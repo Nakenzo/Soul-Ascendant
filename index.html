@@ -82,7 +82,7 @@
                 <p><b>WASD / Panah</b> Gerak</p>
                 <p><b>Klik Kiri</b> Serang</p>
                 <p><b>Klik Kanan</b> Dash</p>
-                <p><b>Q / K</b> Skill</p>
+                <p><b>1 / 2 / 3</b> Skill 1-3 (Q)</p>
                 <p><b>R</b> Ultimate</p>
                 <p><b>Esc</b> Jeda</p>
             </div>
@@ -92,10 +92,10 @@
             <div id="kontrolSentuh">
                 <div id="joyBase" class="joy-basis"><div id="joyKnob" class="joy-tombol"></div></div>
                 <div class="tombol-sentuh-grup">
-                    <button id="tombolSerang" class="tombol-sentuh tombol-serang" type="button"><canvas class="ikon-sentuh"></canvas><div id="serangKnob" class="serang-knob"></div></button>
-                    <button id="tombolSkill" class="tombol-sentuh tombol-skill" type="button"><canvas class="ikon-sentuh"></canvas><i class="cd-tutup"></i><span class="cd-angka"></span></button>
-                    <button id="tombolSkill2" class="tombol-sentuh tombol-skill" type="button"><canvas class="ikon-sentuh"></canvas><i class="cd-tutup"></i><span class="cd-angka"></span></button>
-                    <button id="tombolSkill3" class="tombol-sentuh tombol-skill" type="button"><canvas class="ikon-sentuh"></canvas><i class="cd-tutup"></i><span class="cd-angka"></span></button>
+                    <button id="tombolSerang" class="tombol-sentuh tombol-serang" type="button"><div class="ikon-sentuh-svg"></div><canvas class="ikon-sentuh"></canvas><div id="serangKnob" class="serang-knob"></div></button>
+                    <button id="tombolSkill" class="tombol-sentuh tombol-skill" type="button"><div class="ikon-sentuh-svg"></div><canvas class="ikon-sentuh"></canvas><i class="cd-tutup"></i><span class="cd-angka"></span></button>
+                    <button id="tombolSkill2" class="tombol-sentuh tombol-skill" type="button"><div class="ikon-sentuh-svg"></div><canvas class="ikon-sentuh"></canvas><i class="cd-tutup"></i><span class="cd-angka"></span></button>
+                    <button id="tombolSkill3" class="tombol-sentuh tombol-skill" type="button"><div class="ikon-sentuh-svg"></div><canvas class="ikon-sentuh"></canvas><i class="cd-tutup"></i><span class="cd-angka"></span></button>
                     <button id="tombolDash" class="tombol-sentuh tombol-dash" type="button"><canvas class="ikon-sentuh"></canvas></button>
                 </div>
 
@@ -209,10 +209,61 @@
                         </span>
                     </span>
                 </h1>
+                <button id="tombolSetting" class="tombol-setting-pojok" type="button" title="Pengaturan">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ikon-gear">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                </button>
                 <button id="tombolPlay" class="tombol-play">&#9654; PLAY</button>
-                <button id="tombolKarakter" class="tombol-abu tombol-karakter-menu">&#9733; KARAKTER</button>
-                <button id="tombolSetting" class="tombol-abu tombol-karakter-menu">&#9881; SETTINGS</button>
+                <button id="tombolKarakter" class="tombol-karakter-menu">&#9733; KARAKTER</button>
+                <button id="tombolInventory" class="tombol-inventory-menu">&#127890; INVENTORY</button>
                 <div id="saldoJudul" class="teks-skor" hidden></div>
+            </div>
+
+            
+            <div id="layarInventory" class="overlay hidden layar-inventory inv-layar">
+                <div class="modal-pilih inventory-wide">
+                    <div class="modal-pilih-kartun">
+                        <div class="modal-pilih-kepala">
+                            <div class="inv-kepala-judul">
+                                <span class="modal-pilih-judul">&#127890; INVENTORY</span>
+                                <span id="invKapasitas" class="inv-badge-total">0 ITEM</span>
+                            </div>
+                            <button id="tutupInventory" class="modal-pilih-tutup" type="button">X</button>
+                        </div>
+                        <div class="inv-kategori-bar">
+                            <button class="inv-tab-btn aktif" data-kategori="semua" type="button">SEMUA</button>
+                            <button class="inv-tab-btn" data-kategori="material" type="button">MATERIAL</button>
+                            <button class="inv-tab-btn" data-kategori="konsumsi" type="button">KONSUMSI</button>
+                            <button class="inv-tab-btn" data-kategori="artefak" type="button">ARTEFAK</button>
+                            <button class="inv-tab-btn" data-kategori="spesial" type="button">SPESIAL</button>
+                        </div>
+                        <div class="inv-konten-wadah">
+                            <div class="inv-kolom-kiri">
+                                <div id="invGridDaftar" class="inv-grid"></div>
+                                <div id="invGridKosong" class="inv-kosong hidden">
+                                    <div class="inv-kosong-ikon">&#128230;</div>
+                                    <div class="inv-kosong-teks">TIDAK ADA ITEM DI KATEGORI INI</div>
+                                </div>
+                            </div>
+                            <div id="invPanelDetail" class="inv-panel-detail">
+                                <div id="invDetailIconWadah" class="inv-detail-icon-frame"></div>
+                                <div class="inv-detail-nama-bar">
+                                    <div id="invDetailNama" class="inv-detail-nama">-</div>
+                                    <div id="invDetailRarity" class="inv-detail-rarity">-</div>
+                                </div>
+                                <div class="inv-detail-meta">
+                                    <span id="invDetailKategori" class="inv-meta-tag">TIPE: -</span>
+                                    <span id="invDetailJumlah" class="inv-meta-tag">DIMILIKI: 0</span>
+                                </div>
+                                <div class="inv-detail-garis"></div>
+                                <div id="invDetailDeskripsi" class="inv-detail-deskripsi">Pilih item untuk melihat deskripsi dan kegunaannya.</div>
+                                <div id="invDetailAksiWadah" class="inv-detail-aksi"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div id="layarSetting" class="overlay hidden setting-layar">
@@ -264,6 +315,20 @@
                                 <div id="setDaftarIkatan" class="set-ikatan"></div>
                                 <div class="set-baris set-baris-tombol">
                                     <button id="setResetIkatan" class="tombol-abu" type="button">&#8635; RESET KE BAWAAN</button>
+                                </div>
+                            </div>
+
+                            <div id="setGrupHudMobile" class="set-grup" hidden>
+                                <div class="set-grup-judul">KONTROL <span class="set-grup-catatan">hp / sentuh</span></div>
+                                <div class="set-baris">
+                                    <button id="tombolBukaHudEditor" class="set-menu" type="button">
+                                        <span class="set-menu-ikon" aria-hidden="true">&#9881;</span>
+                                        <span class="set-menu-teks">
+                                            <span class="set-menu-judul">ATUR HUD</span>
+                                            <span class="set-menu-ket">Kustomisasi posisi dan ukuran tombol sentuh serta bar</span>
+                                        </span>
+                                        <span class="set-menu-panah" aria-hidden="true">&#8250;</span>
+                                    </button>
                                 </div>
                             </div>
 
@@ -406,6 +471,113 @@
                 </div>
             </div>
 
+            <div id="layarHudEditor" class="overlay hidden hud-editor-layar">
+                <div class="hud-editor-wadah">
+                    <div class="hud-editor-header">
+                        <div class="hud-editor-judul-wrap">
+                            <span class="hud-editor-judul">&#9881; ATUR HUD MOBILE</span>
+                            <span class="hud-editor-subjudul">Geser elemen untuk memindahkan posisi. Pilih elemen untuk mengubah ukuran.</span>
+                        </div>
+                        <button id="tutupHudEditorX" class="modal-pilih-tutup" type="button" title="Tutup">X</button>
+                    </div>
+
+                    <div id="hudEditorPanggung" class="hud-editor-panggung">
+                        <div id="hudEditorArea" class="hud-editor-area">
+                            <div class="hud-editor-grid" aria-hidden="true"></div>
+
+                            <div id="hudItemJoy" class="hud-item hud-item-joy" data-id="joy" title="Analog Joystick">
+                                <div class="hud-item-joy-inner"></div>
+                                <span class="hud-item-label">JOYSTICK</span>
+                            </div>
+
+                            <div id="hudItemSerang" class="hud-item hud-item-serang" data-id="serang" title="Tombol Serang">
+                                <div class="hud-item-serang-inner"></div>
+                                <div class="hud-item-svg"><span class="hud-ikon-pedang">&#9876;</span></div>
+                                <span class="hud-item-label">SERANG</span>
+                            </div>
+
+                            <div id="hudItemSkill1" class="hud-item hud-item-skill" data-id="skill1" title="Skill 1">
+                                <div class="hud-item-svg"><div class="hud-item-skill-inner">1</div></div>
+                                <span class="hud-item-label">SKILL 1</span>
+                            </div>
+
+                            <div id="hudItemSkill2" class="hud-item hud-item-skill" data-id="skill2" title="Skill 2">
+                                <div class="hud-item-svg"><div class="hud-item-skill-inner">2</div></div>
+                                <span class="hud-item-label">SKILL 2</span>
+                            </div>
+
+                            <div id="hudItemSkill3" class="hud-item hud-item-skill" data-id="skill3" title="Skill 3">
+                                <div class="hud-item-svg"><div class="hud-item-skill-inner">3</div></div>
+                                <span class="hud-item-label">SKILL 3</span>
+                            </div>
+
+                            <div id="hudItemDash" class="hud-item hud-item-dash" data-id="dash" title="Tombol Dash">
+                                <div class="hud-item-dash-inner">&#128095;</div>
+                                <span class="hud-item-label">DASH</span>
+                            </div>
+
+                            <div id="hudItemUlt" class="hud-item hud-item-bar-ult" data-id="ult" title="Soul Meter / Ultimate">
+                                <div class="hud-ult-isi">
+                                    <span class="hud-ult-teks">&#128293; SOUL METER &#128293;</span>
+                                </div>
+                                <span class="hud-item-label">ULTIMATE BAR</span>
+                            </div>
+
+                            <div id="hudItemPause" class="hud-item hud-item-pause" data-id="pause" title="Tombol Pause">
+                                <span class="hud-item-pause-inner">&#10073;&#10073;</span>
+                            </div>
+
+                            <div id="hudItemBarHp" class="hud-item hud-item-bar-hp" data-id="barHp" title="Status Bar (HP &amp; Skill)">
+                                <div class="hud-hp-header-bar">
+                                    <div class="hud-hp-bar-wadah">
+                                        <div class="hud-hp-bar-isi">100/100</div>
+                                    </div>
+                                    <div class="hud-hp-badge">HP</div>
+                                </div>
+                                <div class="hud-sk-deret">
+                                    <div class="hud-sk-bar">
+                                        <span class="hud-sk-num">1</span>
+                                        <span class="hud-sk-nama">HEATWAVE</span>
+                                    </div>
+                                    <div class="hud-sk-bar">
+                                        <span class="hud-sk-num">2</span>
+                                        <span class="hud-sk-nama">FIREBALL</span>
+                                    </div>
+                                    <div class="hud-sk-bar">
+                                        <span class="hud-sk-num">3</span>
+                                        <span class="hud-sk-nama">INFERNO</span>
+                                    </div>
+                                </div>
+                                <span class="hud-item-label">BAR HP &amp; SKILL</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hud-editor-toolbar">
+                        <button id="hudBtnLipatToolbar" class="hud-btn-lipat" type="button" title="Sembunyikan / Tampilkan Panel">&#9660; SEMBUNYIKAN</button>
+                        <div class="hud-toolbar-kiri">
+                            <div class="hud-info-terpilih">
+                                <span class="hud-terpilih-label">ELEMEN:</span>
+                                <span id="hudNamaTerpilih" class="hud-terpilih-nama">JOYSTICK (GERAK)</span>
+                            </div>
+                            <div class="hud-skala-kontrol">
+                                <span class="hud-skala-label">UKURAN:</span>
+                                <button id="hudBtnUkuranMinus" class="hud-btn-mini" type="button" title="Perkecil">-</button>
+                                <input id="hudSliderUkuran" class="hud-slider" type="range" min="50" max="250" step="5" value="100">
+                                <button id="hudBtnUkuranPlus" class="hud-btn-mini" type="button" title="Perbesar">+</button>
+                                <span id="hudNilaiUkuran" class="hud-nilai-skala">100%</span>
+                            </div>
+                            <button id="hudBtnResetElemen" class="hud-btn-sekunder" type="button" title="Reset elemen terpilih">&#8635; Reset Elemen</button>
+                        </div>
+                        <div class="hud-toolbar-kanan">
+                            <button id="hudBtnResetSemua" class="hud-btn-bahaya" type="button">&#8635; RESET DEFAULT</button>
+                            <button id="hudBtnBatal" class="hud-btn-sekunder" type="button">BATAL</button>
+                            <button id="hudBtnSimpan" class="hud-btn-utama" type="button">&#10004; SIMPAN HUD</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="layarKarakter" class="overlay hidden">
                 <div class="dekor-bg" aria-hidden="true">
                     <svg class="jalur-aura" viewBox="0 0 100 100" preserveAspectRatio="none" style="--dur:16s;--delay:0s">
@@ -429,13 +601,21 @@
                 <div class="kar-isi">
                     <div class="kar-kiri">
                         <div class="tab-karakter" role="tablist">
-                            <button class="tab-karakter-btn aktif" data-tab="skill" type="button">SKILL</button>
+                            <button class="tab-karakter-btn aktif" data-tab="skill" type="button">TALENT</button>
                             <button class="tab-karakter-btn" data-tab="artefak" type="button">ARTEFAK</button>
                             <button class="tab-karakter-btn" data-tab="stat" type="button">STAT</button>
                         </div>
                         <div class="balok-panel">
                             <div id="panelSkill" class="panel-karakter">
-                                <div id="daftarSkill" class="daftar-upgrade"></div>
+                                <div id="treeKepala" class="tree-kepala">
+                                    <div class="tree-info-poin">
+                                        <span class="tree-label-poin">TALENT POIN:</span>
+                                        <span id="treePoinSisa" class="tree-angka-poin">0</span>
+                                        <span id="treePoinTotal" class="tree-total-poin">/ 0</span>
+                                    </div>
+                                    <button id="tombolResetTree" class="tombol-abu tree-btn-reset" type="button">&#8635; RESET TALENT</button>
+                                </div>
+                                <div id="daftarTreePoint" class="tree-grid"></div>
                             </div>
                             <div id="panelArtefak" class="panel-karakter hidden">
                                 <div id="daftarArtefak" class="grid-artefak"></div>
@@ -505,7 +685,11 @@
 
             <div id="layarGameOver" class="overlay hidden">
                 <h2 id="judulAkhir" class="judul-gameover">GAME OVER</h2>
-                <p id="skorAkhir" class="teks-skor">KOIN: 0</p>
+                <div class="loot-hadiah-zona">
+                    <div class="loot-hadiah-judul">HASIL PEROLEHAN:</div>
+                    <div id="lootGameOver" class="loot-deret-wadah"></div>
+                </div>
+                <p id="skorAkhir" class="teks-skor" hidden>KOIN: 0</p>
                 <div class="grup-tombol">
                     <button id="tombolUlang" class="tombol-hijau">&#9654; Main Lagi</button>
                     <button id="tombolMenu" class="tombol-abu">&#8635; Ganti Karakter</button>
@@ -515,7 +699,11 @@
 
             <div id="layarMenang" class="overlay hidden">
                 <h2 class="judul-gameover" style="color:#ffd23f">KAMU MENANG!</h2>
-                <p id="skorMenang" class="teks-skor">KOIN: 0</p>
+                <div class="loot-hadiah-zona">
+                    <div class="loot-hadiah-judul">HASIL PEROLEHAN:</div>
+                    <div id="lootMenang" class="loot-deret-wadah"></div>
+                </div>
+                <p id="skorMenang" class="teks-skor" hidden>KOIN: 0</p>
                 <p id="teksLevelBaru" class="teks-skor" style="color:#a3e635"></p>
                 <div class="grup-tombol">
                     <button id="tombolLevelBerikut" class="tombol-hijau">&#9654; Level Berikutnya</button>
@@ -536,12 +724,14 @@
         <script src="akun-ui.js"></script>
         <script src="audio.js"></script>
         <script src="settings-ui.js"></script>
+        <script src="hud.js"></script>
     <script src="config.js"></script>
 <script src="karakter.js"></script>
     <script src="artefak.js"></script>
     <script src="bosses.js"></script>
     <script src="maps.js"></script>
     <script src="texture.js"></script>
+    <script src="inventory.js"></script>
     <script src="menu.js"></script>
     <script src="input.js"></script>
 <script src="ikon-sentuh.js"></script>

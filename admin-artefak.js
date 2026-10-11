@@ -1,4 +1,4 @@
-// PANEL DEBUG ARTEFAK - hanya untuk admin.html (file ini di-ignore git).
+// PANEL DEBUG ARTEFAK (alat admin / testing).
 // Dipakai buat tes cepat tanpa harus mengalahkan bos berulang-ulang.
 (function () {
   "use strict";

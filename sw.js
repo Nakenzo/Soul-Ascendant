@@ -1,31 +1,10 @@
-/* ============================================================
-   Service worker - cache aset game supaya bisa main offline.
-
-   CARA KERJA VERSI INI
-   ------------------------------------------------------------
-   Game ini pakai cache-first: kalau file ada di cache, file itu
-   langsung dipakai tanpa cek server. Ini cepat, tapi satu
-   akibatnya: kalau nama cache tidak berubah, pemain SELALU
-   dilayani file versi lama, padahal file baru sudah terupload.
-
-   Jadi nomornya diambil dari manifest.json -> "build".
-   Setiap mau rilis, cukup naikkan angka "build" satu saja.
-   Tidak perlu sentuh file ini lagi.
-
-   Contoh: rilis hari ini "build": 2 -> besok "build": 3.
-   ============================================================ */
-
-// PENANDA BUILD: angka ini HARUS selalu sama dengan "build" di manifest.json.
-// Browser hanya memeriksa ulang service worker kalau isi file sw.js BERUBAH,
-// jadi tiap rilis yang menaikkan build manifest WAJIB mengubah angka ini juga.
-// Kalau tidak, pemain terus-menerus dilayani JS lama dari cache (bug klasik:
-// tombol/CSS baru tapi draw.js basi). tools/salin-www.js memverifikasi keduanya.
-const BUILD = 41;
+const BUILD = 61;
 const CACHE_FALLBACK = "soul-essence-v" + BUILD;
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",
   "./style.css",
+  "./inventory.js",
   "./settings.css",
   "./manifest.json",
   "./core.js",
@@ -35,6 +14,7 @@ const ASSETS_TO_CACHE = [
   "./akun.js",
   "./akun-ui.js",
   "./settings-ui.js",
+  "./hud.js",
   "./audio.js",
   "./config.js",
   "./karakter.js",

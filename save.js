@@ -77,11 +77,13 @@ function progresBaru() {
     koinTertinggi: 0,
     koinSaldo: 0,
     levelKarakter: {},
+    treePoin: {},
     skillPakai: {},
     artefakMilik: {},
     artefakBintang: {},
     artefakPakai: {},
     artefakSubstat: {},
+    inventaris: {},
     t: Date.now()
   };
 }
@@ -155,6 +157,25 @@ function bersihkanProgres(terbaik) {
       if (Number.isInteger(lv) && lv >= 0) {
         n.levelKarakter[k] = Math.min(lv, KARAKTER_LEVEL_MAX);
       }
+    }
+  }
+  n.treePoin = {};
+  if (terbaik.treePoin && typeof terbaik.treePoin === "object") {
+    for (const k in terbaik.treePoin) {
+      if (!kunciAman(k)) continue;
+      const isi = terbaik.treePoin[k];
+      if (!isi || typeof isi !== "object") continue;
+      const bersih = {};
+      for (const nid in isi) {
+        if (!kunciAman(nid)) continue;
+        const val = isi[nid];
+        if (Number.isInteger(val) && val > 0) {
+          bersih[nid] = Math.min(val, 5);
+        } else if (typeof val === "boolean" && val) {
+          bersih[nid] = true;
+        }
+      }
+      n.treePoin[k] = bersih;
     }
   }
   n.skillPakai = {};
@@ -234,6 +255,18 @@ function bersihkanProgres(terbaik) {
       if (jumlah > 0) n.artefakSubstat[k] = bersih;
     }
   }
+
+  n.inventaris = {};
+  if (terbaik.inventaris && typeof terbaik.inventaris === "object") {
+    for (const itemId in terbaik.inventaris) {
+      if (!kunciAman(itemId) || itemId.length > 50) continue;
+      const jlh = terbaik.inventaris[itemId];
+      if (Number.isInteger(jlh) && jlh > 0) {
+        n.inventaris[itemId] = Math.min(jlh, 999999);
+      }
+    }
+  }
+
   return n;
 }
 
@@ -245,11 +278,13 @@ function saveSnapshot() {
     koinTertinggi: progres.koinTertinggi,
     koinSaldo: progres.koinSaldo,
     levelKarakter: progres.levelKarakter,
+    treePoin: progres.treePoin,
     skillPakai: progres.skillPakai,
     artefakMilik: progres.artefakMilik,
     artefakBintang: progres.artefakBintang,
     artefakPakai: progres.artefakPakai,
     artefakSubstat: progres.artefakSubstat,
+    inventaris: progres.inventaris || {},
     t: Date.now()
   };
   return { d: d, sig: saveChecksum(d) };
@@ -530,16 +565,57 @@ function levelKarakter(kunci) {
 
 function bonusStatKarakter(kunci) {
   const lv = levelKarakter(kunci);
-  const b = { hp: 0.05 * lv, damage: 0.05 * lv, kecepatan: 0.04 * lv };
+  const b = {
+    hp: 0,
+    damage: 0,
+    basicDmg: 0,
+    kecepatan: 0,
+    crit: 0.10,
+    critDmg: 0.70,
+    soulMagnet: 0,
+    jiwa: 1.0,
+    armor: 0,
+    aoe: 0,
+    attackSpeed: 0,
+    skill1Dmg: 0,
+    skill1Cd: 0,
+    skill2Dmg: 0,
+    skill2Cd: 0,
+    skill3Dmg: 0,
+    skill3Cd: 0
+  };
 
-  // bonus piece: stat utama per level + substat tetap
+  if (typeof hitungBonusTree === "function") {
+    const tb = hitungBonusTree(kunci);
+    if (tb) {
+      if (Number.isFinite(tb.hp)) b.hp += tb.hp;
+      if (Number.isFinite(tb.damage)) b.damage += tb.damage;
+      if (Number.isFinite(tb.basicDmg)) b.basicDmg += tb.basicDmg;
+      if (Number.isFinite(tb.kecepatan)) b.kecepatan += tb.kecepatan;
+      if (Number.isFinite(tb.crit)) b.crit += tb.crit;
+      if (Number.isFinite(tb.critDmg)) b.critDmg += tb.critDmg;
+      if (Number.isFinite(tb.soulMagnet)) b.soulMagnet += tb.soulMagnet;
+      if (Number.isFinite(tb.jiwa)) b.jiwa += tb.jiwa;
+      if (Number.isFinite(tb.armor)) b.armor += tb.armor;
+      if (Number.isFinite(tb.aoe)) b.aoe += tb.aoe;
+      if (Number.isFinite(tb.attackSpeed)) b.attackSpeed += tb.attackSpeed;
+      if (Number.isFinite(tb.skill1Dmg)) b.skill1Dmg += tb.skill1Dmg;
+      if (Number.isFinite(tb.skill1Cd)) b.skill1Cd += tb.skill1Cd;
+      if (Number.isFinite(tb.skill2Dmg)) b.skill2Dmg += tb.skill2Dmg;
+      if (Number.isFinite(tb.skill2Cd)) b.skill2Cd += tb.skill2Cd;
+      if (Number.isFinite(tb.skill3Dmg)) b.skill3Dmg += tb.skill3Dmg;
+      if (Number.isFinite(tb.skill3Cd)) b.skill3Cd += tb.skill3Cd;
+      if (tb.bukaSkill2) b.bukaSkill2 = true;
+      if (tb.bukaSkill3) b.bukaSkill3 = true;
+    }
+  }
+
   if (typeof bonusArtefak === "function") {
     const a = bonusArtefak(kunci);
     if (Number.isFinite(a.hp)) b.hp += a.hp;
     if (Number.isFinite(a.damage)) b.damage += a.damage;
     if (Number.isFinite(a.kecepatan)) b.kecepatan += a.kecepatan;
   }
-  // bonus set bertingkat: 2 slot -> bonus2, 4 slot -> bonus2 + bonus4
   if (typeof bonusSetArtefak === "function") {
     const s = bonusSetArtefak(kunci);
     if (Number.isFinite(s.hp)) b.hp += s.hp;
@@ -547,14 +623,29 @@ function bonusStatKarakter(kunci) {
     if (Number.isFinite(s.kecepatan)) b.kecepatan += s.kecepatan;
   }
 
-  // atribut element = base karakter + bonus set (angka tetap, bukan persen)
   let em = 0;
   if (typeof atributElement === "function") em = atributElement(kunci);
 
   return {
     hp: 1 + b.hp,
     damage: 1 + b.damage,
+    basicDmg: b.basicDmg,
     kecepatan: 1 + b.kecepatan,
+    crit: b.crit,
+    critDmg: b.critDmg,
+    soulMagnet: b.soulMagnet,
+    jiwa: b.jiwa,
+    armor: b.armor,
+    aoe: b.aoe,
+    attackSpeed: b.attackSpeed,
+    skill1Dmg: b.skill1Dmg,
+    skill1Cd: b.skill1Cd,
+    skill2Dmg: b.skill2Dmg,
+    skill2Cd: b.skill2Cd,
+    bukaSkill2: !!b.bukaSkill2,
+    skill3Dmg: b.skill3Dmg,
+    skill3Cd: b.skill3Cd,
+    bukaSkill3: !!b.bukaSkill3,
     atributElement: em,
     lv: lv
   };

@@ -121,13 +121,16 @@ function pasangDaftarIkatan() {
 // kebagian layar tanpa daftar keyboard.
 function terapkanGrupPerangkat() {
   const grup = document.getElementById("setGrupKontrol");
-  if (!grup) return;
+  const grupHud = document.getElementById("setGrupHudMobile");
   const keyboard = pakaiKeyboard();
-  // Bangun daftarnya hanya kalau grup baru saja ditampilkan lagi, supaya baris
-  // yang sedang dipantau tombolnya tidak ikut dibuang saat segarkan biasa.
-  const perluPasang = keyboard && grup.hidden;
-  grup.hidden = !keyboard;
-  if (perluPasang) pasangDaftarIkatan();
+  if (grup) {
+    const perluPasang = keyboard && grup.hidden;
+    grup.hidden = !keyboard;
+    if (perluPasang) pasangDaftarIkatan();
+  }
+  if (grupHud) {
+    grupHud.hidden = keyboard;
+  }
 }
 
 function segarkanDaftarIkatan() {
@@ -242,6 +245,13 @@ function pasangPengaturanUI() {
     pasangSaklarSetting("setTambahPenuh", "layarPenuh");
   }
   pasangResetIkatan();
+
+  const btnHud = document.getElementById("tombolBukaHudEditor");
+  if (btnHud) {
+    btnHud.addEventListener("click", () => {
+      if (typeof bukaHudEditor === "function") bukaHudEditor();
+    });
+  }
 
   // Grup kontrol hanya untuk perangkat berkeyboard. Dipanggil lewat satu
   // fungsi yang sama dengan yang dipakai tiap kali layar dibuka.

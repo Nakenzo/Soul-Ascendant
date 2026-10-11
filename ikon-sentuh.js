@@ -297,14 +297,7 @@
     c.clearRect(0, 0, s, s);
     c.fillStyle = "rgba(0,0,0,0.62)";
     c.fillRect(0, 0, s, s);
-    const jalur = jalurIkonV15(karakter, 1);
-    if (jalur && jalur.length) {
-      const ukuran = s * 0.82;
-      c.save();
-      c.translate((s - ukuran) / 2, (s - ukuran) / 2);
-      lukisLogoV15(c, jalur, ukuran, 0, 0);
-      c.restore();
-    }
+    try { perbaruiIkonSkillSentuh(karakter); } catch (err) {}
     btn.dataset.serangv15 = "1";
   }
 
@@ -336,36 +329,47 @@
     btn.dataset.dashv15 = "1";
   }
 
+  function perbaruiIkonSkillSentuh(kar) {
+    const k = kar || (typeof karakter !== "undefined" ? karakter : null);
+    if (!k || typeof ambilIkonTreeNodeSvg !== "function") return;
+    const pemetaan = [
+      { id: "tombolSerang", nodeId: "serang" },
+      { id: "tombolSkill", nodeId: "skill1" },
+      { id: "tombolSkill2", nodeId: "skill2" },
+      { id: "tombolSkill3", nodeId: "skill3" }
+    ];
+    for (let i = 0; i < pemetaan.length; i++) {
+      const item = pemetaan[i];
+      const btn = document.getElementById(item.id);
+      if (!btn) continue;
+      let wadah = btn.querySelector(".ikon-sentuh-svg");
+      if (!wadah) {
+        wadah = document.createElement("div");
+        wadah.className = "ikon-sentuh-svg";
+        const knob = btn.querySelector(".serang-knob");
+        const tutup = btn.querySelector(".cd-tutup");
+        if (knob) btn.insertBefore(wadah, knob);
+        else if (tutup) btn.insertBefore(wadah, tutup);
+        else btn.appendChild(wadah);
+      }
+      const svgStr = ambilIkonTreeNodeSvg(item.nodeId, k);
+      const kunciBaru = item.nodeId + "_" + k.kunci;
+      if (svgStr && wadah.dataset.svgKunci !== kunciBaru) {
+        wadah.innerHTML = svgStr;
+        wadah.dataset.svgKunci = kunciBaru;
+      }
+    }
+  }
+
+  window.perbaruiIkonSkillSentuh = perbaruiIkonSkillSentuh;
+
   function gambarUlangSkillV15() {
     if (!karakter) return;
+    try { perbaruiIkonSkillSentuh(karakter); } catch (err) {}
     for (let i = 0; i < IDS_V15.length; i++) {
       const id = IDS_V15[i][0];
-      const slot = IDS_V15[i][1];
       const btn = document.getElementById(id);
       if (!btn) continue;
-      const cv = btn.querySelector(".ikon-sentuh");
-      if (!cv) continue;
-      const c = cv.getContext ? cv.getContext("2d") : null;
-      if (!c) continue;
-      const s = ukuranKanvas(btn, cv);
-      c.clearRect(0, 0, s, s);
-      c.fillStyle = "rgba(0,0,0,0.62)";
-      c.fillRect(0, 0, s, s);
-      c.save();
-      c.fillStyle = "rgba(6,8,14,.45)";
-      c.beginPath();
-      c.arc(s / 2, s / 2, s * 0.34, 0, Math.PI * 2);
-      c.fill();
-      c.restore();
-      const jalur = jalurIkonV15(karakter, slot);
-      if (jalur && jalur.length) {
-        const ukuran = s * 0.76;
-        const kor = koreksiV15(karakter, slot);
-        c.save();
-        c.translate((s - ukuran) / 2, (s - ukuran) / 2);
-        lukisLogoV15(c, jalur, ukuran, kor.dx, kor.dy);
-        c.restore();
-      }
       btn.dataset.ikonv15 = "1";
     }
   }

@@ -22,7 +22,9 @@ const IKATAN_BAWAAN = {
   mundur: "s",
   kiri: "a",
   kanan: "d",
-  jurus: "k",
+  skill1: "1",
+  skill2: "2",
+  skill3: "3",
   ultimate: "r"
 };
 
@@ -32,24 +34,24 @@ const DAFTAR_AKSI = [
   { aksi: "mundur", label: "MUNDUR", ket: "ArrowDown tetap aktif sebagai cadangan" },
   { aksi: "kiri", label: "KIRI", ket: "ArrowLeft tetap aktif sebagai cadangan" },
   { aksi: "kanan", label: "KANAN", ket: "ArrowRight tetap aktif sebagai cadangan" },
-  { aksi: "jurus", label: "JURUS", ket: "Skill karakter (Q tetap aktif)" },
+  { aksi: "skill1", label: "SKILL 1", ket: "Skill 1 karakter (Q tetap cadangan)" },
+  { aksi: "skill2", label: "SKILL 2", ket: "Skill 2 karakter" },
+  { aksi: "skill3", label: "SKILL 3", ket: "Skill 3 karakter" },
   { aksi: "ultimate", label: "ULTIMATE", ket: "Jurus ultimate" }
 ];
 
 // Tombol cadangan yang menempel tetap pada satu aksi dan tidak boleh dipakai
-// aksi lain: Q = skill (disebut di karakter.js dan upgrades.js, "Q/K").
+// aksi lain: Q = skill cadangan (Q/1).
 const IKATAN_Q_SKILL = "q";
 
-// Tombol yang tidak boleh dipakai: dipakai game's menu sendiri, atau system's
-// own shortcuts (F11/F12, modifier).
+// Tombol yang tidak boleh dipakai: system shortcuts (F11/F12, modifier, Esc, Tab, Enter).
 function ikatanTombolDilarang(k) {
   const s = String(k || "").toLowerCase();
   if (!s) return true;
-  if (/^[0-9]$/.test(s)) return true;            // pilih karakter / level / kartu upgrade
-  if (s === IKATAN_Q_SKILL) return true;         // cadangan skill (Q/K)
+  if (s === IKATAN_Q_SKILL) return true;
   if (s === "escape" || s === "enter" || s === "tab") return true;
   if (s === " " || s === "shift" || s === "control" || s === "alt" || s === "meta") return true;
-  if (/^f([1-9]|1[0-2])$/.test(s)) return true;   // F11 fullscreen, F12 devtools, dst
+  if (/^f([1-9]|1[0-2])$/.test(s)) return true;
   return false;
 }
 
@@ -89,7 +91,9 @@ function pengaturanBawaan() {
       mundur: IKATAN_BAWAAN.mundur,
       kiri: IKATAN_BAWAAN.kiri,
       kanan: IKATAN_BAWAAN.kanan,
-      jurus: IKATAN_BAWAAN.jurus,
+      skill1: IKATAN_BAWAAN.skill1,
+      skill2: IKATAN_BAWAAN.skill2,
+      skill3: IKATAN_BAWAAN.skill3,
       ultimate: IKATAN_BAWAAN.ultimate
     }
   };

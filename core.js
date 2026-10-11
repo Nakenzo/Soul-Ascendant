@@ -74,6 +74,7 @@ const P_RADIUS = 14;
 
 let enemyShots = [];
 let hazards = [];
+let dropItems = [];
 
 function resetArena({ koinBaru }) {
 
@@ -115,13 +116,30 @@ function resetArena({ koinBaru }) {
 
   player.kartu = {};
   if (typeof perbaruiNotaKartu === "function") perbaruiNotaKartu();
-  player.mult = { speed: 1, damage: 1, atk: 1, reach: 1, halfA: 1, bSpeed: 1, special: 1, status: 1, hpA: 0, regen: 0, jiwa: 1, dash: 0, crit: 0, armor: 0, koin: 1 };
+  const aoeBonus = bon.aoe || 0;
+  player.mult = {
+    speed: 1,
+    damage: 1,
+    atk: 1,
+    reach: 1,
+    halfA: 1,
+    bSpeed: 1,
+    special: 1,
+    status: 1,
+    hpA: 0,
+    regen: 0,
+    jiwa: 1,
+    dash: 0,
+    crit: 0,
+    armor: 0,
+    koin: 1
+  };
   player.base = {
     speed: stSPD,
     damage: stDMG,
-    attackRate: karakter ? karakter.attackRate : 0.18,
-    reach: karakter ? karakter.reach : 0,
-    halfArc: karakter ? karakter.halfArc : 0,
+    attackRate: Math.max(0.08, (karakter ? karakter.attackRate : 0.18) * (1 - (bon.attackSpeed || 0))),
+    reach: Math.round((karakter ? karakter.reach : 180) * (1 + aoeBonus)),
+    halfArc: (karakter ? karakter.halfArc : 1.2) * (1 + aoeBonus * 0.4),
     swingDuration: karakter ? karakter.swingDuration : 0.2,
     buffDurasi: karakter ? karakter.buffDurasi : 5,
     bekuDurasi: karakter ? karakter.bekuDurasi : 1,
@@ -129,9 +147,23 @@ function resetArena({ koinBaru }) {
     specialMax: karakter ? karakter.specialCd : 3,
     maxHp: stHP,
     bulletSpeed: 840,
-    dashMax: (karakter && karakter.tipe === "jarak") ? 2 : 1
+    dashMax: (karakter && karakter.tipe === "jarak") ? 2 : 1,
+    crit: bon.crit !== undefined ? bon.crit : 0.10,
+    critDmg: bon.critDmg !== undefined ? bon.critDmg : 0.70,
+    armor: bon.armor || 0,
+    jiwa: bon.jiwa || 1
   };
+  player.crit = player.base.crit;
+  player.critDmg = player.base.critDmg;
+  player.armor = player.base.armor;
+  player.skill1DmgBonus = bon.skill1Dmg || 0;
+  player.skill2DmgBonus = bon.skill2Dmg || 0;
+  player.skill3DmgBonus = bon.skill3Dmg || 0;
+  player.basicDmgBonus = bon.basicDmg || 0;
+  player.soulMagnet = bon.soulMagnet || 0;
+  player.jiwaKali = bon.jiwa || 1;
   if (typeof hitungStatKartu === "function") hitungStatKartu();
+  try { if (typeof perbaruiIkonSkillSentuh === "function") perbaruiIkonSkillSentuh(karakter); } catch (err) {}
   pilihanKartu = null;
   bullets = [];
   enemies = [];
@@ -151,6 +183,7 @@ function resetArena({ koinBaru }) {
   freezes = [];
   damages = [];
   souls = [];
+  dropItems = [];
   flashes = [];
   hurtVig = 0;
   deathPixels = [];
@@ -163,6 +196,7 @@ function resetArena({ koinBaru }) {
   tampilkanBannerLevel(level);
   if (koinBaru) {
     koin = 0;
+    if (typeof resetLootRun === "function") resetLootRun();
   }
   gameOver = false;
   spawnTimer = 0;

@@ -32,7 +32,9 @@ const IKATAN_POKOK = {
   mundur: "s",
   kiri: "a",
   kanan: "d",
-  jurus: "k",
+  skill1: "1",
+  skill2: "2",
+  skill3: "3",
   ultimate: "r"
 };
 
@@ -68,10 +70,10 @@ function _poinMouse(e) {
 }
 
 function _pusatJoy() {
-  const r = canvas.getBoundingClientRect();
+  const r = joyBase.getBoundingClientRect();
   return {
-    x: r.left + joyBase.offsetLeft + joyBase.offsetWidth / 2,
-    y: r.top + joyBase.offsetTop + joyBase.offsetHeight / 2
+    x: r.left + r.width / 2,
+    y: r.top + r.height / 2
   };
 }
 
@@ -82,21 +84,33 @@ window.addEventListener("keydown", (e) => {
   const k = e.key.toLowerCase();
   keys[k] = true;
 
-  if (typeof pakaiModeTigaSkill === "function" && pakaiModeTigaSkill()) {
-    // 1 = skill bawaan (slot 2), 2 = slot 3, 3 = slot 4
-    const slot = typeof slotDariTombol === "function" ? slotDariTombol(k) : 0;
-    if (slot) castSkillSlot(slot);
-    else if (tombolAksi("jurus") || k === "q") castSkillSlot(2);
-  } else if (tombolAksi("jurus") || k === "q") {
-    castSpecial();
+  if (statusGame === "main") {
+    if (typeof pakaiModeTigaSkill === "function" && pakaiModeTigaSkill()) {
+      let slot = 0;
+      if (tombolAksi("skill1") || k === "q") slot = 2;
+      else if (tombolAksi("skill2")) slot = 3;
+      else if (tombolAksi("skill3")) slot = 4;
+      else if (typeof slotDariTombol === "function") slot = slotDariTombol(k);
+
+      if (slot) {
+        if (karakter && typeof apakahSkillTerbuka === "function" && !apakahSkillTerbuka(karakter.kunci, slot)) return;
+        castSkillSlot(slot);
+      }
+    } else if (tombolAksi("skill1") || k === "q") {
+      castSpecial();
+    }
   }
 
   if (e.key === "Escape") {
+    const hudTerbuka = typeof layarHudEditor !== "undefined" && layarHudEditor &&
+      !layarHudEditor.classList.contains("hidden");
     const akunTerbuka = typeof layarAkun !== "undefined" && layarAkun &&
       !layarAkun.classList.contains("hidden");
     const settingTerbuka = typeof layarSetting !== "undefined" && layarSetting &&
       !layarSetting.classList.contains("hidden");
-    if (akunTerbuka && typeof tutupAkun === "function") {
+    if (hudTerbuka && typeof tutupHudEditor === "function") {
+      tutupHudEditor();
+    } else if (akunTerbuka && typeof tutupAkun === "function") {
       tutupAkun();
     } else if (settingTerbuka && typeof tutupSetting === "function") {
       tutupSetting();
@@ -148,6 +162,7 @@ window.addEventListener("keydown", (e) => {
         return;
       }
       karakter = kar;
+      try { if (typeof perbaruiIkonSkillSentuh === "function") perbaruiIkonSkillSentuh(kar); } catch (err) {}
       mulaiGameBaru();
     }
   });
@@ -250,7 +265,8 @@ function _geserJoy(e) {
   const lenX = e.clientX - _joyBasis.x;
   const lenY = e.clientY - _joyBasis.y;
   const len = Math.hypot(lenX, lenY);
-  const k = Math.min(1, len / JARI_R_MX);
+  const rMax = JARI_R_MX * (typeof ambilHudSkalaJoy === "function" ? ambilHudSkalaJoy() : 1);
+  const k = Math.min(1, len / rMax);
   if (len > 0) {
     joy.x = (lenX / len) * k;
     joy.y = (lenY / len) * k;
@@ -293,12 +309,13 @@ tombolSerang.addEventListener("pointermove", (e) => {
   const lenX = e.clientX - _serangBasis.x;
   const lenY = e.clientY - _serangBasis.y;
   const len = Math.hypot(lenX, lenY);
-  aimDx = len > 0 ? (lenX / len) * Math.min(1, len / JARI_SERANG) : 0;
-  aimDy = len > 0 ? (lenY / len) * Math.min(1, len / JARI_SERANG) : 0;
+  const rSerang = JARI_SERANG * (typeof ambilHudSkalaSerang === "function" ? ambilHudSkalaSerang() : 1);
+  aimDx = len > 0 ? (lenX / len) * Math.min(1, len / rSerang) : 0;
+  aimDy = len > 0 ? (lenY / len) * Math.min(1, len / rSerang) : 0;
 
   const kn = document.getElementById("serangKnob");
   if (kn) {
-    const k = Math.min(1, len / JARI_SERANG);
+    const k = Math.min(1, len / rSerang);
     kn.style.transform = "translate(calc(-50% + " + (lenX * k) + "px), calc(-50% + " + (lenY * k) + "px))";
   }
 });
@@ -314,10 +331,12 @@ _pasangSentuh("tombolSkill", (e) => {
 });
 _pasangSentuh("tombolSkill2", (e) => {
   e.preventDefault();
+  if (karakter && typeof apakahSkillTerbuka === "function" && !apakahSkillTerbuka(karakter.kunci, 3)) return;
   if (typeof pakaiModeTigaSkill === "function" && pakaiModeTigaSkill()) castSkillSlot(3);
 });
 _pasangSentuh("tombolSkill3", (e) => {
   e.preventDefault();
+  if (karakter && typeof apakahSkillTerbuka === "function" && !apakahSkillTerbuka(karakter.kunci, 4)) return;
   if (typeof pakaiModeTigaSkill === "function" && pakaiModeTigaSkill()) castSkillSlot(4);
 });
 _pasangSentuh("tombolUlt", (e) => {
@@ -603,16 +622,25 @@ function perbaruiCdSkillSentuh() {
       ? daftarSkill(karakter.kunci).filter(function (s) { return s.slot === slot; })[0]
       : null;
     const cd = typeof cdSkill === "function" && karakter ? cdSkill(karakter.kunci, slot) : 0;
-    const terkunci = def && karakter && typeof levelKarakter === "function" && levelKarakter(karakter.kunci) < def.level;
-    // Lapisan gelap cooldown: 100% saat baru dipakai/terkunci, menyusut
-    // mengikuti sisa waktu, dan 0% (bukan 100%) saat siap -- jadi logo tombol
-    // TAMPIL bersih saat skill siap.
-    const lapis = terkunci ? 100 : (cd > 0 && sisa > 0 ? Math.max(0, Math.min(100, sisa / cd * 100)) : 0);
-    if (tutup) {
-      tutup.style.background = "conic-gradient(rgba(8,10,16,.78) " + lapis + "%, rgba(8,10,16,0) " + lapis + "%)";
+    const terkunci = typeof apakahSkillTerbuka === "function" && karakter
+      ? !apakahSkillTerbuka(karakter.kunci, slot)
+      : (def && karakter && typeof levelKarakter === "function" && levelKarakter(karakter.kunci) < def.level);
+    if (terkunci) {
+      btn.classList.add("tombol-terkunci");
+      if (tutup) {
+        tutup.style.background = "rgba(6, 8, 14, 0.78)";
+      }
+      if (ang) ang.textContent = "🔒";
+    } else {
+      btn.classList.remove("tombol-terkunci");
+      const lapis = cd > 0 && sisa > 0 ? Math.max(0, Math.min(100, sisa / cd * 100)) : 0;
+      if (tutup) {
+        tutup.style.background = "conic-gradient(rgba(8,10,16,.78) " + lapis + "%, rgba(8,10,16,0) " + lapis + "%)";
+      }
+      if (ang) ang.textContent = sisa > 0 ? sisa.toFixed(1) : "";
     }
-    if (ang) ang.textContent = terkunci ? ("LV" + def.level) : (sisa > 0 ? sisa.toFixed(1) : "");
   }
+  try { if (typeof perbaruiIkonSkillSentuh === "function") perbaruiIkonSkillSentuh(karakter); } catch (err) {}
 }
 
 (function loopSoulUlt() {
@@ -650,37 +678,20 @@ function pasangIkonSentuh() {
     return { c, cx, cy, sk, btn };
   };
   const t = mk("tombolSerang", 205);
-  if (t) {
-    if (dekat) _gambarSlash(t.c, t.cx, t.cy, t.sk, wK);
-    else _gambarPanah(t.c, t.cx, t.cy, t.sk, wK);
-  }
   const d = mk("tombolDash", 110);
   if (d) {
     if (dekat) {
-
       _gambarSepatu(d.c, d.cx, d.cy, d.sk * 0.95, "#ffffff", "#ff4d4d", "#ff2030");
     } else {
-
       _gambarSepatu(d.c, d.cx - 3, d.cy, d.sk * 0.85, "rgba(125,211,252,0.85)", "#4a9fd8", "#dff4ff");
       _gambarSepatu(d.c, d.cx + 3, d.cy, d.sk * 0.85, "#ffffff", "#9fd9ff", "#7dd3fc");
     }
   }
-  // 3 tombol skill: logo vektor diambil dari jalurJurus() — sumber data yang
-  // SAMA dengan logo menu karakter (per karakter & slot). Sinkron via Path2D,
-  // jadi tombol HP selalu menampilkan jurus yang dimiliki saat itu.
-  const skillIds = [["tombolSkill", 2], ["tombolSkill2", 3], ["tombolSkill3", 4]];
-  for (const [id, slot] of skillIds) {
-    const sk = mk(id, 100);
-    if (!sk) continue;
-    _gambarSinar4(sk.c, sk.cx, sk.cy, sk.sk * 0.85, wK);
-    sk.c.save();
-    sk.c.fillStyle = "rgba(6,8,14,.45)";
-    sk.c.beginPath();
-    sk.c.arc(sk.cx, sk.cy, sk.s * 0.34, 0, Math.PI * 2);
-    sk.c.fill();
-    sk.c.restore();
-    try { _gambarIkonJurus(sk.c, karakter, slot, sk.s * 0.76, { cx: sk.cx, cy: sk.cy }); } catch (err) {}
+  const skillIds = ["tombolSkill", "tombolSkill2", "tombolSkill3"];
+  for (const id of skillIds) {
+    mk(id, 100);
   }
+  try { if (typeof perbaruiIkonSkillSentuh === "function") perbaruiIkonSkillSentuh(karakter); } catch (err) {}
   try {
     console.log("[DEB ikon] karakter=" + (karakter ? karakter.kunci : "?") +
       " tombolSkill=slot2 tombolSkill2=slot3 tombolSkill3=slot4");

@@ -44,7 +44,7 @@ const KARTU_UPGRADE = [
     mult: { regen: 0.5 }
   },
   {
-    id: "jurus", nama: "SKILL CEPAT", ket: "-15% cooldown skill (Q/K)",
+    id: "jurus", nama: "SKILL CEPAT", ket: "-15% cooldown skill (1-3/Q)",
     bobot: 14, warna: "#a78bfa", ikon: "\u2726", tier: "rare",
     mult: { special: 0.85 }
   },
@@ -188,12 +188,13 @@ function hitungStatKartu() {
   player.maxHp = Math.round(b.maxHp + m.hpA);
   player.hp = Math.min(player.hp, player.maxHp);
   player.regen = m.regen;
-  player.jiwaKali = m.jiwa;
+  player.jiwaKali = (b.jiwa || 1) * m.jiwa;
   player.dashMax = b.dashMax + m.dash;
   if (player.dashStacks < player.dashMax) player.dashStacks = player.dashMax;
 
-  player.crit = m.crit;
-  player.armor = m.armor;
+  player.crit = (b.crit !== undefined ? b.crit : 0.10) + (m.crit || 0);
+  player.critDmg = (b.critDmg !== undefined ? b.critDmg : 0.70) + (m.critDmg || 0);
+  player.armor = (b.armor || 0) + (m.armor || 0);
 }
 
 function mulaiKartuUpgrade() {

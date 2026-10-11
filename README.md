@@ -71,7 +71,7 @@ Pengaturan in-game, disimpan di localStorage kunci `soul-essence-settings` (`set
 
 - **SUARA** - tiga slider (umum/efek/musik). Nilainya tidak punya penyimpanan sendiri: slider membaca dan menulis `_volUmum/_volSfx/_volMusik` milik `audio.js` (kunci `soul-essence-volume`), jadi sama persis dengan slider di layar Pause.
 - **GAMEPLAY** - saklar *Goyang kamera* (dipakai di `draw.js`) dan *Layar penuh*. Status layar penuh selalu disinkronkan dengan kenyataan lewat event `fullscreenchange`, karena browser keluar dari fullscreen saat reload.
-- **KONTROL** - ikatan tombol, hanya tampil di perangkat non-sentuh. Enam aksi: maju/mundur/kiri/kanan/jurus/ultimate. Panah arah tetap aktif sebagai cadangan, dan `Q` tetap cadangan skill (`Q/K`) sehingga tidak bisa dipakai aksi lain. Tombol yang dipakai menu game (angka, Enter, Esc, F11/F12, modifier) ditolak, begitu juga tombol yang sudah dipakai aksi lain.
+- **KONTROL** - ikatan tombol, hanya tampil di perangkat non-sentuh. Delapan aksi: maju/mundur/kiri/kanan/skill 1/skill 2/skill 3/ultimate. Panah arah tetap aktif sebagai cadangan gerak, dan `Q` tetap cadangan skill 1 (`1/Q`). Keybind bawaan skill adalah 1, 2, dan 3. Tombol sistem (Enter, Esc, Tab, F11/F12, modifier) ditolak, begitu juga tombol yang sudah dipakai aksi lain.
 
 Saat menunggu tombol baru, `sedangTangkap()` membuat `input.js` mengabaikan seluruh keyboard - kalau tidak, `W` yang ditekan untuk memindahkan ikatan ikut menggerakkan karakter. Tangkapan otomatis dibatalkan kalau layar ditutup.
 
@@ -106,10 +106,10 @@ Pertahankan urutan ini sebelum commit fitur:
 2. Naikkan `build` di `manifest.json`.
 3. Tambahkan aset baru yang wajib tersedia offline ke `ASSETS_TO_CACHE` di `sw.js` (daftar ini harus sinkron dengan file yang di-`<script>`-kan `index.html` dan aset yang di-load `main.js`).
 
-## File yang tidak ikut ke GitHub
+## Alat Admin & Debug
 
-Dijaga lewat `.gitignore` (jangan dihapus tanpa alasan):
+Mode admin dibuka saat login dengan akun yang sesuai `ADMIN_KONFIG.username` (di `admin-konfig.js`, login lewat **SETTINGS > AKUN**). Skrip debug dimuat dinamis saat admin login:
 
-- `admin-akses.js` + `admin-artefak.js` + `test-wave-select.js` — alat admin/testing (F9 = pilih wave, panel debug artefak/koin). Diakses lewat tombol `ADMIN` di layar judul `index.html`, dibuka dengan password (lihat `ADMIN_PASSWORD` di `admin-akses.js`). Skrip hanya dimuat setelah password benar, jadi versi rilis tidak terpengaruh.
-- `test-wave-select.js` — lompat wave untuk uji.
-- `artefak.js` — sistem artefak masih belum stabil, dikecualikan sampai siap rilis.
+- `admin-artefak.js` — panel debug artefak & saldo koin.
+- `test-wave-select.js` — panel lompat wave (shortcut F9).
+- `admin-debug.js` — panel pemilih kartu upgrade bebas.

@@ -545,6 +545,20 @@ function gabungProgres(a, b) {
     if (Object.keys(artefakPakai[kar]).length === 0) delete artefakPakai[kar];
   }
 
+  const treePoin = {};
+  for (const sumber of [kiri, kanan]) {
+    if (!sumber || typeof sumber.treePoin !== "object") continue;
+    for (const kar of Object.keys(sumber.treePoin)) {
+      const isi = sumber.treePoin[kar];
+      if (!isi || typeof isi !== "object") continue;
+      if (!treePoin[kar]) treePoin[kar] = {};
+      for (const nid of Object.keys(isi)) {
+        const val = akunNomorAngka(isi[nid]);
+        if (val > 0) treePoin[kar][nid] = Math.max(treePoin[kar][nid] || 0, val);
+      }
+    }
+  }
+
   const skillPakai =
     (kiri.skillPakai && typeof kiri.skillPakai === "object" && kiri.skillPakai.kunci)
       ? kiri.skillPakai
@@ -558,6 +572,7 @@ function gabungProgres(a, b) {
     selesai: gabungAngka(kiri.selesai, kanan.selesai),
     bosKalah: gabungKunci(kiri.bosKalah, kanan.bosKalah),
     levelKarakter: levelKarakter,
+    treePoin: treePoin,
     skillPakai: skillPakai,
     artefakMilik: artefakMilik,
     artefakBintang: artefakBintang,

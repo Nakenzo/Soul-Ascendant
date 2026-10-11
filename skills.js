@@ -21,7 +21,7 @@ function jurusVender() {
     t: 0,
     life: 0.35,
     hit: new Set(),
-    dmg: 75,
+    dmg: Math.round(45 * (1 + (player.skill1DmgBonus || 0))),
     skill: true
   });
   shake = 0.35;
@@ -38,7 +38,16 @@ function daftarkanSkill(kunci, slot, fn, cd) {
 
 function cdSkill(kunci, slot) {
   const c = FUNGSI_CD[kunci + "_" + slot];
-  return typeof c === "number" && c > 0 ? c : (player && player.specialMax ? player.specialMax : 9);
+  let baseCd = typeof c === "number" && c > 0 ? c : (player && player.specialMax ? player.specialMax : 9);
+  if (typeof hitungBonusTree === "function") {
+    const tb = hitungBonusTree(kunci);
+    if (tb) {
+      if (slot === 2 && tb.skill1Cd) baseCd = Math.max(2, baseCd - tb.skill1Cd);
+      if (slot === 3 && tb.skill2Cd) baseCd = Math.max(3, baseCd - tb.skill2Cd);
+      if (slot === 4 && tb.skill3Cd) baseCd = Math.max(3, baseCd - tb.skill3Cd);
+    }
+  }
+  return baseCd;
 }
 
 // ===== MODE 3 SKILL IN-GAME (keybind 1/2/3) =====
@@ -56,9 +65,12 @@ function pakaiModeTigaSkill() {
 }
 
 function slotDariTombol(tombol) {
-  if (tombol === "1") return 2; // skill bawaan
-  if (tombol === "2") return 3;
-  if (tombol === "3") return 4;
+  const k1 = typeof pengaturanIkatan === "function" ? pengaturanIkatan("skill1") : "1";
+  const k2 = typeof pengaturanIkatan === "function" ? pengaturanIkatan("skill2") : "2";
+  const k3 = typeof pengaturanIkatan === "function" ? pengaturanIkatan("skill3") : "3";
+  if (tombol === k1 || tombol === "1" || tombol === "q") return 2;
+  if (tombol === k2 || tombol === "2") return 3;
+  if (tombol === k3 || tombol === "3") return 4;
   return 0;
 }
 
@@ -86,7 +98,7 @@ function castSkillSlot(slot) {
   const daftar = daftarSkill(kunci);
   const def = daftar.filter(function (s) { return s.slot === slot; })[0];
   if (!def || !def.bisaPakai) return;
-  if (levelKarakter(kunci) < def.level) return;
+  if (typeof apakahSkillTerbuka === "function" ? !apakahSkillTerbuka(kunci, slot) : levelKarakter(kunci) < def.level) return;
   const fn = FUNGSI_SKILL[kunci + "_" + slot];
   if (typeof fn !== "function") return;
   player.specialCd = cdSkill(kunci, slot);
@@ -148,7 +160,7 @@ function jurusUltimateVender() {
     t: 0,
     life: 0.6,
     hit: new Set(),
-    dmg: 150,
+    dmg: Math.round(85 * (player.ultDmgMultiplier || 1)),
     skill: true,
     burst: true
   });
@@ -247,7 +259,7 @@ function skillVenderInferno() {
     hantamBarier: true,
     jejak: [],
     hit: new Set(),
-    dmg: 120,
+    dmg: Math.round(60 * (1 + (player.skill2DmgBonus || 0))),
     skill: true,
     apiBesar: true
   });
@@ -370,7 +382,7 @@ function skillVoizPrism() {
     prismPulsa.push({ x1: px, y1: py, x2: u.x, y2: u.y, t: 0, life: 0.4, dua: i });
 
     sfxPrismHop(i);
-    const dmg = Math.round(46 * (typeof pengaliElement === "function" ? pengaliElement(karakter.kunci) : 1));
+    const dmg = Math.round(24 * (typeof pengaliElement === "function" ? pengaliElement(karakter.kunci) : 1) * (1 + (player.skill2DmgBonus || 0)));
     const dmgPasar = applyDamageMusuh(u.e, dmg);
     u.e.hitFlash = 0.12;
     // PASIF PRISM: musuh yang tersambar lumpuh (diam) sebentar; bos lebih tahan.

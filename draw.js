@@ -1936,6 +1936,46 @@ function draw() {
   }
   ctx.globalAlpha = 1;
 
+  if (typeof dropItems !== "undefined" && dropItems) {
+    const tNow = performance.now() / 1000;
+    for (const it of dropItems) {
+      const def = typeof DATABASE_ITEM !== "undefined" ? DATABASE_ITEM[it.itemId] : null;
+      const warna = def && typeof ITEM_RARITY !== "undefined" && ITEM_RARITY[def.rarity]
+        ? ITEM_RARITY[def.rarity].warna
+        : "#ffd23f";
+      const melayang = Math.sin(tNow * 4 + it.t * 3) * 3.5;
+
+      ctx.save();
+      ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+      ctx.beginPath();
+      ctx.ellipse(it.x, it.y + 11, 10, 4.5, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      const pulsa = 0.5 + 0.5 * Math.sin(tNow * 5 + it.t * 2);
+      ctx.fillStyle = warna;
+      ctx.globalAlpha = 0.28 * pulsa;
+      ctx.beginPath();
+      ctx.arc(it.x, it.y + melayang, 14, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.globalAlpha = 1;
+      ctx.imageSmoothingEnabled = false;
+      const img = typeof ambilSpriteItemCanvas === "function" ? ambilSpriteItemCanvas(it.itemId) : null;
+      if (img && img.complete && img.naturalWidth > 0) {
+        ctx.drawImage(img, it.x - 14, it.y + melayang - 14, 28, 28);
+      } else {
+        ctx.fillStyle = warna;
+        ctx.fillRect(it.x - 8, it.y + melayang - 8, 16, 16);
+      }
+
+      if (Math.sin(tNow * 8 + it.t * 5) > 0.6) {
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(it.x + 4, it.y + melayang - 8, 3, 3);
+      }
+      ctx.restore();
+    }
+  }
+
   const dmgFontSize = Math.round(W * 0.03);
   for (const dm of damages) {
     ctx.globalAlpha = 1 - dm.t / dm.life;
@@ -3365,7 +3405,7 @@ function gambarBarTerkunci(ctx, x, y, w, h, tNow) {
   ctx.save();
   ctx.fillStyle = "rgba(10,14,20,.94)";
   ctx.fillRect(x, y, w, h);
-  ctx.strokeStyle = "rgba(138,147,165,.10)";
+  ctx.strokeStyle = "rgba(138,147,165,.12)";
   ctx.lineWidth = Math.max(1, g);
   for (let xx = x - h; xx < x + w; xx += h * 0.55) {
     ctx.beginPath();
@@ -3373,8 +3413,11 @@ function gambarBarTerkunci(ctx, x, y, w, h, tNow) {
     ctx.lineTo(xx + h, y);
     ctx.stroke();
   }
-  gambarGembok(ctx, x + h * 1.0, y + h * 0.48, h * 0.42, tNow);
-  gambarRantai(ctx, x + h * 1.75, y + h * 0.5, w - h * 1.75 - 3, "rgba(138,147,165,.8)", tNow);
+  ctx.strokeStyle = "rgba(148,163,184,.35)";
+  ctx.lineWidth = 1;
+  ctx.strokeRect(x, y, w, h);
+  gambarRantai(ctx, x + 6, y + h * 0.5, w - 12, "rgba(148,163,184,.85)", tNow);
+  gambarGembok(ctx, x + w / 2, y + h * 0.48, h * 0.48, tNow);
   ctx.restore();
 }
 
@@ -3385,12 +3428,24 @@ function drawHUD() {
   const m = Math.round(20 * s);
   const fs = (px) => Math.round(px * s);
 
-  const hpX = m, hpY = m;
-  const hpBarW = Math.round(264 * s), hpBarH = Math.round(28 * s);
-  const hpFillW = hpBarW - Math.round(8 * s);
-  const hpFillH = hpBarH - Math.round(8 * s);
-  const hpFillX = hpX + Math.round(4 * s);
-  const hpFillY = hpY + Math.round(4 * s);
+  let hpX = m, hpY = m;
+  let hpBarW = Math.round(264 * s);
+  let hpBarH = Math.round(28 * s);
+  let sHp = s;
+  if (deviceTerpilih === "mobile" && typeof ambilHudPosBar === "function") {
+    const hudBar = ambilHudPosBar(W, H, s, m, hpBarW, hpBarH);
+    if (hudBar) {
+      hpX = hudBar.x;
+      hpY = hudBar.y;
+      hpBarW = hudBar.w;
+      hpBarH = hudBar.h;
+      sHp = hudBar.s;
+    }
+  }
+  const hpFillW = hpBarW - Math.round(8 * sHp);
+  const hpFillH = hpBarH - Math.round(8 * sHp);
+  const hpFillX = hpX + Math.round(4 * sHp);
+  const hpFillY = hpY + Math.round(4 * sHp);
 
   ctx.fillStyle = "#000";
   ctx.fillRect(hpX, hpY, hpBarW, hpBarH);
@@ -3475,21 +3530,15 @@ function drawHUD() {
     ctx.textBaseline = "alphabetic";
     for (let i = 0; i < 3; i++) {
       const def = daftar[slots[i] - 1] || {};
-      const terkunci = levelKarakter(karakter.kunci) < (typeof def.level === "number" ? def.level : 0);
+      const slot = slots[i];
+      const terkunci = typeof apakahSkillTerbuka === "function"
+        ? !apakahSkillTerbuka(karakter.kunci, slot)
+        : levelKarakter(karakter.kunci) < (typeof def.level === "number" ? def.level : 0);
       const mm = Math.max(3, Math.round(4 * s));
       const nm = (def.nama || "SKILL").slice(0, 12);
       ctx.textAlign = "left";
       if (terkunci) {
-        // skill belum terbuka: bar digelapkan dan DIKUNCI OLEH GEMBOK + RANTAI
         gambarBarTerkunci(ctx, hpX, by, hpBarW, bb, performance.now() / 1000);
-        ctx.fillStyle = "rgba(226,232,240,.95)";
-        ctx.fillText(lbls[i], hpX + Math.max(3, Math.round(4 * s)), by + bb * 0.72);
-        ctx.fillStyle = "rgba(148,163,184,.9)";
-        ctx.fillText(nm, hpX + Math.max(20, Math.round(bb * 1.9)), by + bb * 0.72);
-        ctx.textAlign = "right";
-        ctx.fillStyle = "#8a93a5";
-        ctx.fillText("LV " + def.level, hpX + hpBarW - mm, by + bb * 0.72);
-        ctx.textAlign = "left";
         by += step;
         continue;
       }
@@ -3582,10 +3631,19 @@ function drawHUD() {
     } catch (err) {}
   }
 
-  const bwS = Math.round(W * 0.34);
-  const bhS = Math.round(H * 0.045);
-  const bxS = Math.round((W - bwS) / 2);
-  const byS = H - Math.round(H * 0.09) - bhS;
+  let bwS = Math.round(W * 0.34);
+  let bhS = Math.round(H * 0.045);
+  let bxS = Math.round((W - bwS) / 2);
+  let byS = H - Math.round(H * 0.09) - bhS;
+  if (deviceTerpilih === "mobile" && typeof ambilHudPosUlt === "function") {
+    const hudUlt = ambilHudPosUlt(W, H, bwS, bhS, bxS, byS);
+    if (hudUlt) {
+      bwS = hudUlt.w;
+      bhS = hudUlt.h;
+      bxS = hudUlt.x;
+      byS = hudUlt.y;
+    }
+  }
   const tNow = performance.now() / 1000;
   const karakterVoiz = karakter && karakter.kunci === "voiz";
   const apiMenyala = !karakterVoiz && karakter && karakter.tipe === "dekat" && soul >= SOUL_MAX;

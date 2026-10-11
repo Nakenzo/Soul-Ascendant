@@ -135,6 +135,7 @@ function pilihDevice(dev) {
   if (dev === "mobile") {
     kunciLandscapeMobile();
     cekOrientasi();
+    if (typeof terapkanHudConfig === "function") terapkanHudConfig();
   }
 }
 layarDevice.querySelectorAll("[data-device]").forEach((b) =>
@@ -169,6 +170,10 @@ function sembunyiSemua() {
   layarMenang.classList.add("hidden");
   if (layarAkun) layarAkun.classList.add("hidden");
   if (layarSetting) layarSetting.classList.add("hidden");
+  const layarHud = document.getElementById("layarHudEditor");
+  if (layarHud) layarHud.classList.add("hidden");
+  const layarInv = document.getElementById("layarInventory");
+  if (layarInv) layarInv.classList.add("hidden");
   if (typeof hentikanKonfeti === "function") hentikanKonfeti();
 
   if (!animMati && statusGame !== "main") {
@@ -249,45 +254,7 @@ function ikonElemenSVG(el) {
   return "";
 }
 
-// Logo jurus utama (slot 3): INFERNO untuk Vender (jarak dekat, api) dan
-// FROZFALL untuk Kenzro (jarak jauh, es). Dipakai di panel skill karakter
-// maupun kotak info saat pemilihan karakter.
-function ikonLogoInferno() {
-  return '<svg class="ikon-stat ikon-logo-skill" viewBox="0 0 24 24" width="40" height="40" fill="none" stroke-linecap="round" stroke-linejoin="round">'
-    + '<path d="M4.2 19A10.5 10.5 0 0 1 19.8 19" stroke="#ff3d00" stroke-width="2.3"/>'
-    + '<path d="M8.1 19A8 8 0 0 1 15.9 19" stroke="#ff9100" stroke-width="1.6" opacity=".85"/>'
-    + '<path d="M12 16.4l2.4 4.2a2.4 2.4 0 0 1-4.8 0z" fill="#ffd54f"/>'
-    + '<path d="M12 17.3l1.5 2.6a1.5 1.5 0 0 1-3 0z" fill="#ff9100"/>'
-    + '<path d="M5.6 21.7l1-1.7M4.3 23.1l1.3-1" stroke="#ff6a00" stroke-width="1.2" opacity=".85"/>'
-    + '<path d="M18.4 21.7l-1-1.7M19.7 23.1l-1.3-1" stroke="#ff6a00" stroke-width="1.2" opacity=".85"/>'
-    + '</svg>';
-}
 
-function ikonLogoFrozfall() {
-  return '<svg class="ikon-stat ikon-logo-skill" viewBox="0 0 24 24" width="40" height="40" fill="none" stroke-linecap="round" stroke-linejoin="round">'
-    + '<path d="M12 2.6v9.6" stroke="#7dd3fc" stroke-width="2"/>'
-    + '<path d="M9.7 4.9L12 3.5l2.3 1.4" stroke="#b3e5fc" stroke-width="1.6"/>'
-    + '<path d="M12 11.8l-3.1 3.1M12 11.8l3.1 3.1" stroke="#e1f5fe" stroke-width="1.9"/>'
-    + '<path d="M12 14.9l.9 1.5a.95.95 0 0 1-1.8 0z" fill="#7dd3fc"/>'
-    + '<path d="M5.1 8.3l.8.8M6 8.3v1M6 8.3l1.1-1" stroke="#4fc3f7" stroke-width="1.2"/>'
-    + '<path d="M18.5 6.2l.8.8M19.7 6.2v1M19.7 6.2l1.1-1" stroke="#4fc3f7" stroke-width="1.2"/>'
-    + '<path d="M16.9 13.7l-.7.7M17.6 14.4l.8-.7" stroke="#b3e5fc" stroke-width="1.2"/>'
-    + '</svg>';
-}
-
-function ikonLogoSkill(kar) {
-  if (kar && kar.kunci === "voiz") return ikonLogoNihil();
-  return kar && kar.tipe === "jarak" ? ikonLogoFrozfall() : ikonLogoInferno();
-}
-
-function ikonLogoNihil() {
-  return '<svg class="ikon-stat ikon-logo-skill" viewBox="0 0 24 24" width="40" height="40" fill="none" stroke-linecap="round" stroke-linejoin="round">'
-    + '<circle cx="12" cy="12" r="8" stroke="#a78bfa" stroke-width="2" stroke-dasharray="4 3"/>'
-    + '<ellipse cx="12" cy="12" rx="4.9" ry="2.4" stroke="#c084fc" stroke-width="1.4" transform="rotate(38 12 12)"/>'
-    + '<path d="M4.6 7.4a8.4 8.4 0 0 1 5.4-3.2M19.4 16.8a8.4 8.4 0 0 1-5.4 3" stroke="#e9d5ff" stroke-width="1.2" opacity=".8"/>'
-    + '<circle cx="11.7" cy="11.7" r="1.5" fill="#f5d0fe" stroke="none"/>'
-    + '</svg>';
-}
 
 // Ikon tiap jurus = PERSIS sama dengan yang ditampilkan di menu karakter.
 // Satu sumber data vektor (jalurJurus) dipakai menu karakter (SVG) DAN
@@ -632,7 +599,7 @@ function gambarAlirArtefak(grid, lambang, kotakSlot, elemen) {
 
   if (tersembunyi) {
     viewBox = "0 0 100 100";
-    const pxy = [[14, 12], [86, 12], [14, 88], [86, 88]];
+    const pxy = [[22, 20], [78, 20], [22, 80], [78, 80]];
     for (let i = 0; i < ARTEFAK_SLOT.length; i++) {
       mulai.push({ x: pxy[i][0], y: pxy[i][1] });
     }
@@ -649,8 +616,8 @@ function gambarAlirArtefak(grid, lambang, kotakSlot, elemen) {
       if (!r) continue;
       const rr = r.getBoundingClientRect();
       mulai.push({
-        x: rr.left + (pilih[i][0] ? rr.width : 0) - sr.left - x0,
-        y: rr.top + (pilih[i][1] ? rr.height : 0) - sr.top - y0
+        x: rr.left + (pilih[i][0] ? rr.width * 0.8 : rr.width * 0.2) - sr.left - x0,
+        y: rr.top + (pilih[i][1] ? rr.height * 0.8 : rr.height * 0.2) - sr.top - y0
       });
     }
   }
@@ -709,8 +676,6 @@ function gambarAlirArtefak(grid, lambang, kotakSlot, elemen) {
   return alir;
 }
 
-/* Panel artefak kadang dirender saat masih tersembunyi (lebar 0). Simpan
-   state di grid lalu gambar ulang begitu panel benar-benar terlihat. */
 function alirCekUlang(grid) {
   if (!grid || !grid.__alirData || grid.__alirSelesai) return;
   const dd = grid.__alirData;
@@ -849,7 +814,9 @@ function gambarArtefakKarakter(kar) {
     if (cariPakai) {
       const lambang = document.createElement("div");
       lambang.className = "slot-art-lambang";
-      lambang.innerHTML = ikonSetArtefak(cariPakai.set);
+      const artImg = "assets/artefak/" + cariPakai.id + ".png";
+      lambang.innerHTML = '<img src="' + artImg + '" class="pixel-item-img" alt="' + cariPakai.set.nama + '" onerror="this.style.display=\'none\';if(this.nextElementSibling)this.nextElementSibling.style.display=\'block\';">'
+        + '<span class="pixel-artefak-fallback" style="display:none;width:100%;height:100%;">' + ikonSetArtefak(cariPakai.set) + '</span>';
       
       // Trigger equip animation + particle burst effect
       if (typeof requestAnimationFrame === "function") {
@@ -954,7 +921,7 @@ function gambarArtefakKarakter(kar) {
     pusat.appendChild(nama);
     const ket = document.createElement("div");
     ket.className = "arti-set-ket";
-    ket.textContent = "2/4 - 4/4 SET AKTIF";
+    ket.textContent = "";
     pusat.appendChild(ket);
     grid.appendChild(pusat);
 
@@ -1061,7 +1028,9 @@ function buatKartuArtefak(artefak, dipakai) {
   // logo set di kiri: ini yang bikin tiap set kelihatan beda efeknya
   const lambang = document.createElement("div");
   lambang.className = "kartu-artefak-lambang";
-  lambang.innerHTML = ikonSetArtefak(artefak.set);
+  const artImg = "assets/artefak/" + artefak.id + ".png";
+  lambang.innerHTML = '<img src="' + artImg + '" class="pixel-item-img" alt="' + artefak.set.nama + '" onerror="this.style.display=\'none\';if(this.nextElementSibling)this.nextElementSibling.style.display=\'block\';">'
+    + '<span class="pixel-artefak-fallback" style="display:none;width:100%;height:100%;">' + ikonSetArtefak(artefak.set) + '</span>';
   kepala.appendChild(lambang);
 
   const nama = document.createElement("div");
@@ -1194,19 +1163,7 @@ function buatKartuArtefak(artefak, dipakai) {
   return kartu;
 }
 
-// "hp +3%  damage +2%" dari substat yang diacak waktu artefak pertama drop
-function teksSubstat(id) {
-  if (typeof artefakSubstat !== "function") return "";
-  const sub = artefakSubstat(id);
-  if (!sub) return "";
-  const label = { hp: "hp", damage: "damage", kecepatan: "kecepatan" };
-  const bagian = [];
-  for (const k in sub) {
-    if (!Object.prototype.hasOwnProperty.call(sub, k)) continue;
-    bagian.push((label[k] || k) + " +" + Math.round(sub[k] * 100) + "%");
-  }
-  return bagian.join("  ");
-}
+
 function gambarInfoSetArtefak(kar) {
   const el = document.getElementById("infoSetArtefak");
   if (!el) return;
@@ -1244,7 +1201,7 @@ function gambarInfoSetArtefak(kar) {
       const a = aktif[i];
       const set = a.set;
       const judul = document.createElement("div");
-      judul.className = "set-aktif";
+      judul.className = "set-aktif el-" + set.kunci + (a.tier4 ? " full-set" : " semi-set");
       judul.style.color = set.warna;
       // lambang set di depan nama, jadi efek set langsung kelihatan
       const lmb = document.createElement("span");
@@ -1324,11 +1281,24 @@ function gantiTabKarakter(tab) {
   const isi = { skill: "panelSkill", artefak: "panelArtefak", stat: "panelStat" };
   for (const kunci in isi) {
     const el = document.getElementById(isi[kunci]);
-    if (el) el.classList.toggle("hidden", kunci !== tab);
+    if (el) {
+      const aktif = kunci === tab;
+      el.classList.toggle("hidden", !aktif);
+      el.style.display = aktif ? "flex" : "none";
+    }
   }
   const tombol = document.querySelectorAll(".tab-karakter-btn");
   for (let i = 0; i < tombol.length; i++) {
     tombol[i].classList.toggle("aktif", tombol[i].getAttribute("data-tab") === tab);
+  }
+  if (tab === "skill" && typeof segarkanGarisConstellationTree === "function") {
+    setTimeout(segarkanGarisConstellationTree, 20);
+  }
+  if (tab === "artefak") {
+    const grid = document.getElementById("daftarArtefak");
+    if (grid && typeof alirCekUlang === "function") {
+      setTimeout(() => alirCekUlang(grid), 30);
+    }
   }
 }
 
@@ -1343,6 +1313,349 @@ function pasangTabKarakter() {
     };
   }
 }
+const PETA_TREE_NODE = {
+  skill2: { x: 20, y: 15, tipe: "major" },
+  skill1: { x: 50, y: 15, tipe: "major" },
+  skill3: { x: 80, y: 15, tipe: "major" },
+  hp: { x: 20, y: 46, tipe: "socket" },
+  atk: { x: 50, y: 46, tipe: "socket" },
+  spd: { x: 80, y: 46, tipe: "socket" },
+  sm: { x: 10, y: 78, tipe: "socket" },
+  def: { x: 30, y: 78, tipe: "socket" },
+  crit: { x: 40, y: 78, tipe: "socket" },
+  aoe: { x: 60, y: 78, tipe: "socket" },
+  atkspd: { x: 70, y: 78, tipe: "socket" },
+  mvn: { x: 90, y: 78, tipe: "socket" }
+};
+
+const KONEKSI_TREE_GARIS = [
+  { dari: "skill1", ke: "skill2" },
+  { dari: "skill1", ke: "skill3" },
+  { dari: "skill1", ke: "hp" },
+  { dari: "skill1", ke: "atk" },
+  { dari: "skill1", ke: "spd" },
+  { dari: "hp", ke: "sm" },
+  { dari: "hp", ke: "def" },
+  { dari: "atk", ke: "crit" },
+  { dari: "atk", ke: "aoe" },
+  { dari: "spd", ke: "atkspd" },
+  { dari: "spd", ke: "mvn" }
+];
+
+let nodeTreeDisorot = null;
+
+function segarkanGarisConstellationTree() {
+  const wadah = document.querySelector(".tree-constellation-wadah");
+  if (!wadah) return;
+  const svgEl = wadah.querySelector(".tree-constellation-svg");
+  if (!svgEl) return;
+  const rw = wadah.getBoundingClientRect();
+  if (rw.width < 10 || rw.height < 10) return;
+
+  const w = wadah.clientWidth || rw.width;
+  const h = wadah.clientHeight || rw.height;
+
+  svgEl.setAttribute("width", w);
+  svgEl.setAttribute("height", h);
+  svgEl.setAttribute("viewBox", "0 0 " + w + " " + h);
+  svgEl.innerHTML = "";
+
+  const kar = KARAKTER.find((k) => k.kunci === karakterUpgrade) || KARAKTER[0];
+  const tp = kar && typeof treePoinKarakter === "function" ? treePoinKarakter(kar.kunci) : {};
+  const daftarNode = kar && typeof ambilTreeNodes === "function" ? ambilTreeNodes(kar.kunci) : [];
+
+  KONEKSI_TREE_GARIS.forEach(function (rel) {
+    const pDari = PETA_TREE_NODE[rel.dari];
+    const pKe = PETA_TREE_NODE[rel.ke];
+    if (!pDari || !pKe) return;
+
+    const x1 = (pDari.x / 100) * w;
+    const y1 = (pDari.y / 100) * h;
+    const x2 = (pKe.x / 100) * w;
+    const y2 = (pKe.y / 100) * h;
+
+    const rankDari = tp[rel.dari] || 0;
+    const rankKe = tp[rel.ke] || 0;
+
+    const nodeKeDef = daftarNode.find(function (n) { return n.id === rel.ke; });
+    const syaratKe = nodeKeDef && typeof nodeSyaratTerpenuhi === "function" ? nodeSyaratTerpenuhi(kar.kunci, nodeKeDef) : true;
+    const siapKe = typeof apakahSkillSiapBuka === "function" ? apakahSkillSiapBuka(kar.kunci, rel.ke) : false;
+    const sudahKe = typeof apakahSkillSudahBuka === "function" ? apakahSkillSudahBuka(kar.kunci, rel.ke) : false;
+
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    path.setAttribute("x1", x1);
+    path.setAttribute("y1", y1);
+    path.setAttribute("x2", x2);
+    path.setAttribute("y2", y2);
+
+    let statusCls = "garis-terkunci";
+    if (rankKe > 0) {
+      statusCls = "garis-aktif";
+    } else if (rel.ke === "skill2" || rel.ke === "skill3") {
+      if (sudahKe) statusCls = "garis-terbuka";
+      else if (siapKe) statusCls = "garis-siap-buka";
+      else statusCls = "garis-terkunci";
+    } else if (syaratKe) {
+      statusCls = "garis-terbuka";
+    }
+
+    path.setAttribute("class", "tree-line " + statusCls);
+    path.setAttribute("data-dari", rel.dari);
+    path.setAttribute("data-ke", rel.ke);
+    svgEl.appendChild(path);
+
+    const joint = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    joint.setAttribute("cx", (x1 + x2) / 2);
+    joint.setAttribute("cy", (y1 + y2) / 2);
+    joint.setAttribute("r", "2.5");
+    joint.setAttribute("class", "tree-line-joint " + statusCls);
+    svgEl.appendChild(joint);
+  });
+}
+
+if (typeof window !== "undefined") {
+  window.addEventListener("resize", function () {
+    segarkanGarisConstellationTree();
+  });
+}
+
+function ambilSvgGembokTengah(warnaEmas) {
+  const bodi = warnaEmas ? "#d97706" : "#334155";
+  const tepi = warnaEmas ? "#ffd23f" : "#94a3b8";
+  const shackle = warnaEmas ? "#fef08a" : "#cbd5e1";
+  return '<svg viewBox="0 0 44 44" class="tree-svg-gembok-tengah">' +
+    '<path d="M14 19 L14 13 C14 8.5 17.5 5 22 5 C26.5 5 30 8.5 30 13 L30 19" fill="none" stroke="' + shackle + '" stroke-width="3.6" stroke-linecap="round"/>' +
+    '<rect x="9" y="18" width="26" height="22" rx="4.5" fill="' + bodi + '" stroke="' + tepi + '" stroke-width="1.8"/>' +
+    '<circle cx="22" cy="27" r="3" fill="#0b0f19"/>' +
+    '<polygon points="20.8,28 23.2,28 24,34 20,34" fill="#0b0f19"/>' +
+    '<circle cx="22" cy="27" r="1.1" fill="' + (warnaEmas ? "#fde047" : "#e2e8f0") + '"/>' +
+    '</svg>';
+}
+
+function teksSingkatNode(node, kar, rank) {
+  if (typeof node.singkat === "function") return node.singkat(kar, rank);
+  if (node.singkat) return node.singkat;
+  return typeof node.deskripsi === "function" ? node.deskripsi(kar, rank) : node.deskripsi;
+}
+
+function tampilkanTooltipNode(e, node, kar, tp, sisaPoin, wadah) {
+  const tip = wadah.querySelector(".tree-tooltip-melayang");
+  if (!tip) return;
+
+  const rank = tp[node.id] || 0;
+  const maks = rank >= node.max;
+  const syaratOk = typeof nodeSyaratTerpenuhi === "function" ? nodeSyaratTerpenuhi(kar.kunci, node) : true;
+  const sudahBuka = typeof apakahSkillSudahBuka === "function" ? apakahSkillSudahBuka(kar.kunci, node.id) : true;
+  const siapBuka = typeof apakahSkillSiapBuka === "function" ? apakahSkillSiapBuka(kar.kunci, node.id) : false;
+  const singkat = teksSingkatNode(node, kar, rank);
+
+  let teks = singkat;
+  if (siapBuka) {
+    teks = "✨ TEKAN UNTUK BUKA " + (node.labelSlot || "SKILL") + "!";
+  } else if (!syaratOk || !sudahBuka) {
+    if (node.id === "skill2") {
+      teks = "🔒 BUTUH 10 TALENT (SKILL 2)";
+    } else if (node.id === "skill3") {
+      teks = "🔒 BUTUH 20 TALENT (SKILL 3 - SEGERA)";
+    } else if (node.syarat) {
+      teks = "🔒 BUTUH " + String(node.syarat).toUpperCase();
+    } else {
+      teks = "🔒 TERKUNCI";
+    }
+  }
+
+  tip.textContent = teks;
+  tip.className = "tree-tooltip-melayang" + (siapBuka ? " tip-siap" : ((!syaratOk || !sudahBuka) ? " tip-kunci" : (maks ? " tip-maks" : "")));
+
+  const rw = wadah.getBoundingClientRect();
+  const target = e.currentTarget || e.target;
+  const rt = target.getBoundingClientRect();
+
+  let leftPx = rt.left + rt.width / 2 - rw.left;
+  let topPx = rt.top - rw.top - 12;
+
+  if (topPx < 35) {
+    topPx = rt.bottom - rw.top + 12;
+    tip.classList.add("tip-bawah");
+  } else {
+    tip.classList.remove("tip-bawah");
+  }
+
+  leftPx = Math.max(50, Math.min(rw.width - 50, leftPx));
+
+  tip.style.left = leftPx + "px";
+  tip.style.top = topPx + "px";
+  tip.classList.remove("hidden");
+}
+
+function sembunyikanTooltipNode(wadah) {
+  const tip = wadah ? wadah.querySelector(".tree-tooltip-melayang") : null;
+  if (tip) tip.classList.add("hidden");
+}
+
+function buatOrbNodeTree(node, kar, tp, sisaPoin, wadah) {
+  const pos = PETA_TREE_NODE[node.id] || { x: 50, y: 50, tipe: "socket" };
+  const rank = tp[node.id] || 0;
+  const maks = rank >= node.max;
+  const isSkill = node.id === "skill1" || node.id === "skill2" || node.id === "skill3";
+  const syaratOk = typeof nodeSyaratTerpenuhi === "function" ? nodeSyaratTerpenuhi(kar.kunci, node) : true;
+  const sudahBuka = typeof apakahSkillSudahBuka === "function" ? apakahSkillSudahBuka(kar.kunci, node.id) : true;
+  const siapBuka = typeof apakahSkillSiapBuka === "function" ? apakahSkillSiapBuka(kar.kunci, node.id) : false;
+  const bisa = typeof bisaAlokasiTree === "function" ? bisaAlokasiTree(kar.kunci, node.id) : false;
+
+  const orb = document.createElement("div");
+  orb.className = "tree-orb-node tipe-" + pos.tipe;
+  orb.setAttribute("data-node-id", node.id);
+  orb.style.left = pos.x + "%";
+  orb.style.top = pos.y + "%";
+
+  if (siapBuka) {
+    orb.classList.add("skill-siap-buka");
+  } else if (!syaratOk || !sudahBuka) {
+    orb.classList.add("orb-terkunci");
+  } else if (maks) {
+    orb.classList.add("orb-maks");
+  } else if (rank > 0) {
+    orb.classList.add("orb-aktif");
+  }
+  if (bisa) orb.classList.add("orb-bisa-naik");
+
+  if (isSkill && node.labelSlot) {
+    const tag = document.createElement("div");
+    tag.className = "tree-orb-slot-tag slot-tag-" + node.id + (siapBuka ? " tag-siap-buka" : "");
+    if (siapBuka) {
+      tag.textContent = node.labelSlot + " (BUKA!)";
+    } else {
+      tag.textContent = node.labelSlot;
+    }
+    orb.appendChild(tag);
+  }
+
+  const ring = document.createElement("div");
+  ring.className = "tree-orb-cincin";
+
+  const crest = document.createElement("div");
+  crest.className = "tree-orb-crest" + ((!syaratOk || !sudahBuka) && !siapBuka ? " siluet-terkunci" : "");
+  const svgKonten = node.svg || (typeof ambilIkonTreeNodeSvg === "function" ? ambilIkonTreeNodeSvg(node.id, kar) : "");
+  if (svgKonten) crest.innerHTML = svgKonten;
+  else crest.textContent = node.ikon;
+  ring.appendChild(crest);
+
+  if (!syaratOk || !sudahBuka || siapBuka) {
+    const gembokBox = document.createElement("div");
+    gembokBox.className = "tree-orb-gembok-tengah" + (siapBuka ? " gembok-siap-buka" : "");
+    gembokBox.innerHTML = ambilSvgGembokTengah(siapBuka);
+    ring.appendChild(gembokBox);
+  }
+
+  orb.appendChild(ring);
+
+  const badge = document.createElement("span");
+  badge.className = "tree-orb-badge" + (siapBuka ? " badge-siap-buka" : "");
+  if (siapBuka) {
+    badge.textContent = "✨ BUKA ✨";
+  } else if (!syaratOk || !sudahBuka) {
+    if (node.id === "skill2") badge.textContent = "🔒 10 TALENT";
+    else if (node.id === "skill3") badge.textContent = "🔒 20 TALENT";
+    else badge.textContent = "🔒 KUNCI";
+  } else {
+    badge.textContent = maks ? "MAX" : rank + "/" + node.max;
+  }
+  orb.appendChild(badge);
+
+  orb.addEventListener("pointerenter", function (e) {
+    tampilkanTooltipNode(e, node, kar, tp, sisaPoin, wadah);
+  });
+
+  orb.addEventListener("pointerleave", function () {
+    sembunyikanTooltipNode(wadah);
+  });
+
+  orb.addEventListener("click", function (e) {
+    e.stopPropagation();
+    if (siapBuka) {
+      orb.classList.add("animasi-buka-burst");
+      if (typeof sfxKlik === "function") sfxKlik();
+      setTimeout(function () {
+        if (typeof bukaKunciSkillTree === "function") {
+          bukaKunciSkillTree(kar.kunci, node.id);
+        }
+        if (typeof bisaAlokasiTree === "function" && bisaAlokasiTree(kar.kunci, node.id)) {
+          alokasikanTreePoin(kar.kunci, node.id);
+        }
+        buatPilihanUpgrade();
+      }, 260);
+      return;
+    }
+
+    if (typeof alokasikanTreePoin === "function" && alokasikanTreePoin(kar.kunci, node.id)) {
+      if (typeof sfxKlik === "function") sfxKlik();
+      buatPilihanUpgrade();
+    } else {
+      if (typeof sfxKlik === "function") sfxKlik();
+      tampilkanTooltipNode(e, node, kar, tp, sisaPoin, wadah);
+    }
+  });
+
+  return orb;
+}
+
+function gambarTreePoint(kar) {
+  if (!kar) return;
+  const sisaEl = document.getElementById("treePoinSisa");
+  const totalEl = document.getElementById("treePoinTotal");
+  const btnReset = document.getElementById("tombolResetTree");
+  const gridEl = document.getElementById("daftarTreePoint");
+
+  const totalPoin = typeof totalPoinKarakter === "function" ? totalPoinKarakter(kar.kunci) : 0;
+  const sisaPoin = typeof sisaPoinKarakter === "function" ? sisaPoinKarakter(kar.kunci) : 0;
+  const terpakai = typeof poinTerpakaiKarakter === "function" ? poinTerpakaiKarakter(kar.kunci) : 0;
+
+  if (sisaEl) sisaEl.textContent = sisaPoin;
+  if (totalEl) totalEl.textContent = "/ " + totalPoin;
+
+  if (btnReset) {
+    btnReset.disabled = terpakai <= 0;
+    btnReset.classList.toggle("terkunci", terpakai <= 0);
+    btnReset.onclick = function () {
+      if (typeof resetTreePoin === "function" && resetTreePoin(kar.kunci)) {
+        if (typeof sfxKlik === "function") sfxKlik();
+        buatPilihanUpgrade();
+      }
+    };
+  }
+
+  if (!gridEl) return;
+  gridEl.innerHTML = "";
+
+  const nodes = typeof ambilTreeNodes === "function" ? ambilTreeNodes(kar.kunci) : [];
+  const tp = typeof treePoinKarakter === "function" ? treePoinKarakter(kar.kunci) : {};
+
+  const wadah = document.createElement("div");
+  wadah.className = "tree-constellation-wadah";
+
+
+
+  const svgCabang = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svgCabang.setAttribute("class", "tree-constellation-svg");
+  wadah.appendChild(svgCabang);
+
+  const tooltip = document.createElement("div");
+  tooltip.className = "tree-tooltip-melayang hidden";
+  wadah.appendChild(tooltip);
+
+  nodes.forEach(function (node) {
+    const orb = buatOrbNodeTree(node, kar, tp, sisaPoin, wadah);
+    wadah.appendChild(orb);
+  });
+
+  gridEl.appendChild(wadah);
+
+  setTimeout(function () {
+    segarkanGarisConstellationTree();
+  }, 16);
+}
+
 function buatPilihanUpgrade() {
   const daftar = document.getElementById("daftarUpgrade");
   if (!daftar) return;
@@ -1391,7 +1704,8 @@ function buatPilihanUpgrade() {
   const bon = typeof bonusStatKarakter === "function" ? bonusStatKarakter(kar.kunci) : { hp: 1, damage: 1, kecepatan: 1, lv: 0 };
   const hp = Math.round(kar.hp * bon.hp);
   const dmg = Math.round(kar.damage * bon.damage);
-  const spd = Math.round(kar.kecepatan * bon.kecepatan);
+  const baseSpdStat = kar.speedStat !== undefined ? kar.speedStat : Math.round(kar.kecepatan / 20);
+  const spd = Math.round(baseSpdStat * bon.kecepatan);
   const em = typeof atributElement === "function" ? Math.round(atributElement(kar.kunci)) : 0;
   const max = KARAKTER_LEVEL_MAX;
   const biaya = typeof biayaNaikLevelKarakter === "function" ? biayaNaikLevelKarakter(lv) : Infinity;
@@ -1405,8 +1719,8 @@ function buatPilihanUpgrade() {
       { lbl: "ATTACK", nilai: dmg },
       { lbl: "HP", nilai: hp },
       { lbl: "SPEED", nilai: spd },
-      { lbl: "CRIT RATE", nilai: "5%" },
-      { lbl: "CRIT DMG", nilai: "150%" },
+      { lbl: "CRIT RATE", nilai: Math.round((bon.crit !== undefined ? bon.crit : 0.10) * 100) + "%" },
+      { lbl: "CRIT DMG", nilai: Math.round((bon.critDmg !== undefined ? bon.critDmg : 0.70) * 100) + "%" },
       { lbl: "TYPE", nilai: tipe, ikon: ikonTipeSVG(kar) },
       { lbl: "ATRIBUT ELEMENT", nilai: em, ikon: ikonElemenSVG(kar.element) }
     ];
@@ -1434,49 +1748,7 @@ function buatPilihanUpgrade() {
     });
   }
 
-  const skillEl = document.getElementById("daftarSkill");
-  if (skillEl) {
-    skillEl.innerHTML = "";
-
-    const jarak = kar.tipe === "jarak";
-    const aksen = kar.warnaDash || (jarak ? "#7dd3fc" : "#ff4d4d");
-    const svg = (isi) =>
-      '<svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke-linecap="round" stroke-linejoin="round">' + isi + '</svg>';
-
-    const ikonTerkunci = svg('<rect x="5" y="10" width="14" height="10" rx="2" stroke="#8a93a5" stroke-width="1.8"/>' +
-      '<path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="#8a93a5" stroke-width="1.8"/>' +
-      '<circle cx="12" cy="15" r="1.4" fill="#8a93a5"/>');
-    const lv = levelKarakter(kar.kunci);
-    const daftar = daftarSkill(kar.kunci);
-
-    // Tanpa sistem equip: tiap skill hanya menampilkan kunci (1/2/3), nama,
-    // dan syarat level kalau belum terbuka. Semua skill dipakai bersama
-    // lewat keybind 1/2/3 saat bermain (CD bersama, model Mobile Legends).
-    // 1 = skill bawaan (slot 2), 2 = slot 3, 3 = slot 4.
-    const keyPadaSlot = { 2: "1", 3: "2", 4: "3" };
-
-    daftar.forEach((s) => {
-      const terbuka = lv >= s.level;
-      const baris = document.createElement("div");
-      baris.className = "kartu-note";
-      if (!terbuka) baris.classList.add("skill-terkunci");
-
-      const bulat = document.createElement("div");
-      bulat.className = "kartu-note-bulat";
-      bulat.style.background = terbuka ? aksen + "2b" : "rgba(138,147,165,0.15)";
-      bulat.innerHTML = terbuka ? ikonSkillSlot(kar, s.slot) : ikonTerkunci;
-
-      const teks = document.createElement("span");
-      teks.className = "nama-karakter";
-      const tombol = keyPadaSlot[s.slot];
-      const awalan = tombol ? tombol + " · " : "";
-      teks.textContent = awalan + (!terbuka ? s.nama + "  ·  BUKA LV " + s.level : s.nama);
-
-      baris.appendChild(bulat);
-      baris.appendChild(teks);
-      skillEl.appendChild(baris);
-    });
-  }
+  gambarTreePoint(kar);
 
   gambarArtefakKarakter(kar);
   gambarInfoSetArtefak(kar);
@@ -1531,6 +1803,10 @@ function tampilkanGameOver() {
   statusGame = "over";
   judulAkhirEl.textContent = "GAME OVER";
   koinAkhirEl.textContent = "KOIN: " + koin;
+  const wadahLoot = document.getElementById("lootGameOver");
+  if (wadahLoot && typeof renderLootHasilBox === "function") {
+    renderLootHasilBox(wadahLoot, koin);
+  }
   if (typeof catatKoinTertinggi === "function") catatKoinTertinggi(koin);
   if (typeof tambahKoinSaldo === "function") tambahKoinSaldo(koin);
   layarGameOver.classList.remove("hidden");
@@ -1545,6 +1821,10 @@ function tampilkanMenang() {
   sembunyiSemua();
   statusGame = "menang";
   koinMenangEl.textContent = "KOIN: " + koin;
+  const wadahLoot = document.getElementById("lootMenang");
+  if (wadahLoot && typeof renderLootHasilBox === "function") {
+    renderLootHasilBox(wadahLoot, koin);
+  }
 
   if (typeof tandaiLevelSelesai === "function") tandaiLevelSelesai(levelPilihan, koin);
   if (typeof tambahKoinSaldo === "function") tambahKoinSaldo(koin);
@@ -1653,6 +1933,13 @@ function pasangTombol() {
   tombolTerpasang = true;
   document.getElementById("tombolPlay").addEventListener("click", tampilkanLevel);
   document.getElementById("tombolKarakter").addEventListener("click", tampilkanKarakter);
+  const btnInv = document.getElementById("tombolInventory");
+  if (btnInv && typeof bukaInventory === "function") {
+    btnInv.addEventListener("click", bukaInventory);
+  }
+  if (typeof pasangInventoryUI === "function") {
+    try { pasangInventoryUI(); } catch (err) {}
+  }
   pasangAkun();
   document.getElementById("tombolKembaliKarakter").addEventListener("click", tampilkanJudul);
   pasangTabKarakter();
@@ -1674,7 +1961,7 @@ function pasangTombol() {
   document.getElementById("tombolUlangMenang").addEventListener("click", tampilkanLevel);
   document.getElementById("tombolMenuMenang").addEventListener("click", tampilkanJudul);
 
-  document.querySelectorAll(".tombol-play, .tombol-hijau, .tombol-abu, .tombol-pause")
+  document.querySelectorAll(".tombol-play, .tombol-hijau, .tombol-abu, .tombol-pause, .tombol-karakter-menu, .tombol-inventory-menu")
     .forEach((el) => el.addEventListener("click", sfxKlik));
 
   daftarKarakter.addEventListener("click", sfxKlik);
@@ -1751,6 +2038,7 @@ function buatPilihanKarakter() {
         return;
       }
       karakter = kar;
+      try { if (typeof perbaruiIkonSkillSentuh === "function") perbaruiIkonSkillSentuh(kar); } catch (err) {}
       mulaiGameBaru();
     });
 

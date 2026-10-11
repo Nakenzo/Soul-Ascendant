@@ -795,6 +795,7 @@ function updateBosKematian(e, dt) {
     const dapat = Math.round(KOIN_BOS * (player.mult && player.mult.koin || 1));
     koin += dapat;
     spawnDamage(e.x, e.y - e.r - 40, "+" + dapat + " KOIN", "#ffd23f");
+    prosesDropLootBos(e);
     for (let k = 0; k < 60; k++) {
       const ang = Math.random() * Math.PI * 2;
       const sp = 140 + Math.random() * 320;
@@ -841,6 +842,7 @@ function killEnemy(e) {
 
   // Minion bos tidak menjatuhkan koin (soul tetap normal).
   if (!e.koinNol) koin += Math.round(10 * (player.mult && player.mult.koin || 1));
+  prosesDropLootMonster(e);
   sfxMatMusuh();
 
   const imgMusuh = tekstur[e.kunci + "-idle-0"] || tekstur[e.kunci];
@@ -862,6 +864,74 @@ function killEnemy(e) {
   spawnParticles(e.x, e.y, "#ff4d4d", 14);
   spawnParticles(e.x, e.y, "#ffd23f", 6);
   enemies.splice(i, 1);
+}
+
+function spawnItemDropFisik(itemId, jumlah, x, y) {
+  if (typeof dropItems === "undefined" || !dropItems || !itemId) return;
+  const ang = Math.random() * Math.PI * 2;
+  const sp = 70 + Math.random() * 90;
+  dropItems.push({
+    itemId: itemId,
+    jumlah: jumlah || 1,
+    x: x,
+    y: y,
+    vx: Math.cos(ang) * sp,
+    vy: Math.sin(ang) * sp - 60,
+    t: 0,
+    life: 90
+  });
+}
+
+function prosesDropLootMonster(e) {
+  if (!e || e.koinNol) return;
+  const tipe = e.tipe || "biasa";
+  const rCons = Math.random();
+  const rMat = Math.random();
+
+  let itemIdCons = null;
+  let itemIdMat = null;
+
+  if (tipe === "biasa") {
+    if (rCons < 0.035) itemIdCons = "embun_vital";
+    if (rMat < 0.35) itemIdMat = "gel_merah";
+  } else if (tipe === "cepet") {
+    if (rCons < 0.035) itemIdCons = "tetesan_kelincahan";
+    if (rMat < 0.35) itemIdMat = "gel_pendingin";
+  } else if (tipe === "tank") {
+    if (rCons < 0.030) itemIdCons = "elixir_ketahanan";
+    if (rMat < 0.30) itemIdMat = "lendir_besi";
+  } else if (tipe === "jamur") {
+    if (rCons < 0.035) itemIdCons = "ramuan_spora";
+    if (rMat < 0.35) itemIdMat = "spora_hijau";
+  } else if (tipe === "serigala") {
+    if (rCons < 0.025) itemIdCons = "darah_serigala";
+    if (rMat < 0.30) itemIdMat = "taring_bayangan";
+  } else if (tipe === "semak") {
+    if (rCons < 0.030) itemIdCons = "nektar_kuno";
+    if (rMat < 0.30) itemIdMat = "serat_kayu_purba";
+  }
+
+  if (itemIdCons) {
+    spawnItemDropFisik(itemIdCons, 1, e.x, e.y);
+  }
+  if (itemIdMat) {
+    spawnItemDropFisik(itemIdMat, 1, e.x, e.y);
+  }
+}
+
+function prosesDropLootBos(e) {
+  const jmlGel = 1 + (Math.random() < 0.5 ? 1 : 0);
+  spawnItemDropFisik("gelatin_raja_slime", jmlGel, e.x, e.y);
+
+  if (Math.random() < 0.65) {
+    spawnItemDropFisik("inti_bos_slime", 1, e.x, e.y);
+  }
+  if (Math.random() < 0.25) {
+    spawnItemDropFisik("mahkota_raja_slime", 1, e.x, e.y);
+  }
+  if (Math.random() < 0.05) {
+    spawnItemDropFisik("elixir_raja_slime", 1, e.x, e.y);
+  }
 }
 
 function serapanDarah(dmg) {
@@ -1218,8 +1288,11 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
           break;
         }
         let dmg = player.damage || karakter.damage;
+        if (b.beku) {
+          dmg = Math.round(dmg * (1 + (player.skill1DmgBonus || 0)));
+        }
         if (Math.random() < (player.crit || 0)) {
-          dmg *= 2;
+          dmg = Math.round(dmg * (1 + (player.critDmg !== undefined ? player.critDmg : 0.70)));
           spawnDamage(e.x, e.y - e.r - 40, "KRITIS", "#fbbf24");
         }
         const dmgPasar = applyDamageMusuh(e, dmg);
@@ -1300,7 +1373,7 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
       if (segDist(b.px, b.py, b.x, b.y, e.x, e.y) < e.r + 10) {
         let dmg = player.damage || karakter.damage;
         if (Math.random() < (player.crit || 0)) {
-          dmg *= 2;
+          dmg = Math.round(dmg * (1 + (player.critDmg !== undefined ? player.critDmg : 0.70)));
           spawnDamage(e.x, e.y - e.r - 40, "KRITIS", "#fbbf24");
         }
         const dmgPasar = applyDamageMusuh(e, dmg);
@@ -1361,7 +1434,7 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
         const tTerakhir = L.tick[e] || -1;
         if (L.t - tTerakhir >= 0.16) {
           L.tick[e] = L.t;
-          let dmg = Math.round(34 * (typeof pengaliElement === "function" ? pengaliElement(karakter.kunci) : 1));
+          let dmg = Math.round(18 * (typeof pengaliElement === "function" ? pengaliElement(karakter.kunci) : 1) * (1 + (player.skill1DmgBonus || 0)));
           const dmgPasar = applyDamageMusuh(e, dmg);
           e.hitFlash = 0.12;
           parrySerigala(e);
@@ -1594,7 +1667,7 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
           dmg *= pengaliElement(karakter.kunci);
         }
         if (!sl.dmg && Math.random() < (player.crit || 0)) {
-          dmg *= 2;
+          dmg = Math.round(dmg * (1 + (player.critDmg !== undefined ? player.critDmg : 0.70)));
           spawnDamage(e.x, e.y - e.r - 40, "KRITIS", "#fbbf24");
         }
         const dmgSlash = applyDamageMusuh(e, dmg);
@@ -1634,7 +1707,7 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
     sfxApiLapis("jurus-vender-api");
     for (const e of enemies) {
       if (Math.hypot(e.x - ex, e.y - ey) > 130 + e.r) continue;
-      const dmg = applyDamageMusuh(e, 60);
+      const dmg = applyDamageMusuh(e, Math.round(60 * (1 + (player.skill2DmgBonus || 0))));
       e.hitFlash = 0.1;
       e.burn = { durasi: player.burnDurasi || 3, tick: 0.25, timer: 0, dmg: 2 };
       spawnDamage(e.x, e.y - e.r - 16, dmg, "#ffd23f");
@@ -1744,9 +1817,9 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
       const cx = px + dx * t, cy = py + dy * t;
       if (Math.hypot(sasaran.x - cx, sasaran.y - cy) <= sasaran.r + 14) {
         // damage sama persis dengan panah beku FROSTBITE
-        let dmg = player.damage || karakter.damage;
+        let dmg = Math.round((player.damage || karakter.damage) * (1 + (player.skill2DmgBonus || 0)));
         if (Math.random() < (player.crit || 0)) {
-          dmg *= 2;
+          dmg = Math.round(dmg * (1 + (player.critDmg !== undefined ? player.critDmg : 0.70)));
           spawnDamage(sasaran.x, sasaran.y - sasaran.r - 40, "KRITIS", "#fbbf24");
         }
         const dmgPasar = applyDamageMusuh(sasaran, dmg);
@@ -2112,7 +2185,8 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
     const s = souls[i];
     s.t += dt;
     const d = dist(s.x, s.y, player.x, player.y);
-    if (d < 180) {
+    const magnetDist = 180 * (1 + (player.soulMagnet || 0));
+    if (d < magnetDist) {
       const ang = Math.atan2(player.y - s.y, player.x - s.x);
       s.vx += Math.cos(ang) * 600 * dt;
       s.vy += Math.sin(ang) * 600 * dt;
@@ -2133,5 +2207,53 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
       continue;
     }
     if (s.t >= s.life) souls.splice(i, 1);
+  }
+
+  if (typeof dropItems !== "undefined" && dropItems) {
+    const magnetDist = 180 * (1 + (player.soulMagnet || 0));
+    for (let i = dropItems.length - 1; i >= 0; i--) {
+      const it = dropItems[i];
+      it.t += dt;
+      const d = dist(it.x, it.y, player.x, player.y);
+
+      if (d < magnetDist) {
+        const ang = Math.atan2(player.y - it.y, player.x - it.x);
+        it.vx += Math.cos(ang) * 650 * dt;
+        it.vy += Math.sin(ang) * 650 * dt;
+      } else {
+        it.vx *= 0.95;
+        it.vy *= 0.95;
+      }
+
+      it.x += it.vx * dt;
+      it.y += it.vy * dt;
+
+      if (d < 32) {
+        if (typeof tambahLootRun === "function") {
+          tambahLootRun(it.itemId, it.jumlah);
+        }
+        const itemDef = typeof DATABASE_ITEM !== "undefined" ? DATABASE_ITEM[it.itemId] : null;
+        const warna = itemDef && typeof ITEM_RARITY !== "undefined" && ITEM_RARITY[itemDef.rarity]
+          ? ITEM_RARITY[itemDef.rarity].warna
+          : "#ffd23f";
+        const nama = itemDef ? itemDef.nama : it.itemId;
+
+        if (typeof spawnDamage === "function") {
+          spawnDamage(it.x, it.y - 20, "+ " + nama + (it.jumlah > 1 ? " x" + it.jumlah : ""), warna);
+        }
+        if (typeof spawnParticles === "function") {
+          spawnParticles(it.x, it.y, warna, 8);
+          spawnParticles(it.x, it.y, "#ffffff", 4);
+        }
+        if (typeof sfxSoul === "function") sfxSoul();
+
+        dropItems.splice(i, 1);
+        continue;
+      }
+
+      if (it.t >= it.life) {
+        dropItems.splice(i, 1);
+      }
+    }
   }
 }

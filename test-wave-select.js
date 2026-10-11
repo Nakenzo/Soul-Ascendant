@@ -1,12 +1,4 @@
-/* ============================================================
-   WAVE SELECT - ALAT ADMIN
-   ------------------------------------------------------------
-   Hanya dimuat saat akun admin login (lihat admin-akun.js) dan
-   hanya bertindak kalau window.ADMIN_BUKA true. Tidak mengubah
-   aturan game: HP, damage, dan komposisi musuh tetap persis
-   seperti LEVELS. Tool ini hanya memindah wave mana yang sedang
-   dimainkan, biar tidak harus main dari awal.
-   ============================================================ */
+
 
 const _wavePanel = { el: null, buka: false };
 
@@ -148,15 +140,5 @@ window.addEventListener("keydown", (e) => {
     _wavePanelToggle();
   }
 });
-
-// Kalau halaman memang admin.html, panel langsung terbuka.
-if (/\/admin\.html$/.test(location.pathname)) {
-  const buka = () => _wavePanelBuka();
-  if (document.readyState === "loading") {
-    window.addEventListener("DOMContentLoaded", buka);
-  } else {
-    buka();
-  }
-}
 
 console.log("[wave-select] siap. Tekan F9 untuk buka panel lompat wave.");
