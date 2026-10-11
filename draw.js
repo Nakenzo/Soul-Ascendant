@@ -1962,7 +1962,7 @@ function draw() {
       ctx.imageSmoothingEnabled = false;
       const img = typeof ambilSpriteItemCanvas === "function" ? ambilSpriteItemCanvas(it.itemId) : null;
       if (img && img.complete && img.naturalWidth > 0) {
-        ctx.drawImage(img, it.x - 14, it.y + melayang - 14, 28, 28);
+        ctx.drawImage(img, it.x - 10, it.y + melayang - 10, 20, 20);
       } else {
         ctx.fillStyle = warna;
         ctx.fillRect(it.x - 8, it.y + melayang - 8, 16, 16);
