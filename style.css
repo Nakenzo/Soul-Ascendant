@@ -146,8 +146,8 @@ body {
 canvas {
     border: 1.5px solid #222;
     border-radius: 1px;
-    image-rendering: pixelated;
     image-rendering: crisp-edges;
+    image-rendering: pixelated;
     background: #45a049;
     cursor: crosshair;
     display: block;
@@ -217,6 +217,75 @@ body[data-device="mobile"] {
 .overlay-beku {
     background: rgba(10, 12, 25, 0.45);
     backdrop-filter: blur(0.5px);
+}
+
+.admin-dock {
+    position: fixed;
+    top: calc(var(--cs, 0.56) * 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 99999;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    max-width: 96vw;
+    padding: 7px 10px;
+    background: rgba(6, 8, 16, 0.96);
+    border: 2px solid #7a5cff;
+    border-radius: 10px;
+    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.6);
+    font: 600 12px system-ui, -apple-system, sans-serif;
+}
+
+.admin-dock .adm-tanda {
+    color: #a78bfa;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.admin-dock .adm-tombol {
+    font: inherit;
+    color: #e8f5e9;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 8px;
+    padding: 5px 10px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.admin-dock .adm-tombol:hover {
+    background: rgba(122, 92, 255, 0.28);
+    border-color: #7a5cff;
+}
+
+.admin-dock .adm-tombol.utama {
+    color: #fbbf24;
+    border-color: rgba(251, 191, 36, 0.6);
+}
+
+.admin-dock .adm-tombol.utama:hover {
+    background: rgba(251, 191, 36, 0.18);
+    border-color: #fbbf24;
+}
+
+.admin-dock .adm-pisah {
+    width: 1px;
+    align-self: stretch;
+    min-height: 18px;
+    background: rgba(255, 255, 255, 0.18);
+    margin: 0 2px;
+}
+
+.admin-dock .adm-status,
+.admin-dock .adm-info {
+    color: #8a93a5;
+    font-weight: 500;
+    min-width: 88px;
+    text-align: center;
 }
 
 .layar-awal {
@@ -2762,8 +2831,8 @@ body[data-device="mobile"] .bantuan-canvas {
     max-width: 78%;
     max-height: 78%;
     object-fit: contain;
-    image-rendering: pixelated;
     image-rendering: crisp-edges;
+    image-rendering: pixelated;
     display: block;
     pointer-events: none;
 }
@@ -3032,8 +3101,8 @@ body[data-device="mobile"] .bantuan-canvas {
     max-width: 78%;
     max-height: 78%;
     object-fit: contain;
-    image-rendering: pixelated;
     image-rendering: crisp-edges;
+    image-rendering: pixelated;
     display: block;
     pointer-events: none;
 }
@@ -5198,8 +5267,8 @@ font-size: calc(var(--cs, 0.56) * 24px);
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
-    image-rendering: pixelated;
     image-rendering: crisp-edges;
+    image-rendering: pixelated;
     display: block;
 }
 
@@ -5297,8 +5366,8 @@ font-size: calc(var(--cs, 0.56) * 24px);
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
-    image-rendering: pixelated;
     image-rendering: crisp-edges;
+    image-rendering: pixelated;
     display: block;
 }
 
@@ -5490,8 +5559,8 @@ font-size: calc(var(--cs, 0.56) * 24px);
     max-width: 44px;
     max-height: 44px;
     object-fit: contain;
-    image-rendering: pixelated;
     image-rendering: crisp-edges;
+    image-rendering: pixelated;
     display: block;
     filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
 }
@@ -5501,8 +5570,8 @@ font-size: calc(var(--cs, 0.56) * 24px);
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
-    image-rendering: pixelated;
     image-rendering: crisp-edges;
+    image-rendering: pixelated;
     display: block;
     pointer-events: none;
 }

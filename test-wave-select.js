@@ -141,4 +141,17 @@ window.addEventListener("keydown", (e) => {
   }
 });
 
+function _waveTombolPasang() {
+  if (!window.ADMIN_BUKA) return;
+  if (typeof adminSisip !== "function" || typeof adminTombol !== "function") {
+    setTimeout(_waveTombolPasang, 150);
+    return;
+  }
+  if (document.getElementById("admTombolWave")) return;
+  const b = adminTombol("WAVE", _wavePanelToggle);
+  b.id = "admTombolWave";
+  adminSisip(b);
+}
+setTimeout(_waveTombolPasang, 150);
+
 console.log("[wave-select] siap. Tekan F9 untuk buka panel lompat wave.");

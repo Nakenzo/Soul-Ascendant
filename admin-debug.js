@@ -118,34 +118,16 @@
 
   function tutupPanel() { if (panel) panel.style.display = "none"; }
 
-  function pasangBar() {
-    if (!window.ADMIN_BUKA || document.getElementById("barDebugKartu")) return;
-    var bar = document.createElement("div");
-    bar.id = "barDebugKartu";
-    bar.style.cssText = "position:fixed;right:8px;bottom:8px;z-index:99998;display:flex;gap:6px";
-    var b = document.createElement("button");
-    b.type = "button";
-    b.textContent = "KARTU BEBAS";
-    b.style.cssText =
-      "padding:6px 12px;cursor:pointer;border-radius:8px;border:1px solid #fbbf24;" +
-      "background:rgba(6,8,16,0.92);color:#fbbf24;font:600 12px system-ui,sans-serif;";
-    b.onclick = buka;
-    bar.appendChild(b);
-    document.body.appendChild(bar);
+  function pasangTombol() {
+    if (!window.ADMIN_BUKA) return;
+    if (typeof adminSisip !== "function" || typeof adminTombol !== "function") return;
+    if (document.getElementById("admTombolKartu")) return;
+    var b = adminTombol("KARTU BEBAS", buka, true);
+    b.id = "admTombolKartu";
+    adminSisip(b);
   }
 
-  function lepasBar() {
-    var bar = document.getElementById("barDebugKartu");
-    if (bar && bar.parentNode) bar.parentNode.removeChild(bar);
-    if (panel) tutupPanel();
-  }
-
-  function jaga() {
-    if (window.ADMIN_BUKA) pasangBar();
-    else lepasBar();
-    setTimeout(jaga, 1200);
-  }
-
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", jaga);
-  else jaga();
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", pasangTombol);
+  else pasangTombol();
+  setTimeout(pasangTombol, 250);
 })();

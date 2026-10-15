@@ -115,11 +115,52 @@ function adminMuatSkrip() {
   });
 }
 
+function adminDock() {
+  var el = document.getElementById("adminDock");
+  if (el) return el;
+  el = document.createElement("div");
+  el.id = "adminDock";
+  el.className = "admin-dock";
+  var tanda = document.createElement("span");
+  tanda.className = "adm-tanda";
+  tanda.textContent = "ADMIN";
+  el.appendChild(tanda);
+  var status = document.createElement("span");
+  status.className = "adm-status";
+  el.appendChild(status);
+  document.body.appendChild(el);
+  return el;
+}
+
+function adminSisip(el) {
+  if (!el) return el;
+  var dock = adminDock();
+  var status = dock.querySelector(".adm-status");
+  if (status) dock.insertBefore(el, status);
+  else dock.appendChild(el);
+  return el;
+}
+
+function adminTombol(teks, aksi, utama) {
+  var b = document.createElement("button");
+  b.type = "button";
+  b.className = "adm-tombol" + (utama ? " utama" : "");
+  b.textContent = teks;
+  if (aksi) b.onclick = aksi;
+  return b;
+}
+
+function adminPesan(teks) {
+  var status = adminDock().querySelector(".adm-status");
+  if (status) status.textContent = teks || "";
+}
+
 function adminNyalakan(catatan) {
   if (adminMenyala) return;
   adminMenyala = true;
   ADMIN_BUKA = true;
   window.ADMIN_BUKA = true;
+  adminDock().style.display = "flex";
   adminMuatSkrip();
   adminPesan(catatan || "aktif");
   if (window.console) console.log("[admin] mode admin aktif");
@@ -131,32 +172,15 @@ function adminMatikan() {
   ADMIN_BUKA = false;
   window.ADMIN_BUKA = false;
   adminBuangPanel();
-  adminPesan("");
   if (window.console) console.log("[admin] mode admin nonaktif");
 }
 
 function adminBuangPanel() {
-  ["panelDebugArtefak", "panelDebugKartu", "waveSelectPanel", "barDebugKartu"].forEach(function (id) {
-    var el = document.getElementById(id);
-    if (el && el.parentNode) el.parentNode.removeChild(el);
-  });
-}
-
-function adminPesan(teks) {
-  var el = document.getElementById("adminIndikator");
-  if (!el) {
-    if (!teks) return;
-    el = document.createElement("div");
-    el.id = "adminIndikator";
-    el.style.cssText =
-      "position:fixed;left:8px;bottom:8px;z-index:99998;" +
-      "background:rgba(6,8,16,0.92);color:#fbbf24;border:1px solid #7a5cff;" +
-      "border-radius:8px;padding:4px 8px;font:12px system-ui,sans-serif;pointer-events:none;";
-    document.body.appendChild(el);
-  }
-  if (!teks) { el.style.display = "none"; return; }
-  el.style.display = "block";
-  el.textContent = "ADMIN - " + teks;
+  var dock = document.getElementById("adminDock");
+  if (dock) dock.style.display = "none";
+  if (typeof _wavePanelTutup === "function") _wavePanelTutup();
+  var kartu = document.getElementById("panelDebugKartu");
+  if (kartu) kartu.style.display = "none";
 }
 
 // Dipanggil dari akunPerbaruiUI() setiap status akun berubah.
