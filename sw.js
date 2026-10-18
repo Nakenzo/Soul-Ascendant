@@ -1,4 +1,4 @@
-const BUILD = 64;
+const BUILD = 65;
 const CACHE_FALLBACK = "soul-essence-v" + BUILD;
 const ASSETS_TO_CACHE = [
   "./",

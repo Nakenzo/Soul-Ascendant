@@ -51,9 +51,13 @@ jobs:
         working-directory: mobile
         run: npm run build:www
 
-      - name: Sync Capacitor Android
+      - name: Copy & Sync Web Assets to Android
         working-directory: mobile
-        run: npx cap sync android
+        run: |
+          mkdir -p android/app/src/main/assets
+          npx cap copy android
+          npx cap sync android
+          ls -la android/app/src/main/assets/public
 
       - name: Grant Execute Permission to Gradlew
         run: chmod +x mobile/android/gradlew
