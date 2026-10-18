@@ -25,3 +25,6 @@ Aturan ini wajib dipatuhi di setiap sesi pengerjaan proyek Soul Essence (folder 
 5. **Dilarang Menjalankan Git Push Sebelum Persetujuan**
    - Jangan pernah melakukan `git push` ke GitHub sampai pengguna memeriksa dan menyetujuinya.
 
+6. **Wajib Menjaga Sinkronisasi Build (manifest.json & sw.js)**
+   - Agen bertanggung jawab penuh merekayasa dan memastikan nilai `build` di `manifest.json` selalu persis sama dengan `const BUILD` di `sw.js` setiap kali melakukan pembaruan rilis/fitur, agar proses verifikasi build mobile dan GitHub Actions selalu lolos otomatis tanpa membebani pengguna.
+
