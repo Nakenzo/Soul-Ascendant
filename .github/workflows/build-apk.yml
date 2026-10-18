@@ -19,7 +19,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: 'npm'
           cache-dependency-path: mobile/package-lock.json
 
@@ -37,20 +37,16 @@ jobs:
         working-directory: mobile
         run: npm run build:www
 
-      - name: Prepare Capacitor Android
+      - name: Sync Capacitor Android
         working-directory: mobile
-        run: |
-          if [ ! -d "android" ]; then
-            npx cap add android
-          fi
-          npx cap sync android
+        run: npx cap sync android
 
       - name: Grant Execute Permission to Gradlew
         run: chmod +x mobile/android/gradlew
 
       - name: Build Debug APK with Gradle
         working-directory: mobile/android
-        run: ./gradlew assembleDebug --no-daemon
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
 
       - name: Upload Debug APK Artifact
         uses: actions/upload-artifact@v4
