@@ -29,11 +29,14 @@ jobs:
         with:
           workspaces: src-tauri -> target
 
+      - name: Install Tauri CLI
+        run: npm install -g @tauri-apps/cli@latest
+
       - name: Build Web Assets (Salin Game ke www)
         run: node mobile/tools/salin-www.js
 
       - name: Build Tauri Application
-        run: npx @tauri-apps/cli build
+        run: tauri build --verbose
 
       - name: Upload Windows Setup Installer
         uses: actions/upload-artifact@v4

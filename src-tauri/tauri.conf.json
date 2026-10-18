@@ -4,8 +4,7 @@
   "version": "0.1.0",
   "identifier": "com.soulescence.app",
   "build": {
-    "frontendDist": "../mobile/www",
-    "beforeBuildCommand": "node mobile/tools/salin-www.js"
+    "frontendDist": "../mobile/www"
   },
   "app": {
     "windows": [
