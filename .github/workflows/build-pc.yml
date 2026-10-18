@@ -40,7 +40,14 @@ jobs:
         run: node mobile/tools/salin-www.js
 
       - name: Build Tauri Application
-        run: npx tauri build
+        run: |
+          npx tauri build --verbose 2>&1 | tee tauri-build.log || {
+            echo "### ❌ Tauri Build Failed" >> $GITHUB_STEP_SUMMARY
+            echo '```text' >> $GITHUB_STEP_SUMMARY
+            tail -n 120 tauri-build.log >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            exit 1
+          }
 
       - name: Upload Windows Setup Installer
         uses: actions/upload-artifact@v4
