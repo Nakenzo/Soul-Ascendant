@@ -4,7 +4,11 @@
   "version": "0.1.0",
   "description": "Soul Essence - 2D top-down action roguelike (PWA, vanilla JS, tanpa dependency)",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "tauri": "tauri"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.0.0"
   },
   "engines": {
     "node": ">=14"

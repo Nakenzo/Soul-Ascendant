@@ -11,6 +11,9 @@ jobs:
   build-windows:
     name: Build Windows App (Tauri)
     runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
 
     steps:
       - name: Checkout Repository
@@ -20,6 +23,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: 'npm'
 
       - name: Setup Rust Stable
         uses: dtolnay/rust-toolchain@stable
@@ -29,21 +33,14 @@ jobs:
         with:
           workspaces: src-tauri -> target
 
+      - name: Install Dependencies
+        run: npm ci
+
       - name: Build Web Assets (Salin Game ke www)
         run: node mobile/tools/salin-www.js
 
       - name: Build Tauri Application
-        run: |
-          npx --yes @tauri-apps/cli build --verbose 2>&1 | Tee-Object -FilePath tauri-build.log
-        shell: powershell
-
-      - name: Print Tauri Build Log on Failure
-        if: failure()
-        run: |
-          if (Test-Path tauri-build.log) {
-            Get-Content tauri-build.log -Tail 150
-          }
-        shell: powershell
+        run: npx tauri build
 
       - name: Upload Windows Setup Installer
         uses: actions/upload-artifact@v4
