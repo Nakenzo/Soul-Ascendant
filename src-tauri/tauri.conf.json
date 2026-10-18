@@ -4,11 +4,13 @@
   "version": "0.1.0",
   "identifier": "com.soulescence.app",
   "build": {
-    "frontendDist": "../mobile/www"
+    "frontendDist": "../mobile/www",
+    "devUrl": "http://localhost:8080"
   },
   "app": {
     "windows": [
       {
+        "label": "main",
         "title": "Soul Essence",
         "width": 1280,
         "height": 720,
@@ -25,12 +27,11 @@
   },
   "bundle": {
     "active": true,
-    "targets": "all",
+    "targets": ["nsis"],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
       "icons/128x128@2x.png",
-      "icons/icon.icns",
       "icons/icon.ico"
     ]
   }
