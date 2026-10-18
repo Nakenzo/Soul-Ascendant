@@ -1,0 +1,257 @@
+.layar-loading-update {
+    position: absolute;
+    inset: 0;
+    z-index: 100;
+    background: radial-gradient(circle at center, #0d1527 0%, #030712 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+
+.layar-loading-update.fade-out {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.update-kotak-tengah {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: calc(var(--cs, 0.56) * 16px);
+    max-width: 85%;
+}
+
+.update-logo-mini {
+    position: relative;
+    width: calc(var(--cs, 0.56) * 100px);
+    height: calc(var(--cs, 0.56) * 100px);
+}
+
+.update-app-ikon {
+    width: 100%;
+    height: 100%;
+    border-radius: 22%;
+    box-shadow: 0 0 calc(var(--cs, 0.56) * 30px) rgba(74, 222, 128, 0.35);
+    animation: updatePulseLogo 2.2s infinite ease-in-out;
+}
+
+@keyframes updatePulseLogo {
+    0%, 100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 8px rgba(74, 222, 128, 0.4));
+    }
+    50% {
+        transform: scale(1.05);
+        filter: drop-shadow(0 0 18px rgba(74, 222, 128, 0.8));
+    }
+}
+
+.update-judul-game {
+    font-family: "Zen Dots", "Courier New", monospace;
+    font-size: calc(var(--cs, 0.56) * 34px);
+    letter-spacing: calc(var(--cs, 0.56) * 3px);
+    color: #e2e8f0;
+    margin: 0;
+    text-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+}
+
+.update-spinner-wadah {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: calc(var(--cs, 0.56) * 44px);
+}
+
+.update-spinner {
+    width: calc(var(--cs, 0.56) * 36px);
+    height: calc(var(--cs, 0.56) * 36px);
+    border: calc(var(--cs, 0.56) * 4px) solid rgba(74, 222, 128, 0.15);
+    border-top-color: #4ade80;
+    border-radius: 50%;
+    animation: updatePutar 0.85s linear infinite;
+}
+
+@keyframes updatePutar {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.update-status-teks {
+    font-size: calc(var(--cs, 0.56) * 20px);
+    color: #94a3b8;
+    margin: 0;
+    letter-spacing: 0.5px;
+    transition: color 0.2s ease;
+}
+
+.update-status-teks.sukses {
+    color: #4ade80;
+    font-weight: 600;
+}
+
+.update-versi-teks {
+    font-size: calc(var(--cs, 0.56) * 15px);
+    color: #64748b;
+    letter-spacing: 1px;
+}
+
+.modal-update-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 105;
+    background: rgba(3, 7, 18, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: updateFadeIn 0.25s ease;
+}
+
+.modal-update-overlay.hidden {
+    display: none;
+}
+
+@keyframes updateFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-update-kotak {
+    background: linear-gradient(145deg, #131c31 0%, #0b1120 100%);
+    border: 2px solid #3b82f6;
+    border-radius: calc(var(--cs, 0.56) * 18px);
+    box-shadow: 0 0 35px rgba(59, 130, 246, 0.35);
+    width: min(92%, calc(var(--cs, 0.56) * 620px));
+    padding: calc(var(--cs, 0.56) * 26px);
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--cs, 0.56) * 18px);
+    animation: updatePopIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes updatePopIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.modal-update-kepala {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--cs, 0.56) * 14px);
+}
+
+.modal-update-ikon {
+    font-size: calc(var(--cs, 0.56) * 32px);
+}
+
+.modal-update-judul {
+    font-family: "Zen Dots", "Courier New", monospace;
+    font-size: calc(var(--cs, 0.56) * 26px);
+    color: #f8fafc;
+    margin: 0;
+    letter-spacing: 1px;
+}
+
+.modal-update-isi {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--cs, 0.56) * 12px);
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: calc(var(--cs, 0.56) * 12px);
+    padding: calc(var(--cs, 0.56) * 16px);
+}
+
+.modal-update-badge-bar {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--cs, 0.56) * 10px);
+}
+
+.modal-update-badge {
+    background: #2563eb;
+    color: #ffffff;
+    font-size: calc(var(--cs, 0.56) * 17px);
+    font-weight: 700;
+    padding: calc(var(--cs, 0.56) * 4px) calc(var(--cs, 0.56) * 12px);
+    border-radius: calc(var(--cs, 0.56) * 6px);
+    letter-spacing: 0.5px;
+}
+
+.modal-update-pesan {
+    font-size: calc(var(--cs, 0.56) * 18px);
+    color: #cbd5e1;
+    margin: 0;
+    line-height: 1.45;
+}
+
+.modal-update-catatan {
+    font-size: calc(var(--cs, 0.56) * 16px);
+    color: #94a3b8;
+    max-height: calc(var(--cs, 0.56) * 120px);
+    overflow-y: auto;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    background: rgba(0, 0, 0, 0.25);
+    padding: calc(var(--cs, 0.56) * 10px);
+    border-radius: calc(var(--cs, 0.56) * 8px);
+}
+
+.modal-update-kaki {
+    display: flex;
+    justify-content: flex-end;
+    gap: calc(var(--cs, 0.56) * 12px);
+    margin-top: calc(var(--cs, 0.56) * 6px);
+}
+
+.tombol-update-batal {
+    background: #1e293b;
+    color: #94a3b8;
+    border: 1px solid #334155;
+    border-radius: calc(var(--cs, 0.56) * 10px);
+    padding: calc(var(--cs, 0.56) * 12px) calc(var(--cs, 0.56) * 20px);
+    font-size: calc(var(--cs, 0.56) * 18px);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.tombol-update-batal:hover {
+    background: #334155;
+    color: #f1f5f9;
+}
+
+.tombol-update-unduh {
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    color: #ffffff;
+    border: 1px solid #34d399;
+    border-radius: calc(var(--cs, 0.56) * 10px);
+    padding: calc(var(--cs, 0.56) * 12px) calc(var(--cs, 0.56) * 24px);
+    font-size: calc(var(--cs, 0.56) * 18px);
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 0 16px rgba(16, 185, 129, 0.4);
+    transition: all 0.15s ease;
+}
+
+.tombol-update-unduh:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 24px rgba(16, 185, 129, 0.7);
+}
+
+.tombol-update-unduh:active {
+    transform: translateY(1px);
+}

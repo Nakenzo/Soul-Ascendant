@@ -10,8 +10,9 @@
     <link rel="icon" type="image/png" href="assets/ui/icon-192.png">
     <link rel="apple-touch-icon" href="assets/ui/icon-192.png">
     <link rel="stylesheet" href="settings.css" media="all">
+    <link rel="stylesheet" href="updater.css" media="all">
     <script>
-        // Cache-buster CSS: muat style.css & settings.css ?v=<build dari manifest>
+        // Cache-buster CSS: muat style.css & settings.css & updater.css ?v=<build dari manifest>
         // supaya CSS baru tidak pernah tersangkut di cache/SW lama (SW cache-first
         // menyimpan file tanpa query). Kalau gagal (offline), link asli tetap
         // dipakai dan tetap tersedia dari cache offline. Dijalankan setelah kedua
@@ -19,7 +20,7 @@
         (function () {
             function segarkan() {
                 var daftar = document.querySelectorAll(
-                    'link[rel="stylesheet"][href="style.css"], link[rel="stylesheet"][href="settings.css"]'
+                    'link[rel="stylesheet"][href="style.css"], link[rel="stylesheet"][href="settings.css"], link[rel="stylesheet"][href="updater.css"]'
                 );
                 if (!daftar.length) return;
                 // ?nc= supaya manifest tidak pernah kena cache lama.
@@ -63,6 +64,39 @@
             <div class="posisi-game">
             <canvas id="game" width="1707" height="960"></canvas>
 
+            <div id="layarLoadingUpdate" class="layar-loading-update">
+                <div class="update-kotak-tengah">
+                    <div class="update-logo-mini">
+                        <img src="assets/ui/icon-192.png" alt="Soul Essence" class="update-app-ikon">
+                    </div>
+                    <h2 class="update-judul-game">SOUL ESSENCE</h2>
+                    <div class="update-spinner-wadah">
+                        <div class="update-spinner"></div>
+                    </div>
+                    <p id="updateStatusTeks" class="update-status-teks">Memeriksa pembaruan...</p>
+                    <span id="updateVersiTeks" class="update-versi-teks">v0.1.0</span>
+                </div>
+            </div>
+
+            <div id="modalUpdate" class="modal-update-overlay hidden">
+                <div class="modal-update-kotak">
+                    <div class="modal-update-kepala">
+                        <span class="modal-update-ikon">&#128640;</span>
+                        <h3 class="modal-update-judul">Pembaruan Tersedia!</h3>
+                    </div>
+                    <div class="modal-update-isi">
+                        <div class="modal-update-badge-bar">
+                            <span id="modalUpdateBadgeVersi" class="modal-update-badge">Versi Baru</span>
+                        </div>
+                        <p id="modalUpdatePesan" class="modal-update-pesan">Versi baru Soul Essence telah dirilis dengan perbaikan bug dan peningkatan performa.</p>
+                        <div id="modalUpdateCatatan" class="modal-update-catatan" hidden></div>
+                    </div>
+                    <div class="modal-update-kaki">
+                        <button id="tombolBatalUpdate" type="button" class="tombol-update-batal">Nanti Saja</button>
+                        <button id="tombolAksiUpdate" type="button" class="tombol-update-unduh">&#128229; Perbarui Sekarang</button>
+                    </div>
+                </div>
+            </div>
 
             <div id="layarPutar" class="layar-putar">
                 <h1 class="judul-besar">PUTAR PERANGKAT</h1>
@@ -338,6 +372,7 @@
 
                             <div class="set-info-platform">
                                 <span id="setLabelEdisi" class="set-edisi-teks"></span>
+                                <button id="tombolCekUpdateManual" type="button" class="tombol-cek-update">&#8635; Cek Pembaruan</button>
                                 <div id="setLinkDownload" class="set-download-grup" hidden>
                                     <a href="https://github.com/Nakenzo/Soul-Essence/releases/latest/download/Soul-Essence.apk" target="_blank" rel="noopener" class="tombol-unduh-apk">&#128241; Unduh APK Android</a>
                                     <a href="https://github.com/Nakenzo/Soul-Essence/releases/latest/download/Soul-Essence-Setup.exe" target="_blank" rel="noopener" class="tombol-unduh-pc">&#128187; Unduh Versi PC</a>
@@ -740,6 +775,7 @@
     <script src="entities.js"></script>
     <script src="draw.js"></script>
     <script src="ambience.js"></script>
+    <script src="updater.js"></script>
     <script src="main.js"></script>
     <script src="admin-konfig.js"></script>
     <script src="admin-akun.js"></script>

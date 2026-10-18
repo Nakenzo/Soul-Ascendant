@@ -6,6 +6,8 @@ const ASSETS_TO_CACHE = [
   "./style.css",
   "./inventory.js",
   "./settings.css",
+  "./updater.css",
+  "./updater.js",
   "./manifest.json",
   "./core.js",
   "./save.js",

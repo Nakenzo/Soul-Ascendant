@@ -311,3 +311,21 @@
     background: #3b82f6;
     transform: translateY(-2px);
 }
+
+.tombol-cek-update {
+    background: #1e293b;
+    color: #cbd5e1;
+    border: 1px solid #475569;
+    border-radius: calc(var(--cs, 0.56) * 8px);
+    padding: calc(var(--cs, 0.56) * 8px) calc(var(--cs, 0.56) * 16px);
+    font-size: calc(var(--cs, 0.56) * 16px);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.tombol-cek-update:hover {
+    background: #334155;
+    color: #ffffff;
+    border-color: #64748b;
+}

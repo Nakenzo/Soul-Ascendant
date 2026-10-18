@@ -264,6 +264,15 @@ function pasangPengaturanUI() {
     });
   }
 
+  const btnCek = document.getElementById("tombolCekUpdateManual");
+  if (btnCek) {
+    btnCek.addEventListener("click", () => {
+      if (typeof window.cekPembaruanManual === "function") {
+        window.cekPembaruanManual();
+      }
+    });
+  }
+
   // Grup kontrol hanya untuk perangkat berkeyboard. Dipanggil lewat satu
   // fungsi yang sama dengan yang dipakai tiap kali layar dibuka.
   terapkanGrupPerangkat();
