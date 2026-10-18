@@ -46,5 +46,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Soul-Essence-Windows-Setup
-          path: ${{ steps.tauri_build.outputs.artifactPaths }}
+          path: |
+            src-tauri/target/release/bundle/nsis/*.exe
+            src-tauri/target/release/bundle/msi/*.msi
           retention-days: 14
