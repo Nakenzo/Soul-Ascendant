@@ -33,7 +33,17 @@ jobs:
         run: node mobile/tools/salin-www.js
 
       - name: Build Tauri Application
-        run: npx --yes @tauri-apps/cli build --verbose
+        run: |
+          npx --yes @tauri-apps/cli build --verbose 2>&1 | Tee-Object -FilePath tauri-build.log
+        shell: powershell
+
+      - name: Print Tauri Build Log on Failure
+        if: failure()
+        run: |
+          if (Test-Path tauri-build.log) {
+            Get-Content tauri-build.log -Tail 150
+          }
+        shell: powershell
 
       - name: Upload Windows Setup Installer
         uses: actions/upload-artifact@v4
