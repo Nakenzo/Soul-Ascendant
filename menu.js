@@ -11,7 +11,6 @@ const koinAkhirEl = document.getElementById("skorAkhir");
 const koinMenangEl = document.getElementById("skorMenang");
 const judulAkhirEl = document.getElementById("judulAkhir");
 
-const layarDevice = document.getElementById("layarDevice");
 const layarPutar = document.getElementById("layarPutar");
 const layarAkun = document.getElementById("layarAkun");
 const layarSetting = document.getElementById("layarSetting");
@@ -120,26 +119,15 @@ function cekOrientasi() {
 window.addEventListener("resize", cekOrientasi);
 window.addEventListener("orientationchange", () => setTimeout(cekOrientasi, 200));
 
-function pilihDevice(dev) {
-  deviceTerpilih = dev;
-  document.body.dataset.device = dev;
-  try { localStorage.setItem("soul-essence-device", dev); } catch (err) {}
-  bukaAudio();
-
-  if (typeof latarSkala === "function" && latarSkala() !== latarSkalaTerpakai) latarCache = null;
-  layarDevice.classList.add("hidden");
-
-  if (statusGame === "title" && layarJudul && layarJudul.classList.contains("hidden")) {
-    layarJudul.classList.remove("hidden");
-  }
-  if (dev === "mobile") {
+function terapkanDevice() {
+  document.body.dataset.device = deviceTerpilih;
+  if (deviceTerpilih === "mobile") {
     kunciLandscapeMobile();
     cekOrientasi();
     if (typeof terapkanHudConfig === "function") terapkanHudConfig();
   }
 }
-layarDevice.querySelectorAll("[data-device]").forEach((b) =>
-  b.addEventListener("click", () => pilihDevice(b.dataset.device)));
+terapkanDevice();
 
 let _statusNotaTerakhir = null;
 function aturNotaKartu() {

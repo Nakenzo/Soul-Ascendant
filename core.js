@@ -20,8 +20,42 @@ function hitungKamera() {
 let karakter = null;
 let statusGame = "title";
 
+const PLATFORM = (() => {
+  if (typeof window !== "undefined") {
+    if (window.Capacitor) return "apk";
+    if (window.__TAURI__ || window.__TAURI_INTERNALS__) return "pc";
+  }
+  return "web";
+})();
+
+const IS_APK = PLATFORM === "apk";
+const IS_PC = PLATFORM === "pc";
+const IS_WEB = PLATFORM === "web";
+
+const VERSI_GAME = "0.1.0";
+const EDISI_GAME = IS_APK ? "Android APK" : (IS_PC ? "PC Windows" : "Web Edition");
+
+function saatPlatform(opsi) {
+  if (!opsi) return;
+  if (IS_APK && typeof opsi.apk === "function") return opsi.apk();
+  if (IS_PC && typeof opsi.pc === "function") return opsi.pc();
+  if (IS_WEB && typeof opsi.web === "function") return opsi.web();
+  if (typeof opsi.default === "function") return opsi.default();
+}
+
 let deviceTerpilih = (() => {
-  try { return localStorage.getItem("soul-essence-device"); } catch (err) { return null; }
+  if (typeof window !== "undefined") {
+    if (IS_APK) return "mobile";
+    if (IS_PC) return "desktop";
+    try {
+      const s = localStorage.getItem("soul-essence-device");
+      if (s === "mobile" || s === "desktop") return s;
+    } catch (err) {}
+    const isMobileUA = /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const isTouch = (("ontouchstart" in window) || (navigator.maxTouchPoints > 0)) && window.innerWidth <= 1024;
+    return (isMobileUA || isTouch) ? "mobile" : "desktop";
+  }
+  return "desktop";
 })();
 let player, bullets, enemies, particles, rings, slashes, damages, souls;
 let fires, freezes;

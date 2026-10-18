@@ -72,8 +72,9 @@ function segarkanSaklarSetting() {
 
 // ------------------------------------------------------------- ikatan tombol
 
-// PC = ada keyboard. Deteksi pragmatic: perangkat yang dipilih bukan "mobile".
 function pakaiKeyboard() {
+  if (typeof IS_APK !== "undefined" && IS_APK) return false;
+  if (typeof IS_PC !== "undefined" && IS_PC) return true;
   return !(typeof deviceTerpilih === "string" && deviceTerpilih === "mobile");
 }
 
@@ -215,10 +216,20 @@ function pasangResetIkatan() {
 
 // ------------------------------------------------------------------ pasang
 
+function segarkanInfoPlatform() {
+  const label = document.getElementById("setLabelEdisi");
+  if (label && typeof EDISI_GAME !== "undefined" && typeof VERSI_GAME !== "undefined") {
+    label.textContent = "Soul Essence v" + VERSI_GAME + " (" + EDISI_GAME + ")";
+  }
+  const link = document.getElementById("setLinkDownload");
+  if (link && typeof IS_WEB !== "undefined") {
+    link.hidden = !IS_WEB;
+  }
+}
+
 function segarkanPengaturanUI() {
-  // Sebelum guard preferensi: materi perangkat harus selalu benar walaupun
-  // penyimpanan pengaturan belum siap.
   terapkanGrupPerangkat();
+  segarkanInfoPlatform();
   if (typeof pengaturanAmbil !== "function") return;
   segarkanSliderSetting();
   segarkanSaklarSetting();
