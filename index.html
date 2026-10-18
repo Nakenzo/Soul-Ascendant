@@ -781,7 +781,9 @@
     <script src="admin-akun.js"></script>
     <script>
         if ("serviceWorker" in navigator) {
-            if (window.Capacitor || window.__TAURI__) {
+            var isAplikasiNative = !!(window.Capacitor || window.__TAURI__ || window.__TAURI_INTERNALS__ ||
+                location.hostname === "localhost" || location.protocol === "tauri:" || location.protocol === "capacitor:");
+            if (isAplikasiNative) {
                 navigator.serviceWorker.getRegistrations().then(function (regs) {
                     for (var i = 0; i < regs.length; i++) regs[i].unregister();
                 });
