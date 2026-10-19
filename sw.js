@@ -1,4 +1,4 @@
-const BUILD = 72;
+const BUILD = 73;
 const CACHE_FALLBACK = "soul-essence-v" + BUILD;
 const ASSETS_TO_CACHE = [
   "./",
@@ -8,6 +8,7 @@ const ASSETS_TO_CACHE = [
   "./settings.css",
   "./updater.css",
   "./updater.js",
+  "./boot.js",
   "./manifest.json",
   "./core.js",
   "./save.js",

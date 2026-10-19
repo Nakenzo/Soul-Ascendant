@@ -273,6 +273,15 @@ function pasangPengaturanUI() {
     });
   }
 
+  const btnReset = document.getElementById("tombolResetPatch");
+  if (btnReset) {
+    btnReset.addEventListener("click", () => {
+      if (window.SE_PATCHER && typeof window.SE_PATCHER.resetKeBawaan === "function") {
+        window.SE_PATCHER.resetKeBawaan();
+      }
+    });
+  }
+
   // Grup kontrol hanya untuk perangkat berkeyboard. Dipanggil lewat satu
   // fungsi yang sama dengan yang dipakai tiap kali layar dibuka.
   terapkanGrupPerangkat();

@@ -11,44 +11,6 @@
     <link rel="apple-touch-icon" href="assets/ui/icon-192.png">
     <link rel="stylesheet" href="settings.css" media="all">
     <link rel="stylesheet" href="updater.css" media="all">
-    <script>
-        // Cache-buster CSS: muat style.css & settings.css & updater.css ?v=<build dari manifest>
-        // supaya CSS baru tidak pernah tersangkut di cache/SW lama (SW cache-first
-        // menyimpan file tanpa query). Kalau gagal (offline), link asli tetap
-        // dipakai dan tetap tersedia dari cache offline. Dijalankan setelah kedua
-        // link ada, jadi keduanya ikut diganti.
-        (function () {
-            function segarkan() {
-                var daftar = document.querySelectorAll(
-                    'link[rel="stylesheet"][href="style.css"], link[rel="stylesheet"][href="settings.css"], link[rel="stylesheet"][href="updater.css"]'
-                );
-                if (!daftar.length) return;
-                // ?nc= supaya manifest tidak pernah kena cache lama.
-                fetch("manifest.json?nc=" + Date.now(), { cache: "no-store" })
-                    .then(function (r) { return r && r.ok ? r.json() : null; })
-                    .then(function (m) {
-                        if (!m || typeof m.build === "undefined") return;
-                        Array.prototype.forEach.call(daftar, function (dasar) {
-                            var nama = dasar.getAttribute("href");
-                            var segar = document.createElement("link");
-                            segar.rel = "stylesheet";
-                            segar.media = "all";
-                            segar.href = nama + "?v=" + m.build;
-                            segar.onload = function () {
-                                if (dasar.parentNode) dasar.parentNode.removeChild(dasar);
-                            };
-                            segar.onerror = function () {
-                                if (segar.parentNode) segar.parentNode.removeChild(segar);
-                            };
-                            document.head.appendChild(segar);
-                        });
-                    })
-                    .catch(function () {});
-            }
-            if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", segarkan);
-            else segarkan();
-        })();
-    </script>
 </head>
 <body>
     <script>var BUILD_TERKINI = 0;</script>
@@ -373,6 +335,7 @@
                             <div class="set-info-platform">
                                 <span id="setLabelEdisi" class="set-edisi-teks"></span>
                                 <button id="tombolCekUpdateManual" type="button" class="tombol-cek-update">&#8635; Cek Pembaruan</button>
+                                <button id="tombolResetPatch" type="button" class="tombol-cek-update" style="margin-top:calc(var(--cs, 0.56) * 6px);background:#334155;">&#8634; Reset Versi Bawaan</button>
                                 <div id="setLinkDownload" class="set-download-grup" hidden>
                                     <a href="https://github.com/Nakenzo/Soul-Essence/releases/latest/download/Soul-Essence.apk" target="_blank" rel="noopener" class="tombol-unduh-apk">&#128241; Unduh APK Android</a>
                                     <a href="https://github.com/Nakenzo/Soul-Essence/releases/latest/download/Soul-Essence-Setup.exe" target="_blank" rel="noopener" class="tombol-unduh-pc">&#128187; Unduh Versi PC</a>
@@ -750,35 +713,7 @@
     </div>
     </div>
 
-<script src="core.js"></script>
-<script src="save.js"></script>
-        <script src="settings.js"></script>
-<script src="akun-konfig.js"></script>
-<script src="akun.js"></script>
-        <script src="akun-ui.js"></script>
-        <script src="audio.js"></script>
-        <script src="settings-ui.js"></script>
-        <script src="hud.js"></script>
-    <script src="config.js"></script>
-<script src="karakter.js"></script>
-    <script src="artefak.js"></script>
-    <script src="bosses.js"></script>
-    <script src="maps.js"></script>
-    <script src="texture.js"></script>
-    <script src="inventory.js"></script>
-    <script src="menu.js"></script>
-    <script src="input.js"></script>
-<script src="ikon-sentuh.js"></script>
-    <script src="levels.js"></script>
-    <script src="upgrades.js"></script>
-    <script src="skills.js"></script>
-    <script src="entities.js"></script>
-    <script src="draw.js"></script>
-    <script src="ambience.js"></script>
-    <script src="updater.js"></script>
-    <script src="main.js"></script>
-    <script src="admin-konfig.js"></script>
-    <script src="admin-akun.js"></script>
+<script src="boot.js"></script>
     <script>
         if ("serviceWorker" in navigator) {
             var isAplikasiNative = !!(window.Capacitor || window.__TAURI__ || window.__TAURI_INTERNALS__ ||

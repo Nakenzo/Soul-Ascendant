@@ -30,3 +30,7 @@ Aturan ini wajib dipatuhi di setiap sesi pengerjaan proyek Soul Essence (folder 
 
 7. **Interpretasi Instruksi "Versi APK"**
    - Jika pengguna hanya menyebutkan "versi apk" atau "apk" tanpa menspesifikasikan mobile atau PC, maka instruksi tersebut berlaku untuk **keduanya (Mobile APK & PC/Tauri)**, kecuali versi web.
+
+8. **Cari Cara Paling Maksimal/Efisien Tanpa Setengah-Setengah & Sampaikan Apa Adanya**
+   - Agen wajib mencari dan mengimplementasikan solusi yang paling maksimal, efisien, dan tuntas sampai level arsitektur inti tanpa solusi tambal sulam atau setengah-setengah.
+   - Sampaikan fakta teknis apa adanya secara jujur dan transparan tanpa melebih-lebihkan atau menutupi keterbatasan sistem.
