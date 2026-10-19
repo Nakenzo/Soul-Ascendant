@@ -10,6 +10,7 @@ const BOSS_DEF = {
     kunci: "raja-slime",
     nama: "RAJA SLIME",
     renderer: "slime",
+    element: "fisik",
 
     r: 72,
     skala: 2.4,

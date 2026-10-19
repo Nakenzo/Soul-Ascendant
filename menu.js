@@ -211,36 +211,10 @@ function ikonTipeSVG(kar) {
 
 function ikonElemenSVG(el) {
   const e = String(el || "").toLowerCase();
-  if (e === "api") {
-    return '<svg class="ikon-stat ikon-elemen" viewBox="0 0 24 24" width="46" height="46">' +
-      '<defs><linearGradient id="gradApi" x1="0" y1="1" x2="0" y2="0">' +
-      '<stop offset="0%" stop-color="#ff3d00"/><stop offset="55%" stop-color="#ff9100"/><stop offset="100%" stop-color="#ffee58"/>' +
-      '</linearGradient></defs>' +
-      '<path fill="url(#gradApi)" d="M13.5 1.5c.3 2.8 1.9 4.2 3.4 6.1 1.4 1.8 2.6 3.7 2.6 6.4 0 4.1-3.2 7.5-7.5 7.5S4.5 18.1 4.5 14c0-2.4 1-4.3 2.4-6.1.5 1.3 1.3 2.1 2.4 2.5-.4-3.1.5-6.3 1.8-8.4.3 1.9 1 3.1 2 3.9.6-1.5.6-3.1.4-4.4z"/>' +
-      '<path fill="#ffd54f" opacity="0.9" d="M12.2 10.5c.6 1.5 2.4 2.6 2.4 5 0 1.9-1.3 3.4-3.1 3.4s-3.1-1.5-3.1-3.4c0-1.5.8-2.6 1.7-3.6.3.9.8 1.4 1.5 1.7-.2-1.2 0-2.3.6-3.1z"/>' +
-      '</svg>';
-  }
-  if (e === "es") {
-    return '<svg class="ikon-stat ikon-elemen" viewBox="0 0 24 24" width="46" height="46" fill="none" stroke="#b3e5fc" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' +
-      '<path d="M12 2.5v19M3.8 7.2l16.4 9.6M20.2 7.2L3.8 16.8"/>' +
-      '<path d="M9.9 4.6L12 5.8l2.1-1.2"/>' +
-      '<path d="M9.9 19.4L12 18.2l2.1 1.2"/>' +
-      '<path d="M17.4 6.5v2.4l2.1 1.2"/>' +
-      '<path d="M6.6 6.5v2.4l-2.1 1.2"/>' +
-      '<path d="M17.4 17.5v-2.4l2.1-1.2"/>' +
-      '<path d="M6.6 17.5v-2.4l-2.1-1.2"/>' +
-      '</svg>';
-  }
-  if (e === "nihil") {
-    return '<svg class="ikon-stat ikon-elemen" viewBox="0 0 24 24" width="46" height="46" fill="none" stroke-linecap="round" stroke-linejoin="round">' +
-      '<circle cx="12" cy="12" r="8.4" stroke="#a78bfa" stroke-width="1.4" stroke-dasharray="5 3.4" opacity="0.9"/>' +
-      '<ellipse cx="12" cy="12" rx="4.2" ry="7" stroke="#c084fc" stroke-width="1.4" transform="rotate(35 12 12)"/>' +
-      '<circle cx="10.5" cy="10.5" r="1.2" fill="#e9d5ff" stroke="none"/>' +
-      '<circle cx="13.6" cy="13.6" r="0.8" fill="#f5d0fe" stroke="none"/>' +
-      '</svg>';
-  }
-  return "";
+  if (!e) return "";
+  return '<img src="assets/ui/element-' + e + '.svg" class="ikon-stat ikon-elemen" alt="' + e + '" width="46" height="46" style="vertical-align:middle;object-fit:contain;filter:drop-shadow(0 0 6px rgba(255,255,255,0.2));" />';
 }
+
 
 
 

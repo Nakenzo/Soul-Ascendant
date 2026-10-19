@@ -1022,6 +1022,23 @@ function draw() {
     ctx.fillStyle = e.warna;
     ctx.fillRect(e.x - 16, e.y - 22, 32 * (e.hp / e.maxHp), 3);
 
+    const elK = (e.element || (typeof TIPE_MUSUH !== "undefined" && TIPE_MUSUH[e.tipe] ? TIPE_MUSUH[e.tipe].element : "fisik") || "fisik").toLowerCase();
+    const warnaElemen = elK === "nature" ? "#22c55e" : (elK === "es" ? "#38bdf8" : (elK === "api" ? "#f97316" : (elK === "nihil" ? "#a855f7" : "#94a3b8")));
+
+    ctx.fillStyle = warnaElemen;
+    ctx.beginPath();
+    ctx.arc(e.x - 22, e.y - 20.5, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    if (e.reaksiCooldown > 0) {
+      const pCd = Math.min(1, e.reaksiCooldown / 4.0);
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.75)";
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.arc(e.x - 22, e.y - 20.5, 5.2, -Math.PI / 2, -Math.PI / 2 + (1 - pCd) * Math.PI * 2);
+      ctx.stroke();
+    }
+
     if (e.freeze > 0) {
       ctx.fillStyle = "rgba(125, 211, 252, 0.35)";
       ctx.beginPath();
@@ -1051,6 +1068,16 @@ function draw() {
       ctx.fill();
       ctx.strokeStyle = "#ff8c3f";
       ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    if (e.korosi) {
+      ctx.fillStyle = "rgba(168, 85, 247, 0.28)";
+      ctx.beginPath();
+      ctx.arc(e.x, e.y, e.r + 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#c084fc";
+      ctx.lineWidth = 1.5;
       ctx.stroke();
     }
   }

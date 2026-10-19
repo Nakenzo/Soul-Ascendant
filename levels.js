@@ -1,15 +1,15 @@
 const TIPE_MUSUH = {
-  biasa: { kunci: "musuh", r: 24, skala: 1, hpKali: 1, kecepatanKali: 1, warna: "#ff4d4d" },
-  cepet: { kunci: "cepet", r: 18, skala: 0.75, hpKali: 0.6, kecepatanKali: 1.45, warna: "#4dc3ff" },
-  tank: { kunci: "tank", r: 32, skala: 1.33, hpKali: 2.2, kecepatanKali: 0.6, warna: "#b26bff" },
+  biasa: { kunci: "musuh", r: 24, skala: 1, hpKali: 1, kecepatanKali: 1, warna: "#ff4d4d", element: "fisik" },
+  cepet: { kunci: "cepet", r: 18, skala: 0.75, hpKali: 0.6, kecepatanKali: 1.45, warna: "#4dc3ff", element: "fisik" },
+  tank: { kunci: "tank", r: 32, skala: 1.33, hpKali: 2.2, kecepatanKali: 0.6, warna: "#b26bff", element: "fisik" },
 
-  jamur: { kunci: "jamur", r: 22, skala: 1, hpKali: 1.3, kecepatanKali: 0.5, warna: "#86efac" },
+  jamur: { kunci: "jamur", r: 22, skala: 1, hpKali: 1.3, kecepatanKali: 0.5, warna: "#86efac", element: "nature" },
 
-  serigala: { kunci: "serigala", r: 28, skala: 1.35, hpKali: 1.2, kecepatanKali: 1.55, warna: "#aab3bc" },
+  serigala: { kunci: "serigala", r: 28, skala: 1.35, hpKali: 1.2, kecepatanKali: 1.55, warna: "#aab3bc", element: "fisik" },
 
-  semak: { kunci: "semak", r: 34, skala: 1.45, hpKali: 2.4, kecepatanKali: 0.5, warna: "#3ea05f" },
+  semak: { kunci: "semak", r: 34, skala: 1.45, hpKali: 2.4, kecepatanKali: 0.5, warna: "#3ea05f", element: "nature" },
 
-  bos: { kunci: "bos", r: 72, skala: 2.4, hpKali: 1, kecepatanKali: 1, warna: "#14532d" }
+  bos: { kunci: "bos", r: 72, skala: 2.4, hpKali: 1, kecepatanKali: 1, warna: "#14532d", element: "fisik" }
 };
 
 const LEVELS = [

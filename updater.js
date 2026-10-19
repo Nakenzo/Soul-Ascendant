@@ -74,20 +74,83 @@
 
     const btnAksi = document.getElementById("tombolAksiUpdate");
     if (btnAksi) {
-      btnAksi.onclick = () => {
+      btnAksi.onclick = (e) => {
+        if (e && e.preventDefault) e.preventDefault();
         const isApk = typeof IS_APK !== "undefined" ? IS_APK : false;
         const isPc = typeof IS_PC !== "undefined" ? IS_PC : false;
         const tujuan = isApk ? URL_APK : (isPc ? URL_EXE : URL_APK);
 
-        if (isApk && window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
-          window.open(tujuan, "_system");
-        } else {
-          try {
-            window.open(tujuan, "_blank");
-          } catch (e) {
-            window.location.href = tujuan;
+        btnAksi.disabled = true;
+        btnAksi.textContent = "Menyiapkan Unduhan...";
+
+        const pesanEl = document.getElementById("modalUpdatePesan");
+
+        if (isApk && window.AndroidNative && typeof window.AndroidNative.unduhDanPasangApk === "function") {
+          if (pesanEl) {
+            pesanEl.textContent = "Mengunduh pembaruan APK... Jangan tutup aplikasi.";
           }
+
+          window.onProgressUpdateApk = (persen) => {
+            btnAksi.textContent = "Mengunduh " + persen + "%";
+            if (pesanEl) {
+              pesanEl.textContent = "Mengunduh berkas APK (" + persen + "%)... Jendela instalasi akan terbuka otomatis setelah selesai.";
+            }
+          };
+
+          window.onSelesaiUpdateApk = () => {
+            btnAksi.textContent = "Membuka Penginstal...";
+            if (pesanEl) {
+              pesanEl.textContent = "Unduhan selesai! Membuka penginstal resmi Android...";
+            }
+          };
+
+          window.onGagalUpdateApk = (err) => {
+            btnAksi.disabled = false;
+            btnAksi.textContent = "Coba Lagi";
+            if (pesanEl) {
+              pesanEl.innerHTML = "Gagal mengunduh otomatis. Silakan unduh manual:<br><a href=\"" + tujuan + "\" target=\"_blank\" style=\"color:#38bdf8;text-decoration:underline;word-break:break-all;\">" + tujuan + "</a>";
+            }
+          };
+
+          try {
+            window.AndroidNative.unduhDanPasangApk(tujuan);
+            return;
+          } catch (err) {}
         }
+
+        if (window.AndroidNative && typeof window.AndroidNative.bukaUrl === "function") {
+          try {
+            window.AndroidNative.bukaUrl(tujuan);
+          } catch (err) {}
+        }
+
+        try {
+          const a = document.createElement("a");
+          a.href = tujuan;
+          a.target = "_blank";
+          a.rel = "noopener noreferrer";
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(() => {
+            if (a.parentNode) a.parentNode.removeChild(a);
+          }, 1000);
+        } catch (err) {}
+
+        try {
+          window.open(tujuan, "_system");
+        } catch (err) {}
+
+        try {
+          window.open(tujuan, "_blank");
+        } catch (err) {}
+
+        setTimeout(() => {
+          btnAksi.disabled = false;
+          btnAksi.textContent = "\u2B07 Perbarui Sekarang";
+          if (pesanEl) {
+            pesanEl.innerHTML = "Jika unduhan tidak mulai otomatis, silakan unduh manual melalui tautan rilis berikut:<br><a href=\"" + tujuan + "\" target=\"_blank\" style=\"color:#38bdf8;text-decoration:underline;word-break:break-all;\">" + tujuan + "</a>";
+          }
+        }, 2500);
       };
     }
 

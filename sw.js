@@ -1,4 +1,4 @@
-const BUILD = 66;
+const BUILD = 67;
 const CACHE_FALLBACK = "soul-essence-v" + BUILD;
 const ASSETS_TO_CACHE = [
   "./",
@@ -55,7 +55,15 @@ const ASSETS_TO_CACHE = [
   "./assets/ui/logo-kamu.png",
   "./assets/ui/icon-192.png",
   "./assets/ui/icon-512.png",
-  "./assets/ui/icon.png"
+  "./assets/ui/icon.png",
+  "./assets/ui/element-angin.svg",
+  "./assets/ui/element-api.svg",
+  "./assets/ui/element-es.svg",
+  "./assets/ui/element-fisik.svg",
+  "./assets/ui/element-nature.svg",
+  "./assets/ui/element-nihil.svg",
+  "./assets/ui/element-petir.svg",
+  "./assets/ui/element-tanah.svg"
 ];
 
 // Nama cache aktif, diisi saat install.

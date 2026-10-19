@@ -233,6 +233,9 @@ function spawnEnemy() {
     y: y,
     tipe: tipe,
     kunci: t.kunci,
+    element: t.element || "fisik",
+    reaksiCooldown: 0,
+    korosi: null,
     hp: hp,
     maxHp: hp,
     speed: (kecepatanMin + Math.random() * (kecepatanMax - kecepatanMin)) * t.kecepatanKali,
@@ -324,6 +327,9 @@ function spawnBoss(x, y, def) {
     y: y,
     tipe: "bos",
     kunci: def.renderer || "slime",
+    element: def.element || "fisik",
+    reaksiCooldown: 0,
+    korosi: null,
     bos: true,
     bosDef: def,
     namaBos: def.nama,
@@ -386,14 +392,77 @@ function bossSlam(e, fase) {
 }
 
 // Damage masuk ke musuh; bos dapat pengali vulnKali (transisi fase & stagger parry).
-function applyDamageMusuh(e, dmg) {
+function applyDamageMusuh(e, dmg, elemenSerangan) {
   const total = e.bos ? dmg * (e.vulnKali || 1) : dmg;
   e.hp -= total;
+  if (elemenSerangan !== "dot" && e.hp > 0) {
+    prosesReaksiElemen(e, elemenSerangan, total);
+  }
   return total;
 }
 
-// --- Fase -------------------------------------------------------------------
-// Minion: total dibatasi minionTotal per fight, tiap fase masuk summon 1.
+function prosesReaksiElemen(e, elemenSerangan, dmgAwal) {
+  if (!e || e.hp <= 0) return;
+  if ((e.reaksiCooldown || 0) > 0) return;
+
+  const atkEl = (elemenSerangan || (karakter && karakter.element ? karakter.element : "fisik")).toLowerCase();
+  const musuhEl = (e.element || (TIPE_MUSUH[e.tipe] ? TIPE_MUSUH[e.tipe].element : "fisik") || "fisik").toLowerCase();
+
+  if (!atkEl || !musuhEl || atkEl === musuhEl) return;
+
+  const emKali = typeof pengaliElement === "function" && karakter ? pengaliElement(karakter.kunci) : 1;
+  let reaksi = null;
+
+  if ((atkEl === "fisik" && musuhEl === "es") || (atkEl === "es" && musuhEl === "fisik")) {
+    const bonusDmg = Math.round(dmgAwal * 1.5 * emKali);
+    e.hp -= bonusDmg;
+    reaksi = { nama: "SHATTER x2.5", warna: "#38bdf8" };
+    spawnParticles(e.x, e.y, "#38bdf8", 16);
+    rings.push({ x: e.x, y: e.y, r: 10, maxR: 70, life: 0.35, t: 0 });
+    if (typeof sfxBeku === "function") sfxBeku();
+  } else if ((atkEl === "fisik" && musuhEl === "api") || (atkEl === "api" && musuhEl === "fisik")) {
+    const bonusDmg = Math.round(dmgAwal * 0.5 * emKali);
+    e.hp -= bonusDmg;
+    if (!e.bos) {
+      const ang = Math.atan2(e.y - player.y, e.x - player.x);
+      e.x += Math.cos(ang) * 45;
+      e.y += Math.sin(ang) * 45;
+    }
+    reaksi = { nama: "SPARK!", warna: "#f97316" };
+    spawnParticles(e.x, e.y, "#f97316", 14);
+  } else if ((atkEl === "fisik" && musuhEl === "nihil") || (atkEl === "nihil" && musuhEl === "fisik")) {
+    e.korosi = { timer: 0, tick: 0.4, durasi: 4.0, dmg: Math.max(3, Math.round(8 * emKali)) };
+    reaksi = { nama: "VOID CORROSION", warna: "#c084fc" };
+    spawnParticles(e.x, e.y, "#a855f7", 14);
+  } else if ((atkEl === "nature" && musuhEl === "api") || (atkEl === "api" && musuhEl === "nature")) {
+    e.burn = { timer: 0, tick: 0.35, durasi: 4.0, dmg: Math.max(4, Math.round(12 * emKali)) };
+    reaksi = { nama: "COMBUSTION!", warna: "#ff5722" };
+    spawnParticles(e.x, e.y, "#ff4500", 18);
+    rings.push({ x: e.x, y: e.y, r: 12, maxR: 100, life: 0.4, t: 0 });
+  } else if ((atkEl === "nature" && musuhEl === "es") || (atkEl === "es" && musuhEl === "nature")) {
+    e.freeze = Math.max(e.freeze || 0, 1.5);
+    const bonusDmg = Math.round(dmgAwal * 0.8 * emKali);
+    e.hp -= bonusDmg;
+    reaksi = { nama: "FROSTBITE!", warna: "#7dd3fc" };
+    spawnParticles(e.x, e.y, "#7dd3fc", 16);
+  } else if ((atkEl === "nature" && musuhEl === "nihil") || (atkEl === "nihil" && musuhEl === "nature")) {
+    e.korosi = { timer: 0, tick: 0.4, durasi: 4.0, dmg: Math.max(4, Math.round(10 * emKali)) };
+    reaksi = { nama: "PLAGUE CORROSION", warna: "#a855f7" };
+    spawnParticles(e.x, e.y, "#a855f7", 16);
+  } else if ((atkEl === "api" && musuhEl === "es") || (atkEl === "es" && musuhEl === "api")) {
+    const bonusDmg = Math.round(dmgAwal * 1.0 * emKali);
+    e.hp -= bonusDmg;
+    reaksi = { nama: "MELT x2.0", warna: "#f43f5e" };
+    spawnParticles(e.x, e.y, "#f43f5e", 18);
+  }
+
+  if (reaksi) {
+    e.reaksiCooldown = 4.0;
+    spawnDamage(e.x, e.y - e.r - 28, reaksi.nama, reaksi.warna);
+    if (e.hp <= 0) killEnemy(e);
+  }
+}
+
 function summonMinionBos(e, fase) {
   if (!fase.spawn) return;
   if (e.minionDipanggil >= (e.bosDef.minionTotal || 0)) return;
@@ -415,6 +484,9 @@ function summonMinionBos(e, fase) {
     x: x, y: y,
     tipe: fase.spawn,
     kunci: t.kunci,
+    element: t.element || "fisik",
+    reaksiCooldown: 0,
+    korosi: null,
     hp: hp, maxHp: hp,
     speed: 95 * t.kecepatanKali,
     r: t.r, skala: t.skala, warna: t.warna,
@@ -1917,12 +1989,29 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
     e.freeze = Math.max(0, (e.freeze || 0) - dt);
     e.paralyze = Math.max(0, (e.paralyze || 0) - dt);
     e.contactCd = Math.max(0, (e.contactCd || 0) - dt);
+    e.reaksiCooldown = Math.max(0, (e.reaksiCooldown || 0) - dt);
+
+    if (e.korosi) {
+      e.korosi.timer += dt;
+      while (e.korosi.timer >= e.korosi.tick) {
+        e.korosi.timer -= e.korosi.tick;
+        const dmgKor = applyDamageMusuh(e, e.korosi.dmg, "dot");
+        e.hitFlash = 0.1;
+        spawnDamage(e.x, e.y - e.r - 20, dmgKor, "#a855f7");
+      }
+      e.korosi.durasi -= dt;
+      if (e.korosi.durasi <= 0) e.korosi = null;
+      if (e.hp <= 0) {
+        killEnemy(e);
+        continue;
+      }
+    }
 
     if (e.burn) {
       e.burn.timer += dt;
       while (e.burn.timer >= e.burn.tick) {
         e.burn.timer -= e.burn.tick;
-        const dmgBakar = applyDamageMusuh(e, e.burn.dmg);
+        const dmgBakar = applyDamageMusuh(e, e.burn.dmg, "dot");
         e.hitFlash = 0.1;
         spawnDamage(e.x, e.y - e.r - 16, dmgBakar, "#ff8c3f");
         parrySerigala(e);
