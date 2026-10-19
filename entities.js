@@ -239,6 +239,7 @@ function spawnEnemy() {
     element: t.element || "fisik",
     reaksiCooldown: 0,
     korosi: null,
+    bleeding: null,
     hp: hp,
     maxHp: hp,
     speed: (kecepatanMin + Math.random() * (kecepatanMax - kecepatanMin)) * t.kecepatanKali,
@@ -333,6 +334,7 @@ function spawnBoss(x, y, def) {
     element: def.element || "fisik",
     reaksiCooldown: 0,
     korosi: null,
+    bleeding: null,
     bos: true,
     bosDef: def,
     namaBos: def.nama,
@@ -421,18 +423,43 @@ function prosesReaksiElemen(e, elemenSerangan, dmgAwal) {
     e.hp -= bonusDmg;
     reaksi = { nama: "SHATTER x2.5", warna: "#38bdf8" };
     spawnParticles(e.x, e.y, "#38bdf8", 16);
-    rings.push({ x: e.x, y: e.y, r: 10, maxR: 70, life: 0.35, t: 0 });
+    rings.push({ x: e.x, y: e.y, r: 10, maxR: 70, life: 0.35, t: 0, warna: "#38bdf8" });
     if (typeof sfxBeku === "function") sfxBeku();
-  } else if ((atkEl === "fisik" && musuhEl === "api") || (atkEl === "api" && musuhEl === "fisik")) {
-    const bonusDmg = Math.round(dmgAwal * 0.5 * emKali);
+  } else if ((atkEl === "fisik" && musuhEl === "angin") || (atkEl === "angin" && musuhEl === "fisik")) {
+    const bonusDmg = Math.round(dmgAwal * 0.9 * emKali);
     e.hp -= bonusDmg;
-    if (!e.bos) {
-      const ang = Math.atan2(e.y - player.y, e.x - player.x);
-      e.x += Math.cos(ang) * 45;
-      e.y += Math.sin(ang) * 45;
+    const vortexRadius = 240;
+    for (let k = 0; k < enemies.length; k++) {
+      const lain = enemies[k];
+      if (lain.hp <= 0 || lain.bosKematian) continue;
+      const dx = e.x - lain.x;
+      const dy = e.y - lain.y;
+      const d = Math.hypot(dx, dy) || 1;
+      if (d < vortexRadius) {
+        const pull = lain.bos ? 35 : (1 - d / vortexRadius) * 130 + 40;
+        lain.x += (dx / d) * pull;
+        lain.y += (dy / d) * pull;
+        lain.x = Math.max(lain.r, Math.min(WORLD_W - lain.r, lain.x));
+        lain.y = Math.max(lain.r, Math.min(WORLD_H - lain.r, lain.y));
+        if (lain !== e) {
+          lain.hitFlash = 0.08;
+          spawnParticles(lain.x, lain.y, "#2dd4bf", 4);
+        }
+      }
     }
-    reaksi = { nama: "SPARK!", warna: "#f97316" };
-    spawnParticles(e.x, e.y, "#f97316", 14);
+    reaksi = { nama: "VORTEX", warna: "#2dd4bf" };
+    spawnParticles(e.x, e.y, "#2dd4bf", 20);
+    rings.push({ x: e.x, y: e.y, r: 12, maxR: 120, life: 0.4, t: 0, warna: "#2dd4bf" });
+    if (typeof sfxDash === "function") sfxDash();
+  } else if (
+    (atkEl === "fisik" && (musuhEl === "api" || musuhEl === "petir" || musuhEl === "listrik" || musuhEl === "nature")) ||
+    ((atkEl === "api" || atkEl === "petir" || atkEl === "listrik" || atkEl === "nature") && musuhEl === "fisik")
+  ) {
+    const bleedDmg = Math.max(4, Math.round((dmgAwal * 0.35 + 5) * emKali));
+    e.bleeding = { timer: 0, tick: 0.35, durasi: 4.0, dmg: bleedDmg };
+    reaksi = { nama: "BLEEDING!", warna: "#ef4444" };
+    spawnParticles(e.x, e.y, "#ef4444", 18);
+    rings.push({ x: e.x, y: e.y, r: 10, maxR: 75, life: 0.35, t: 0, warna: "#ef4444" });
   } else if ((atkEl === "fisik" && musuhEl === "nihil") || (atkEl === "nihil" && musuhEl === "fisik")) {
     e.korosi = { timer: 0, tick: 0.4, durasi: 4.0, dmg: Math.max(3, Math.round(8 * emKali)) };
     reaksi = { nama: "VOID CORROSION", warna: "#c084fc" };
@@ -490,6 +517,7 @@ function summonMinionBos(e, fase) {
     element: t.element || "fisik",
     reaksiCooldown: 0,
     korosi: null,
+    bleeding: null,
     hp: hp, maxHp: hp,
     speed: 95 * t.kecepatanKali,
     r: t.r, skala: t.skala, warna: t.warna,
@@ -778,6 +806,8 @@ function mulaiKematianBos(e) {
   e.bomJalan = null;
   e.tarikT = 0;
   e.burn = null;
+  e.bleeding = null;
+  e.korosi = null;
   bossIntro = null;
   bosKematian = { e: e, t: 0, sudahBayar: false };
   spawnTimer = 999;
@@ -2024,6 +2054,23 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
       }
       e.burn.durasi -= dt;
       if (e.burn.durasi <= 0) e.burn = null;
+      if (e.hp <= 0) {
+        killEnemy(e);
+        continue;
+      }
+    }
+
+    if (e.bleeding) {
+      e.bleeding.timer += dt;
+      while (e.bleeding.timer >= e.bleeding.tick) {
+        e.bleeding.timer -= e.bleeding.tick;
+        const dmgBleed = applyDamageMusuh(e, e.bleeding.dmg, "dot");
+        e.hitFlash = 0.1;
+        spawnDamage(e.x, e.y - e.r - 18, dmgBleed, "#ef4444");
+        spawnParticles(e.x, e.y, "#ef4444", 4);
+      }
+      e.bleeding.durasi -= dt;
+      if (e.bleeding.durasi <= 0) e.bleeding = null;
       if (e.hp <= 0) {
         killEnemy(e);
         continue;

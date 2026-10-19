@@ -747,12 +747,23 @@ function draw() {
   gambarAmbience();
 
   for (const r of rings) {
-    const alpha = 1 - r.t / r.life;
-    ctx.strokeStyle = "rgba(255, 210, 63, " + alpha + ")";
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.arc(r.x, r.y, r.r, 0, Math.PI * 2);
-    ctx.stroke();
+    const alpha = Math.max(0, 1 - r.t / r.life);
+    if (r.warna) {
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.strokeStyle = r.warna;
+      ctx.lineWidth = r.tebal || 3.5;
+      ctx.beginPath();
+      ctx.arc(r.x, r.y, r.r, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    } else {
+      ctx.strokeStyle = "rgba(255, 210, 63, " + alpha + ")";
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(r.x, r.y, r.r, 0, Math.PI * 2);
+      ctx.stroke();
+    }
   }
 
   for (const f of fires) {
@@ -1023,7 +1034,7 @@ function draw() {
     ctx.fillRect(e.x - 16, e.y - 22, 32 * (e.hp / e.maxHp), 3);
 
     const elK = (e.element || (typeof TIPE_MUSUH !== "undefined" && TIPE_MUSUH[e.tipe] ? TIPE_MUSUH[e.tipe].element : "fisik") || "fisik").toLowerCase();
-    const warnaElemen = elK === "nature" ? "#22c55e" : (elK === "es" ? "#38bdf8" : (elK === "api" ? "#f97316" : (elK === "nihil" ? "#a855f7" : "#94a3b8")));
+    const warnaElemen = elK === "nature" ? "#22c55e" : (elK === "es" ? "#38bdf8" : (elK === "api" ? "#f97316" : (elK === "nihil" ? "#a855f7" : (elK === "angin" ? "#2dd4bf" : (elK === "petir" || elK === "listrik" ? "#eab308" : "#94a3b8")))));
 
     ctx.fillStyle = warnaElemen;
     ctx.beginPath();
@@ -1078,6 +1089,16 @@ function draw() {
       ctx.fill();
       ctx.strokeStyle = "#c084fc";
       ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+
+    if (e.bleeding) {
+      ctx.fillStyle = "rgba(239, 68, 68, 0.28)";
+      ctx.beginPath();
+      ctx.arc(e.x, e.y, e.r + 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#ef4444";
+      ctx.lineWidth = 1.8;
       ctx.stroke();
     }
   }
