@@ -22,7 +22,8 @@ function jurusVender() {
     life: 0.35,
     hit: new Set(),
     dmg: Math.round(45 * (1 + (player.skill1DmgBonus || 0))),
-    skill: true
+    skill: true,
+    element: (karakter && karakter.element ? karakter.element : "api").toLowerCase()
   });
   shake = 0.35;
   spawnParticles(ox, oy, "#ff8c3f", 14);
@@ -162,7 +163,8 @@ function jurusUltimateVender() {
     hit: new Set(),
     dmg: Math.round(85 * (player.ultDmgMultiplier || 1)),
     skill: true,
-    burst: true
+    burst: true,
+    element: (karakter && karakter.element ? karakter.element : "api").toLowerCase()
   });
   shake = 0.7;
   spawnParticles(player.x, player.y, "#ff8c3f", 30);
@@ -261,7 +263,8 @@ function skillVenderInferno() {
     hit: new Set(),
     dmg: Math.round(60 * (1 + (player.skill2DmgBonus || 0))),
     skill: true,
-    apiBesar: true
+    apiBesar: true,
+    element: (karakter && karakter.element ? karakter.element : "api").toLowerCase()
   });
   shake = 0.45;
   spawnParticles(player.x, player.y, "#ff8c3f", 16);
@@ -383,7 +386,7 @@ function skillVoizPrism() {
 
     sfxPrismHop(i);
     const dmg = Math.round(24 * (typeof pengaliElement === "function" ? pengaliElement(karakter.kunci) : 1) * (1 + (player.skill2DmgBonus || 0)));
-    const dmgPasar = applyDamageMusuh(u.e, dmg);
+    const dmgPasar = applyDamageMusuh(u.e, dmg, (karakter && karakter.element ? karakter.element : "nihil").toLowerCase());
     u.e.hitFlash = 0.12;
     // PASIF PRISM: musuh yang tersambar lumpuh (diam) sebentar; bos lebih tahan.
     u.e.paralyze = Math.max(u.e.paralyze || 0, u.e.bos ? 0.5 : 1.2);

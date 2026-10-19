@@ -119,6 +119,20 @@ const KARAKTER = [
   }
 ];
 
+function apakahClassElemenBiasa(kelas) {
+  const k = String(kelas || "").toLowerCase().trim();
+  return k === "mage" || k === "support" || k === "suport" || k === "catalyst";
+}
+
+function elemenSeranganBiasa(kar) {
+  const k = kar || (typeof karakter !== "undefined" ? karakter : null);
+  if (!k) return "fisik";
+  if (apakahClassElemenBiasa(k.kelas)) {
+    return String(k.element || "fisik").toLowerCase();
+  }
+  return "fisik";
+}
+
 // 4 slot artefak per karakter, pola slot Genshin.
 //  "stat" pada slot = stat utama WAJIB (mahkota selalu HP, armor selalu
 //  damage). Slot dengan "stat: null" = fleksibel, ikut stat utama set yang

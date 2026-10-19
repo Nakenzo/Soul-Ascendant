@@ -98,7 +98,8 @@ function shoot() {
     vy: Math.sin(angle) * speed,
     life: 2.0,
 
-    beku: player.specialBuff > 0
+    beku: player.specialBuff > 0,
+    element: player.specialBuff > 0 ? (karakter && karakter.element ? karakter.element : "es").toLowerCase() : (typeof elemenSeranganBiasa === "function" ? elemenSeranganBiasa() : "fisik")
   });
   spawnParticles(player.x, player.y, "#ffd23f", 4);
 }
@@ -140,7 +141,8 @@ function tembakBoltNihil() {
     laju: 640,
     wob: Math.random() * Math.PI * 2,
     t: 0,
-    life: 2.2
+    life: 2.2,
+    element: typeof elemenSeranganBiasa === "function" ? elemenSeranganBiasa() : "nihil"
   });
   spawnParticles(player.x, player.y, "#c084fc", 5);
 }
@@ -165,7 +167,8 @@ function slashSwing() {
     halfArc: player.halfArc || karakter.halfArc,
     t: 0,
     life: player.swingDuration || 0.2,
-    hit: new Set()
+    hit: new Set(),
+    element: typeof elemenSeranganBiasa === "function" ? elemenSeranganBiasa() : "fisik"
   });
   spawnParticles(ox, oy, "#ffffff", 6);
 }
@@ -405,7 +408,7 @@ function prosesReaksiElemen(e, elemenSerangan, dmgAwal) {
   if (!e || e.hp <= 0) return;
   if ((e.reaksiCooldown || 0) > 0) return;
 
-  const atkEl = (elemenSerangan || (karakter && karakter.element ? karakter.element : "fisik")).toLowerCase();
+  const atkEl = (elemenSerangan || (typeof elemenSeranganBiasa === "function" ? elemenSeranganBiasa() : "fisik")).toLowerCase();
   const musuhEl = (e.element || (TIPE_MUSUH[e.tipe] ? TIPE_MUSUH[e.tipe].element : "fisik") || "fisik").toLowerCase();
 
   if (!atkEl || !musuhEl || atkEl === musuhEl) return;
@@ -1344,7 +1347,7 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
           }
           for (const e2 of impuls) {
             b.hitSet.add(e2);
-            applyDamageMusuh(e2, dmg);
+            applyDamageMusuh(e2, dmg, (karakter && karakter.element ? karakter.element : "es").toLowerCase());
             e2.hitFlash = 0.1;
             e2.freeze = 7;
             parrySerigala(e2);
@@ -1367,7 +1370,8 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
           dmg = Math.round(dmg * (1 + (player.critDmg !== undefined ? player.critDmg : 0.70)));
           spawnDamage(e.x, e.y - e.r - 40, "KRITIS", "#fbbf24");
         }
-        const dmgPasar = applyDamageMusuh(e, dmg);
+        const elPeluru = b.beku ? (b.element || (karakter && karakter.element ? karakter.element : "es")).toLowerCase() : (b.element ? String(b.element).toLowerCase() : (typeof elemenSeranganBiasa === "function" ? elemenSeranganBiasa() : "fisik"));
+        const dmgPasar = applyDamageMusuh(e, dmg, elPeluru);
         e.hitFlash = 0.1;
         parrySerigala(e);
         sfxKena();
@@ -1448,7 +1452,8 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
           dmg = Math.round(dmg * (1 + (player.critDmg !== undefined ? player.critDmg : 0.70)));
           spawnDamage(e.x, e.y - e.r - 40, "KRITIS", "#fbbf24");
         }
-        const dmgPasar = applyDamageMusuh(e, dmg);
+        const elBolt = b.element ? String(b.element).toLowerCase() : (typeof elemenSeranganBiasa === "function" ? elemenSeranganBiasa() : "nihil");
+        const dmgPasar = applyDamageMusuh(e, dmg, elBolt);
         e.hitFlash = 0.1;
         parrySerigala(e);
         sfxKena();
@@ -1507,7 +1512,7 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
         if (L.t - tTerakhir >= 0.16) {
           L.tick[e] = L.t;
           let dmg = Math.round(18 * (typeof pengaliElement === "function" ? pengaliElement(karakter.kunci) : 1) * (1 + (player.skill1DmgBonus || 0)));
-          const dmgPasar = applyDamageMusuh(e, dmg);
+          const dmgPasar = applyDamageMusuh(e, dmg, (karakter && karakter.element ? karakter.element : "nihil").toLowerCase());
           e.hitFlash = 0.12;
           parrySerigala(e);
           sfxKena();
@@ -1628,7 +1633,7 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
           const d = dist(e.x, e.y, bh.x, bh.y);
           if (d < bh.R) {
             let dmg = Math.round((karakter.specialDmg || 55) * (typeof pengaliElement === "function" ? pengaliElement(karakter.kunci) : 1));
-            const dmgPasar = applyDamageMusuh(e, dmg);
+            const dmgPasar = applyDamageMusuh(e, dmg, (karakter && karakter.element ? karakter.element : "nihil").toLowerCase());
             e.hitFlash = 0.1;
             parrySerigala(e);
             sfxKena();
@@ -1742,7 +1747,8 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
           dmg = Math.round(dmg * (1 + (player.critDmg !== undefined ? player.critDmg : 0.70)));
           spawnDamage(e.x, e.y - e.r - 40, "KRITIS", "#fbbf24");
         }
-        const dmgSlash = applyDamageMusuh(e, dmg);
+        const elSlash = sl.skill ? (sl.element || (karakter && karakter.element ? karakter.element : "api")).toLowerCase() : (sl.element ? String(sl.element).toLowerCase() : (typeof elemenSeranganBiasa === "function" ? elemenSeranganBiasa() : "fisik"));
+        const dmgSlash = applyDamageMusuh(e, dmg, elSlash);
         e.hitFlash = 0.1;
         spawnDamage(e.x, e.y - e.r - 8, dmgSlash, "#ffd23f");
         serapanDarah(dmgSlash);
@@ -1779,7 +1785,7 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
     sfxApiLapis("jurus-vender-api");
     for (const e of enemies) {
       if (Math.hypot(e.x - ex, e.y - ey) > 130 + e.r) continue;
-      const dmg = applyDamageMusuh(e, Math.round(60 * (1 + (player.skill2DmgBonus || 0))));
+      const dmg = applyDamageMusuh(e, Math.round(60 * (1 + (player.skill2DmgBonus || 0))), (karakter && karakter.element ? karakter.element : "api").toLowerCase());
       e.hitFlash = 0.1;
       e.burn = { durasi: player.burnDurasi || 3, tick: 0.25, timer: 0, dmg: 2 };
       spawnDamage(e.x, e.y - e.r - 16, dmg, "#ffd23f");
@@ -1894,7 +1900,7 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
           dmg = Math.round(dmg * (1 + (player.critDmg !== undefined ? player.critDmg : 0.70)));
           spawnDamage(sasaran.x, sasaran.y - sasaran.r - 40, "KRITIS", "#fbbf24");
         }
-        const dmgPasar = applyDamageMusuh(sasaran, dmg);
+        const dmgPasar = applyDamageMusuh(sasaran, dmg, (karakter && karakter.element ? karakter.element : "es").toLowerCase());
         sasaran.hitFlash = 0.1;
         sasaran.freeze = player.bekuDurasi || karakter.bekuDurasi;
         parrySerigala(sasaran);
@@ -2146,7 +2152,7 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
 
       if (player.kartu && player.kartu.duriBalik) {
         const reflek = Math.round(dmgMasuk * 0.15);
-        applyDamageMusuh(e, reflek);
+        applyDamageMusuh(e, reflek, "fisik");
         spawnDamage(e.x, e.y - e.r - 40, reflek, "#fb7185");
         spawnParticles(e.x, e.y, "#fb7185", 8);
         if (e.hp <= 0) killEnemy(e);
