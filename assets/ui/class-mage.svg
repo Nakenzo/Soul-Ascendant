@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <g fill="#ffffff">
+    <circle cx="50" cy="50" r="8"/>
+    <polygon points="50,6 54,34 50,40 46,34"/>
+    <polygon points="50,94 54,66 50,60 46,66"/>
+    <polygon points="6,50 34,46 40,50 34,54"/>
+    <polygon points="94,50 66,46 60,50 66,54"/>
+    <circle cx="26" cy="26" r="3.5"/>
+    <circle cx="74" cy="26" r="3.5"/>
+    <circle cx="26" cy="74" r="3.5"/>
+    <circle cx="74" cy="74" r="3.5"/>
+  </g>
+  <g fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round">
+    <path d="M24 38 C28 26 38 18 50 18 C62 18 72 26 76 38"/>
+    <path d="M24 62 C28 74 38 82 50 82 C62 82 72 74 76 62"/>
+    <path d="M38 24 C26 28 18 38 18 50 C18 62 26 72 38 76"/>
+    <path d="M62 24 C74 28 82 38 82 50 C82 62 74 72 62 76"/>
+  </g>
+</svg>

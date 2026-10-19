@@ -3485,6 +3485,32 @@ body[data-device="mobile"] .bantuan-canvas {
     filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8));
 }
 
+.kartu-karakter .badge-kelas-karakter {
+    position: absolute;
+    top: calc(var(--cs, 0.56) * 4px);
+    left: calc(var(--cs, 0.56) * 4px);
+    width: calc(var(--cs, 0.56) * 22px);
+    height: calc(var(--cs, 0.56) * 22px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 4px;
+    pointer-events: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.kartu-karakter .badge-kelas-karakter img {
+    width: 78%;
+    height: 78%;
+    object-fit: contain;
+}
+
+.ikon-kelas {
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.3));
+}
+
 .syarat-karakter {
     margin-top: calc(var(--cs, 0.56) * 3px);
     font-size: calc(var(--cs, 0.56) * 10px);

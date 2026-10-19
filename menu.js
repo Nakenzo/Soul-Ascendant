@@ -215,6 +215,12 @@ function ikonElemenSVG(el) {
   return '<img src="assets/ui/element-' + e + '.svg" class="ikon-stat ikon-elemen" alt="' + e + '" width="46" height="46" style="vertical-align:middle;object-fit:contain;filter:drop-shadow(0 0 6px rgba(255,255,255,0.2));" />';
 }
 
+function ikonKelasSVG(kelas) {
+  const k = String(kelas || "").toLowerCase();
+  if (!k) return "";
+  return '<img src="assets/ui/class-' + k + '.svg" class="ikon-stat ikon-kelas" alt="' + k + '" width="40" height="40" style="vertical-align:middle;object-fit:contain;filter:drop-shadow(0 0 6px rgba(255,255,255,0.25));" />';
+}
+
 
 
 
@@ -1684,6 +1690,7 @@ function buatPilihanUpgrade() {
       { lbl: "CRIT RATE", nilai: Math.round((bon.crit !== undefined ? bon.crit : 0.10) * 100) + "%" },
       { lbl: "CRIT DMG", nilai: Math.round((bon.critDmg !== undefined ? bon.critDmg : 0.70) * 100) + "%" },
       { lbl: "TYPE", nilai: tipe, ikon: ikonTipeSVG(kar) },
+      { lbl: "CLASS", nilai: (kar.kelas || "ATTACKER").toUpperCase(), ikon: ikonKelasSVG(kar.kelas) },
       { lbl: "ATRIBUT ELEMENT", nilai: em, ikon: ikonElemenSVG(kar.element) }
     ];
     statEl.innerHTML = "";
@@ -1994,6 +2001,14 @@ function buatPilihanKarakter() {
 
     card.appendChild(nama);
 
+    if (kar.kelas && cek.terbuka) {
+      const badge = document.createElement("div");
+      badge.className = "badge-kelas-karakter";
+      badge.title = "Class: " + kar.kelas;
+      badge.innerHTML = '<img src="assets/ui/class-' + String(kar.kelas).toLowerCase() + '.svg" alt="' + kar.kelas + '">';
+      card.appendChild(badge);
+    }
+
     card.addEventListener("click", () => {
       if (!cek.terbuka) {
         if (typeof sfxKlik === "function") sfxKlik();
@@ -2080,9 +2095,10 @@ function tampilInfoKarakter(kar) {
   }
 
   const namaElemen = kar.element ? String(kar.element).toUpperCase() : "ELEMENT";
+  const namaKelas = kar.kelas ? String(kar.kelas).toUpperCase() : "ATTACKER";
   const parts = [
     { lbl: "HP", nilai: kar.hp },
-
+    { lbl: "CLASS", ikon: ikonKelasSVG(kar.kelas) + '<span class="info-val-nama">' + namaKelas + '</span>' },
     { lbl: "TIPE", ikon: ikonTipeSVG(kar) },
     { lbl: "", ikon: ikonElemenSVG(kar.element) + '<span class="info-val-nama">' + namaElemen + '</span>' }
   ];

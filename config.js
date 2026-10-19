@@ -13,6 +13,7 @@ const KARAKTER = [
       { nama: "walk", jumlah: 12 }
     ],
     nama: "Kenzro",
+    kelas: "Ranger",
     deskripsi: "Pemanah - jarak jauh",
     element: "Es",
     atributElement: 25,
@@ -49,6 +50,7 @@ const KARAKTER = [
       { nama: "walk", jumlah: 12 }
     ],
     nama: "Vender",
+    kelas: "Attacker",
     deskripsi: "Pengguna Sabit - jarak dekat",
     element: "Api",
     atributElement: 20,
@@ -84,6 +86,7 @@ const KARAKTER = [
       { nama: "walk", jumlah: 12 }
     ],
     nama: "Voiz",
+    kelas: "Mage",
     deskripsi: "Penyihir - jarak jauh",
     // Terkunci sampai player tuntaskan Level 3 (Rawa Gulita) dan mengalahkan
     // bosnya, RAJA SLIME. Kosongkan field ini = langsung terbuka.
