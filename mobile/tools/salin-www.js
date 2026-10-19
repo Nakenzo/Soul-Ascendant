@@ -13,7 +13,7 @@ const EKSTENSI_BOLEH = new Set([
 ]);
 
 const LEWATI_AKAR = new Set([
-  ".git", "mobile", "node_modules", "tools", "src-tauri", "scratch",
+  ".git", "mobile", "node_modules", "tools", "src-tauri", "scratch", "lobby",
   "README.md", "package.json", "package-lock.json",
   "server.js", "start-app.bat", "admin.html"
 ]);

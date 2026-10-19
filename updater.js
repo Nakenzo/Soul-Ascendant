@@ -82,7 +82,11 @@
         if (isApk && window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
           window.open(tujuan, "_system");
         } else {
-          window.location.href = tujuan;
+          try {
+            window.open(tujuan, "_blank");
+          } catch (e) {
+            window.location.href = tujuan;
+          }
         }
       };
     }

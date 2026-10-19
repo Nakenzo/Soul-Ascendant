@@ -7,3 +7,4 @@ node_modules/
 
 tools/test_out/
 tools/read-gt-ref.ps1
+lobby/

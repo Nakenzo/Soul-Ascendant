@@ -1,4 +1,4 @@
-const BUILD = 65;
+const BUILD = 66;
 const CACHE_FALLBACK = "soul-essence-v" + BUILD;
 const ASSETS_TO_CACHE = [
   "./",
@@ -70,6 +70,10 @@ function namaCacheDari(manifest) {
 }
 
 self.addEventListener("install", (e) => {
+  if (self.location.hostname === "localhost" || self.location.protocol === "tauri:" || self.location.protocol === "capacitor:") {
+    self.skipWaiting();
+    return;
+  }
   e.waitUntil(
     // cache: "reload" = paksa ambil dari jaringan, jangan dari cache browser.
     fetch("./manifest.json", { cache: "reload" })
@@ -98,6 +102,13 @@ self.addEventListener("install", (e) => {
 });
 
 self.addEventListener("activate", (e) => {
+  if (self.location.hostname === "localhost" || self.location.protocol === "tauri:" || self.location.protocol === "capacitor:") {
+    e.waitUntil(
+      caches.keys().then((keys) => Promise.all(keys.map((k) => caches.delete(k))))
+        .then(() => self.registration.unregister())
+    );
+    return;
+  }
   e.waitUntil(
     caches.keys().then((keys) => {
       if (!AMAN_UNTUK_HAPUS) return;
@@ -110,6 +121,9 @@ self.addEventListener("activate", (e) => {
 });
 
 self.addEventListener("fetch", (e) => {
+  if (self.location.hostname === "localhost" || self.location.protocol === "tauri:" || self.location.protocol === "capacitor:") {
+    return;
+  }
   // URL ber-query (?nc= manifest / ?v= CSS) = penanda cache-buster dari
   // index.html. Selalu ambil dari jaringan (jangan dibaca/ditulis cache),
   // supaya versi baru CSS selalu segar walau cache-first ini menyimpan
