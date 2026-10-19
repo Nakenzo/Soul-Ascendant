@@ -33,7 +33,7 @@ const IS_PC = PLATFORM === "pc";
 const IS_WEB = PLATFORM === "web";
 
 const VERSI_GAME = "0.1.0";
-const BUILD_GAME = 70;
+const BUILD_GAME = 71;
 const EDISI_GAME = IS_APK ? "Android APK" : (IS_PC ? "PC Windows" : "Web Edition");
 
 function saatPlatform(opsi) {
