@@ -76,18 +76,19 @@
     if (btnAksi) {
       btnAksi.onclick = (e) => {
         if (e && e.preventDefault) e.preventDefault();
-        const isApk = typeof IS_APK !== "undefined" ? IS_APK : false;
-        const isPc = typeof IS_PC !== "undefined" ? IS_PC : false;
-        const tujuan = isApk ? URL_APK : (isPc ? URL_EXE : URL_APK);
+
+        const isAndroidApp = !!(window.AndroidNative || (typeof IS_APK !== "undefined" && IS_APK) || (typeof window !== "undefined" && window.Capacitor));
+        const isPcApp = typeof IS_PC !== "undefined" ? IS_PC : (typeof window !== "undefined" && !!(window.__TAURI__ || window.__TAURI_INTERNALS__));
+        const tujuan = isAndroidApp ? URL_APK : (isPcApp ? URL_EXE : URL_APK);
 
         btnAksi.disabled = true;
         btnAksi.textContent = "Menyiapkan Unduhan...";
 
         const pesanEl = document.getElementById("modalUpdatePesan");
 
-        if (isApk && window.AndroidNative && typeof window.AndroidNative.unduhDanPasangApk === "function") {
+        if (window.AndroidNative && typeof window.AndroidNative.unduhDanPasangApk === "function") {
           if (pesanEl) {
-            pesanEl.textContent = "Mengunduh pembaruan APK... Jangan tutup aplikasi.";
+            pesanEl.textContent = "Mengunduh pembaruan APK langsung... Mohon jangan tutup aplikasi.";
           }
 
           window.onProgressUpdateApk = (persen) => {
@@ -97,10 +98,18 @@
             }
           };
 
-          window.onSelesaiUpdateApk = () => {
-            btnAksi.textContent = "Membuka Penginstal...";
+          window.onProgressUpdateMb = (mb) => {
+            btnAksi.textContent = "Mengunduh " + mb + " MB";
             if (pesanEl) {
-              pesanEl.textContent = "Unduhan selesai! Membuka penginstal resmi Android...";
+              pesanEl.textContent = "Mengunduh berkas APK (" + mb + " MB)... Jendela instalasi akan terbuka otomatis setelah selesai.";
+            }
+          };
+
+          window.onMintaIzinInstall = () => {
+            btnAksi.disabled = false;
+            btnAksi.textContent = "Pasang Pembaruan";
+            if (pesanEl) {
+              pesanEl.innerHTML = "Aktifkan izin 'Instal aplikasi tidak dikenal' untuk Soul Essence di layar Pengaturan Android yang baru terbuka, lalu tekan tombol ini lagi.";
             }
           };
 
@@ -108,7 +117,7 @@
             btnAksi.disabled = false;
             btnAksi.textContent = "Coba Lagi";
             if (pesanEl) {
-              pesanEl.innerHTML = "Gagal mengunduh otomatis. Silakan unduh manual:<br><a href=\"" + tujuan + "\" target=\"_blank\" style=\"color:#38bdf8;text-decoration:underline;word-break:break-all;\">" + tujuan + "</a>";
+              pesanEl.innerHTML = "Unduhan otomatis gagal (" + (err || "koneksi terputus") + "). Silakan unduh manual:<br><a href=\"" + tujuan + "\" target=\"_blank\" style=\"color:#38bdf8;text-decoration:underline;word-break:break-all;\">" + tujuan + "</a>";
             }
           };
 
@@ -116,6 +125,24 @@
             window.AndroidNative.unduhDanPasangApk(tujuan);
             return;
           } catch (err) {}
+        }
+
+        if (isPcApp && window.__TAURI__ && window.__TAURI__.core && typeof window.__TAURI__.core.invoke === "function") {
+          btnAksi.textContent = "Membuka Unduhan PC...";
+          if (pesanEl) {
+            pesanEl.textContent = "Membuka tautan unduhan Soul-Essence-Setup.exe di browser...";
+          }
+          window.__TAURI__.core.invoke("buka_url", { url: tujuan }).catch(() => {
+            window.__TAURI__.core.invoke("buka_url", { url: "https://github.com/Nakenzo/Soul-Essence/releases/latest" });
+          });
+          setTimeout(() => {
+            btnAksi.disabled = false;
+            btnAksi.textContent = "Unduh Ulang";
+            if (pesanEl) {
+              pesanEl.innerHTML = "Jika unduhan tidak mulai otomatis, silakan unduh manual:<br><a href=\"" + tujuan + "\" target=\"_blank\" style=\"color:#38bdf8;text-decoration:underline;word-break:break-all;\">" + tujuan + "</a>";
+            }
+          }, 3000);
+          return;
         }
 
         if (window.AndroidNative && typeof window.AndroidNative.bukaUrl === "function") {
@@ -146,7 +173,7 @@
 
         setTimeout(() => {
           btnAksi.disabled = false;
-          btnAksi.textContent = "\u2B07 Perbarui Sekarang";
+          btnAksi.textContent = "Perbarui Sekarang";
           if (pesanEl) {
             pesanEl.innerHTML = "Jika unduhan tidak mulai otomatis, silakan unduh manual melalui tautan rilis berikut:<br><a href=\"" + tujuan + "\" target=\"_blank\" style=\"color:#38bdf8;text-decoration:underline;word-break:break-all;\">" + tujuan + "</a>";
           }
@@ -157,9 +184,9 @@
     modal.classList.remove("hidden");
   }
 
-  async function periksaKeServer() {
+  async function periksaKeServer(timeoutMs) {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2600);
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs || 6500);
 
     try {
       const res = await fetch(URL_MANIFEST + Date.now(), {
@@ -236,7 +263,7 @@
 
   window.cekPembaruanManual = async function () {
     const lokal = ambilVersiLokal();
-    const remote = await periksaKeServer();
+    const remote = await periksaKeServer(10000);
     if (!remote) {
       alert("Tidak dapat terhubung ke server pembaruan. Periksa koneksi internet.");
       return;

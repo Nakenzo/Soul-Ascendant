@@ -60,7 +60,15 @@ try {
     console.error("Ubah 'const BUILD' di sw.js agar sama, lalu jalankan ulang script ini.");
     process.exit(1);
   }
-  console.log("Verifikasi ok: build " + manifest.build + " (manifest == sw.js)");
+  const coreSrc = fs.readFileSync(path.join(ROOT, "core.js"), "utf8");
+  const mc = coreSrc.match(/const BUILD_GAME = (\d+)/);
+  const coreBuild = mc ? Number(mc[1]) : null;
+  if (coreBuild !== manifest.build) {
+    console.error("GAGAL: core.js BUILD_GAME (" + coreBuild + ") != manifest.json build (" + manifest.build + ").");
+    console.error("Ubah 'const BUILD_GAME' di core.js agar sama, lalu jalankan ulang script ini.");
+    process.exit(1);
+  }
+  console.log("Verifikasi ok: build " + manifest.build + " (manifest == sw.js == core.js)");
 } catch (err) {
   console.error("GAGAL verifikasi build: " + err.message);
   process.exit(1);
