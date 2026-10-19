@@ -197,9 +197,17 @@ function tampilkanJudul() {
 
 function segarkanSaldoJudul() {
   const el = document.getElementById("saldoJudul");
-  if (!el) return;
-  const saldo = typeof progres === "object" && progres ? progres.koinSaldo : 0;
-  el.textContent = saldo > 0 ? ("KOIN TERSIMPAN: " + saldo) : "";
+  if (el) {
+    const saldo = typeof progres === "object" && progres ? progres.koinSaldo : 0;
+    el.textContent = saldo > 0 ? ("KOIN TERSIMPAN: " + saldo) : "";
+  }
+  const elV = document.getElementById("labelVersiJudul");
+  if (elV) {
+    const b = (window.SE_PATCHER && typeof window.SE_PATCHER.ambilBuildAktif === "function")
+      ? window.SE_PATCHER.ambilBuildAktif()
+      : (typeof BUILD_GAME !== "undefined" ? BUILD_GAME : 74);
+    elV.textContent = "v" + (typeof VERSI_GAME !== "undefined" ? VERSI_GAME : "0.1.0") + " (Build " + b + ")";
+  }
 }
 
 function ikonElemenSVG(el) {

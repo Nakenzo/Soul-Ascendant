@@ -40,7 +40,7 @@
   function ambilBuildBawaan() {
     if (typeof BUILD_GAME !== "undefined") return BUILD_GAME;
     if (typeof BUILD !== "undefined") return BUILD;
-    return 72;
+    return 73;
   }
 
   function ambilBuildAktif() {

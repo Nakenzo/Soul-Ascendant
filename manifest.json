@@ -2,7 +2,7 @@
   "name": "Soul Essence",
   "short_name": "SoulEssence",
   "description": "2D Top-Down Action Roguelike Game",
-  "build": 73,
+  "build": 74,
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -11,8 +11,10 @@
   "theme_color": "#111111",
   "patch_files": [
     "boot.js",
-    "updater.js",
-    "settings-ui.js"
+    "core.js",
+    "menu.js",
+    "settings-ui.js",
+    "index.html"
   ],
   "icons": [
     {

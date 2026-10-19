@@ -219,7 +219,10 @@ function pasangResetIkatan() {
 function segarkanInfoPlatform() {
   const label = document.getElementById("setLabelEdisi");
   if (label && typeof EDISI_GAME !== "undefined" && typeof VERSI_GAME !== "undefined") {
-    label.textContent = "Soul Essence v" + VERSI_GAME + " (" + EDISI_GAME + ")";
+    const b = (window.SE_PATCHER && typeof window.SE_PATCHER.ambilBuildAktif === "function")
+      ? window.SE_PATCHER.ambilBuildAktif()
+      : (typeof BUILD_GAME !== "undefined" ? BUILD_GAME : 74);
+    label.textContent = "Soul Essence v" + VERSI_GAME + " (Build " + b + " • " + EDISI_GAME + ")";
   }
   const link = document.getElementById("setLinkDownload");
   if (link && typeof IS_WEB !== "undefined") {
