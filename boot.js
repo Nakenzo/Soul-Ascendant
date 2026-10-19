@@ -150,6 +150,25 @@
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeoutMs || 2500);
     try {
+      try {
+        const resSha = await fetch("https://api.github.com/repos/Nakenzo/Soul-Essence/commits/main", {
+          signal: controller.signal
+        });
+        if (resSha.ok) {
+          const dSha = await resSha.json();
+          if (dSha && dSha.sha) {
+            const rawShaUrl = GITHUB_RAW_BASE.replace("/main/", "/" + dSha.sha + "/") + "manifest.json";
+            const resM = await fetch(rawShaUrl, { signal: controller.signal, cache: "no-store" });
+            if (resM.ok) {
+              const data = await resM.json();
+              data._sha = dSha.sha;
+              clearTimeout(timer);
+              return data;
+            }
+          }
+        }
+      } catch (eApi) {}
+
       const res = await fetch(URL_MANIFEST + Date.now(), {
         signal: controller.signal,
         cache: "no-store"
@@ -163,9 +182,10 @@
     }
   }
 
-  async function unduhBerkasTeks(path, build) {
+  async function unduhBerkasTeks(path, build, sha) {
     try {
-      const url = GITHUB_RAW_BASE + path + "?nc=" + build + "_" + Date.now();
+      const base = sha ? GITHUB_RAW_BASE.replace("/main/", "/" + sha + "/") : GITHUB_RAW_BASE;
+      const url = base + path + "?nc=" + build + "_" + Date.now();
       const res = await fetch(url, { cache: "no-store" });
       if (!res.ok) return null;
       return await res.text();
@@ -176,6 +196,7 @@
 
   async function lakukanPatching(db, remote) {
     const buildBaru = Number(remote.build);
+    const sha = remote && remote._sha ? remote._sha : "";
     let berkasTarget = Array.isArray(remote.patch_files) && remote.patch_files.length > 0
       ? remote.patch_files
       : DAFTAR_SKRIP.concat(["style.css", "settings.css"]);
@@ -190,7 +211,7 @@
       const persen = Math.round(((i + 1) / berkasTarget.length) * 100);
       perbaruiStatusUI("Mengunduh " + nama, persen);
 
-      const konten = await unduhBerkasTeks(nama, buildBaru);
+      const konten = await unduhBerkasTeks(nama, buildBaru, sha);
       if (konten !== null) {
         petaBaru[nama] = konten;
         if (db) await simpanPatch(db, nama, konten, buildBaru);
