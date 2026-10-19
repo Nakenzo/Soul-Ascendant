@@ -3060,7 +3060,8 @@ body[data-device="mobile"] .bantuan-canvas {
     display: block;
 }
 
-.ikon-stat {
+.artefak-stat .ikon-stat,
+.artefak-stat-ikon .ikon-stat {
     width: calc(var(--cs, 0.56) * 11px);
     height: calc(var(--cs, 0.56) * 11px);
     display: block;
@@ -3347,7 +3348,7 @@ body[data-device="mobile"] .bantuan-canvas {
 .stat-val-ikon {
     display: inline-flex;
     align-items: center;
-    gap: calc(var(--cs, 0.56) * 5px);
+    gap: calc(var(--cs, 0.56) * 8px);
     justify-content: flex-end;
 }
 
@@ -3356,9 +3357,16 @@ body[data-device="mobile"] .bantuan-canvas {
     display: block;
 }
 
-.stat-val-ikon svg {
-    width: calc(var(--cs, 0.56) * 40px);
-    height: calc(var(--cs, 0.56) * 40px);
+.stat-val-ikon img,
+.stat-val-ikon svg,
+.stat-val-ikon .ikon-stat,
+.stat-val-ikon .ikon-kelas,
+.stat-val-ikon .ikon-elemen {
+    width: calc(var(--cs, 0.56) * 50px);
+    height: calc(var(--cs, 0.56) * 50px);
+    object-fit: contain;
+    flex-shrink: 0;
+    display: inline-block;
 }
 
 .stat-val {
@@ -3489,26 +3497,30 @@ body[data-device="mobile"] .bantuan-canvas {
     position: absolute;
     top: calc(var(--cs, 0.56) * 4px);
     left: calc(var(--cs, 0.56) * 4px);
-    width: calc(var(--cs, 0.56) * 22px);
-    height: calc(var(--cs, 0.56) * 22px);
+    width: calc(var(--cs, 0.56) * 36px);
+    height: calc(var(--cs, 0.56) * 36px);
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(15, 23, 42, 0.85);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    border-radius: 4px;
+    background: rgba(15, 23, 42, 0.9);
+    border: 1.5px solid rgba(255, 255, 255, 0.35);
+    border-radius: 6px;
     pointer-events: none;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
 }
 
 .kartu-karakter .badge-kelas-karakter img {
-    width: 78%;
-    height: 78%;
+    width: 82%;
+    height: 82%;
     object-fit: contain;
 }
 
 .ikon-kelas {
-    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.3));
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.35));
+}
+
+.ikon-elemen {
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.35));
 }
 
 .syarat-karakter {
@@ -3540,23 +3552,23 @@ body[data-device="mobile"] .bantuan-canvas {
 
 .info-karakter {
     box-sizing: border-box;
-    height: calc(var(--cs, 0.56) * 180px);
-    width: calc(var(--cs, 0.56) * 300px);
+    height: calc(var(--cs, 0.56) * 190px);
+    width: calc(var(--cs, 0.56) * 350px);
     margin-top: calc(var(--cs, 0.56) * 10px);
-    padding: calc(var(--cs, 0.56) * 10px) calc(var(--cs, 0.56) * 20px);
-    background: rgba(0, 0, 0, 0.85);
-    border: 1px solid #555;
-    border-radius: 6px;
+    padding: calc(var(--cs, 0.56) * 12px) calc(var(--cs, 0.56) * 20px);
+    background: rgba(0, 0, 0, 0.88);
+    border: 1.5px solid #555;
+    border-radius: 8px;
     color: #e6edf5;
     font-family: "Zen Dots", "Courier New", monospace;
-    font-size: calc(var(--cs, 0.56) * 17px);
+    font-size: calc(var(--cs, 0.56) * 18px);
     letter-spacing: 1px;
     text-align: left;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    gap: calc(var(--cs, 0.56) * 12px);
+    gap: calc(var(--cs, 0.56) * 14px);
     line-height: 1.7;
     visibility: hidden;
     opacity: 0;
@@ -3571,17 +3583,28 @@ body[data-device="mobile"] .bantuan-canvas {
 
 .info-karakter .info-lbl {
     color: #ffd23f;
+    min-width: calc(var(--cs, 0.56) * 88px);
 }
 
 .info-karakter .info-baris {
     display: flex;
     align-items: center;
-    gap: calc(var(--cs, 0.56) * 6px);
+    gap: calc(var(--cs, 0.56) * 10px);
 }
 
-.info-karakter .ikon-stat {
-    width: calc(var(--cs, 0.56) * 46px);
-    height: calc(var(--cs, 0.56) * 46px);
+.info-karakter .info-val {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(var(--cs, 0.56) * 8px);
+}
+
+.info-karakter .ikon-stat,
+.info-karakter .ikon-kelas,
+.info-karakter .ikon-elemen {
+    width: calc(var(--cs, 0.56) * 58px);
+    height: calc(var(--cs, 0.56) * 58px);
+    object-fit: contain;
+    flex-shrink: 0;
 }
 
 .info-karakter .info-val-nama {

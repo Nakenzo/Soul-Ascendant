@@ -202,23 +202,16 @@ function segarkanSaldoJudul() {
   el.textContent = saldo > 0 ? ("KOIN TERSIMPAN: " + saldo) : "";
 }
 
-function ikonTipeSVG(kar) {
-  if (kar && kar.tipe === "jarak") {
-    return '<svg class="ikon-stat" viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19L19 5"/><path d="M9 5h10v10"/></svg>';
-  }
-  return '<svg class="ikon-stat" viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#c8d6ea" stroke-width="2.2" stroke-linecap="round"><path d="M4.5 4.5L19.5 19.5"/><path d="M19.5 4.5L4.5 19.5"/><path d="M15.7 18.3l3-3"/><path d="M5.7 15.7l3 3"/></svg>';
-}
-
 function ikonElemenSVG(el) {
   const e = String(el || "").toLowerCase();
   if (!e) return "";
-  return '<img src="assets/ui/element-' + e + '.svg" class="ikon-stat ikon-elemen" alt="' + e + '" width="46" height="46" style="vertical-align:middle;object-fit:contain;filter:drop-shadow(0 0 6px rgba(255,255,255,0.2));" />';
+  return '<img src="assets/ui/element-' + e + '.svg" class="ikon-stat ikon-elemen" alt="' + e + '" width="54" height="54" style="vertical-align:middle;object-fit:contain;filter:drop-shadow(0 0 6px rgba(255,255,255,0.25));" />';
 }
 
 function ikonKelasSVG(kelas) {
   const k = String(kelas || "").toLowerCase();
   if (!k) return "";
-  return '<img src="assets/ui/class-' + k + '.svg" class="ikon-stat ikon-kelas" alt="' + k + '" width="40" height="40" style="vertical-align:middle;object-fit:contain;filter:drop-shadow(0 0 6px rgba(255,255,255,0.25));" />';
+  return '<img src="assets/ui/class-' + k + '.svg" class="ikon-stat ikon-kelas" alt="' + k + '" width="54" height="54" style="vertical-align:middle;object-fit:contain;filter:drop-shadow(0 0 6px rgba(255,255,255,0.3));" />';
 }
 
 
@@ -1682,14 +1675,12 @@ function buatPilihanUpgrade() {
 
   const statEl = document.getElementById("statKarakterIsi");
   if (statEl) {
-    const tipe = kar.tipe === "jarak" ? "JARAK JAUH" : "JARAK DEKAT";
     const stats = [
       { lbl: "ATTACK", nilai: dmg },
       { lbl: "HP", nilai: hp },
       { lbl: "SPEED", nilai: spd },
       { lbl: "CRIT RATE", nilai: Math.round((bon.crit !== undefined ? bon.crit : 0.10) * 100) + "%" },
       { lbl: "CRIT DMG", nilai: Math.round((bon.critDmg !== undefined ? bon.critDmg : 0.70) * 100) + "%" },
-      { lbl: "TYPE", nilai: tipe, ikon: ikonTipeSVG(kar) },
       { lbl: "CLASS", nilai: (kar.kelas || "ATTACKER").toUpperCase(), ikon: ikonKelasSVG(kar.kelas) },
       { lbl: "ATRIBUT ELEMENT", nilai: em, ikon: ikonElemenSVG(kar.element) }
     ];
@@ -2099,8 +2090,7 @@ function tampilInfoKarakter(kar) {
   const parts = [
     { lbl: "HP", nilai: kar.hp },
     { lbl: "CLASS", ikon: ikonKelasSVG(kar.kelas) + '<span class="info-val-nama">' + namaKelas + '</span>' },
-    { lbl: "TIPE", ikon: ikonTipeSVG(kar) },
-    { lbl: "", ikon: ikonElemenSVG(kar.element) + '<span class="info-val-nama">' + namaElemen + '</span>' }
+    { lbl: "ELEMENT", ikon: ikonElemenSVG(kar.element) + '<span class="info-val-nama">' + namaElemen + '</span>' }
   ];
 
   parts.forEach((p) => {
