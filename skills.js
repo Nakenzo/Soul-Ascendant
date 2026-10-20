@@ -394,7 +394,8 @@ function skillVoizPrism() {
     sfxKena();
     rings.push({ x: u.x, y: u.y, r: 5, maxR: 32, life: 0.28, t: 0 });
     spawnParticles(u.x, u.y, "#c084fc", 8);
-    spawnDamage(u.x, u.y - (u.e.r || 20) - 16, dmgPasar, "#e9d5ff");
+    const elPrism = (karakter && karakter.element ? karakter.element : "nihil").toLowerCase();
+    spawnDamage(u.x, u.y - (u.e.r || 20) - 16, dmgPasar, typeof warnaElemenDamage === "function" ? warnaElemenDamage(elPrism) : "#c084fc");
     serapanDarah(dmgPasar);
     if (u.e.hp <= 0) killEnemy(u.e);
     px = u.x;

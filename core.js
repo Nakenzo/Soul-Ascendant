@@ -33,7 +33,7 @@ const IS_PC = PLATFORM === "pc";
 const IS_WEB = PLATFORM === "web";
 
 const VERSI_GAME = "0.1.0";
-const BUILD_GAME = 76;
+const BUILD_GAME = 77;
 const EDISI_GAME = IS_APK ? "Android APK" : (IS_PC ? "PC Windows" : "Web Edition");
 
 function saatPlatform(opsi) {
@@ -328,12 +328,44 @@ function spawnParticles(x, y, color, n) {
   }
 }
 
+function warnaElemenDamage(elemen) {
+  const el = String(elemen || "fisik").toLowerCase().trim();
+  switch (el) {
+    case "fisik":
+      return "#ffffff";
+    case "api":
+    case "bara":
+      return "#ff7a00";
+    case "es":
+      return "#38bdf8";
+    case "nihil":
+    case "void":
+      return "#c084fc";
+    case "angin":
+      return "#2dd4bf";
+    case "petir":
+    case "listrik":
+    case "gemuruh":
+      return "#facc15";
+    case "nature":
+      return "#4ade80";
+    case "tanah":
+      return "#f59e0b";
+    default:
+      return "#ffffff";
+  }
+}
+
 function spawnDamage(x, y, teks, warna) {
+  let w = warna || "#ffffff";
+  if (typeof w === "string" && !w.startsWith("#") && !w.startsWith("rgb")) {
+    w = warnaElemenDamage(w);
+  }
   damages.push({
     x: x,
     y: y,
     teks: String(teks),
-    warna: warna,
+    warna: w,
     t: 0,
     life: 0.8
   });

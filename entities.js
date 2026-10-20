@@ -1417,14 +1417,15 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
           }
           for (const e2 of impuls) {
             b.hitSet.add(e2);
-            applyDamageMusuh(e2, dmg, (karakter && karakter.element ? karakter.element : "es").toLowerCase());
+            const elRaksasa = (karakter && karakter.element ? karakter.element : "es").toLowerCase();
+            applyDamageMusuh(e2, dmg, elRaksasa);
             e2.hitFlash = 0.1;
             e2.freeze = 7;
             parrySerigala(e2);
             sfxBeku();
             spawnParticles(e2.x, e2.y, "#7dd3fc", 10);
             spawnDamage(e2.x, e2.y - e2.r - 56, "BEKU 7D", "#7dd3fc");
-            spawnDamage(e2.x, e2.y - e2.r - 16, dmg, "#ffd23f");
+            spawnDamage(e2.x, e2.y - e2.r - 16, dmg, warnaElemenDamage(elRaksasa));
             serapanDarah(dmg);
             if (e2.hp <= 0) killEnemy(e2);
           }
@@ -1451,7 +1452,7 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
           spawnParticles(e.x, e.y, "#7dd3fc", 8);
           spawnDamage(e.x, e.y - e.r - 56, "BEKU", "#7dd3fc");
         }
-        spawnDamage(e.x, e.y - e.r - 16, dmg, "#ffd23f");
+        spawnDamage(e.x, e.y - e.r - 16, dmgPasar, warnaElemenDamage(elPeluru));
         serapanDarah(dmg);
         bullets.splice(i, 1);
         if (e.hp <= 0) killEnemy(e);
@@ -1528,7 +1529,7 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
         parrySerigala(e);
         sfxKena();
         spawnParticles(e.x, e.y, "#c084fc", 10);
-        spawnDamage(e.x, e.y - e.r - 16, dmgPasar, "#e9d5ff");
+        spawnDamage(e.x, e.y - e.r - 16, dmgPasar, warnaElemenDamage(elBolt));
         serapanDarah(dmgPasar);
         boltNihil.splice(i, 1);
         if (e.hp <= 0) killEnemy(e);
@@ -1582,12 +1583,13 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
         if (L.t - tTerakhir >= 0.16) {
           L.tick[e] = L.t;
           let dmg = Math.round(18 * (typeof pengaliElement === "function" ? pengaliElement(karakter.kunci) : 1) * (1 + (player.skill1DmgBonus || 0)));
-          const dmgPasar = applyDamageMusuh(e, dmg, (karakter && karakter.element ? karakter.element : "nihil").toLowerCase());
+          const elUmbra = (karakter && karakter.element ? karakter.element : "nihil").toLowerCase();
+          const dmgPasar = applyDamageMusuh(e, dmg, elUmbra);
           e.hitFlash = 0.12;
           parrySerigala(e);
           sfxKena();
           spawnParticles(e.x, e.y, "#c084fc", 6);
-          spawnDamage(e.x, e.y - e.r - 16, dmgPasar, "#e9d5ff");
+          spawnDamage(e.x, e.y - e.r - 16, dmgPasar, warnaElemenDamage(elUmbra));
           serapanDarah(dmgPasar);
           if (e.hp <= 0) killEnemy(e);
         }
@@ -1703,11 +1705,12 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
           const d = dist(e.x, e.y, bh.x, bh.y);
           if (d < bh.R) {
             let dmg = Math.round((karakter.specialDmg || 55) * (typeof pengaliElement === "function" ? pengaliElement(karakter.kunci) : 1));
-            const dmgPasar = applyDamageMusuh(e, dmg, (karakter && karakter.element ? karakter.element : "nihil").toLowerCase());
+            const elBh = (karakter && karakter.element ? karakter.element : "nihil").toLowerCase();
+            const dmgPasar = applyDamageMusuh(e, dmg, elBh);
             e.hitFlash = 0.1;
             parrySerigala(e);
             sfxKena();
-            spawnDamage(e.x, e.y - e.r - 16, dmgPasar, "#e9d5ff");
+            spawnDamage(e.x, e.y - e.r - 16, dmgPasar, warnaElemenDamage(elBh));
             serapanDarah(dmgPasar);
             particles.push({
               x: e.x + (bh.x - e.x) * Math.random() * 0.4,
@@ -1820,7 +1823,7 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
         const elSlash = sl.skill ? (sl.element || (karakter && karakter.element ? karakter.element : "api")).toLowerCase() : (sl.element ? String(sl.element).toLowerCase() : (typeof elemenSeranganBiasa === "function" ? elemenSeranganBiasa() : "fisik"));
         const dmgSlash = applyDamageMusuh(e, dmg, elSlash);
         e.hitFlash = 0.1;
-        spawnDamage(e.x, e.y - e.r - 8, dmgSlash, "#ffd23f");
+        spawnDamage(e.x, e.y - e.r - 8, dmgSlash, warnaElemenDamage(elSlash));
         serapanDarah(dmgSlash);
         parrySerigala(e);
 
@@ -1855,10 +1858,11 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
     sfxApiLapis("jurus-vender-api");
     for (const e of enemies) {
       if (Math.hypot(e.x - ex, e.y - ey) > 130 + e.r) continue;
-      const dmg = applyDamageMusuh(e, Math.round(60 * (1 + (player.skill2DmgBonus || 0))), (karakter && karakter.element ? karakter.element : "api").toLowerCase());
+      const elInferno = (karakter && karakter.element ? karakter.element : "api").toLowerCase();
+      const dmg = applyDamageMusuh(e, Math.round(60 * (1 + (player.skill2DmgBonus || 0))), elInferno);
       e.hitFlash = 0.1;
       e.burn = { durasi: player.burnDurasi || 3, tick: 0.25, timer: 0, dmg: 2 };
-      spawnDamage(e.x, e.y - e.r - 16, dmg, "#ffd23f");
+      spawnDamage(e.x, e.y - e.r - 16, dmg, warnaElemenDamage(elInferno));
       spawnDamage(e.x, e.y - e.r - 56, "TERBAKAR", "#ff8c3f");
       serapanDarah(dmg);
       parrySerigala(e);
@@ -1970,14 +1974,15 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
           dmg = Math.round(dmg * (1 + (player.critDmg !== undefined ? player.critDmg : 0.70)));
           spawnDamage(sasaran.x, sasaran.y - sasaran.r - 40, "KRITIS", "#fbbf24");
         }
-        const dmgPasar = applyDamageMusuh(sasaran, dmg, (karakter && karakter.element ? karakter.element : "es").toLowerCase());
+        const elFrozfall = (karakter && karakter.element ? karakter.element : "es").toLowerCase();
+        const dmgPasar = applyDamageMusuh(sasaran, dmg, elFrozfall);
         sasaran.hitFlash = 0.1;
         sasaran.freeze = player.bekuDurasi || karakter.bekuDurasi;
         parrySerigala(sasaran);
         sfxKena();
         sfxBeku();
         spawnParticles(sasaran.x, sasaran.y, "#7dd3fc", 10);
-        spawnDamage(sasaran.x, sasaran.y - sasaran.r - 16, dmgPasar, "#ffd23f");
+        spawnDamage(sasaran.x, sasaran.y - sasaran.r - 16, dmgPasar, warnaElemenDamage(elFrozfall));
         spawnDamage(sasaran.x, sasaran.y - sasaran.r - 56, "BEKU", "#7dd3fc");
         serapanDarah(dmgPasar);
         if (sasaran.hp <= 0) killEnemy(sasaran);

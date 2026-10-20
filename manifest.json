@@ -2,7 +2,7 @@
   "name": "Soul Essence",
   "short_name": "SoulEssence",
   "description": "2D Top-Down Action Roguelike Game",
-  "build": 76,
+  "build": 77,
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -14,6 +14,7 @@
     "core.js",
     "entities.js",
     "draw.js",
+    "skills.js",
     "menu.js",
     "settings-ui.js",
     "index.html"
