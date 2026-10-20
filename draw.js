@@ -1034,7 +1034,7 @@ function draw() {
     ctx.fillRect(e.x - 16, e.y - 22, 32 * (e.hp / e.maxHp), 3);
 
     const elK = (e.element || (typeof TIPE_MUSUH !== "undefined" && TIPE_MUSUH[e.tipe] ? TIPE_MUSUH[e.tipe].element : "fisik") || "fisik").toLowerCase();
-    const warnaElemen = elK === "nature" ? "#22c55e" : (elK === "es" ? "#38bdf8" : (elK === "api" ? "#f97316" : (elK === "nihil" ? "#a855f7" : (elK === "angin" ? "#2dd4bf" : (elK === "petir" || elK === "listrik" ? "#eab308" : "#94a3b8")))));
+    const warnaElemen = elK === "nature" ? "#22c55e" : (elK === "es" ? "#38bdf8" : (elK === "api" ? "#f97316" : (elK === "nihil" ? "#a855f7" : (elK === "angin" ? "#2dd4bf" : (elK === "petir" || elK === "listrik" ? "#eab308" : (elK === "tanah" ? "#d97706" : "#94a3b8"))))));
 
     ctx.fillStyle = warnaElemen;
     ctx.beginPath();

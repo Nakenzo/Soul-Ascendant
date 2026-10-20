@@ -484,6 +484,46 @@ function prosesReaksiElemen(e, elemenSerangan, dmgAwal) {
     e.hp -= bonusDmg;
     reaksi = { nama: "MELT x2.0", warna: "#f43f5e" };
     spawnParticles(e.x, e.y, "#f43f5e", 18);
+  } else if ((atkEl === "angin" && musuhEl === "nihil") || (atkEl === "nihil" && musuhEl === "angin")) {
+    e.korosi = { timer: 0, tick: 0.35, durasi: 4.5, dmg: Math.max(4, Math.round((dmgAwal * 0.35 + 8) * emKali)) };
+    const bonusDmg = Math.round(dmgAwal * 0.5 * emKali);
+    e.hp -= bonusDmg;
+    const swirlRadius = 190;
+    for (let k = 0; k < enemies.length; k++) {
+      const lain = enemies[k];
+      if (lain.hp <= 0 || lain.bosKematian || lain === e) continue;
+      const d = dist(e.x, e.y, lain.x, lain.y);
+      if (d < swirlRadius) {
+        lain.korosi = { timer: 0, tick: 0.4, durasi: 3.0, dmg: Math.max(3, Math.round(6 * emKali)) };
+        const dmgSwirl = applyDamageMusuh(lain, Math.round(dmgAwal * 0.4 * emKali), "dot");
+        spawnDamage(lain.x, lain.y - lain.r - 16, dmgSwirl, "#c084fc");
+        spawnParticles(lain.x, lain.y, "#a855f7", 6);
+      }
+    }
+    reaksi = { nama: "SWIRL CORROSION", warna: "#c084fc" };
+    spawnParticles(e.x, e.y, "#c084fc", 18);
+    spawnParticles(e.x, e.y, "#2dd4bf", 12);
+    rings.push({ x: e.x, y: e.y, r: 12, maxR: 110, life: 0.4, t: 0, warna: "#c084fc" });
+  } else if ((atkEl === "angin" && musuhEl === "tanah") || (atkEl === "tanah" && musuhEl === "angin")) {
+    const bonusDmg = Math.round(dmgAwal * 1.1 * emKali);
+    e.hp -= bonusDmg;
+    e.freeze = Math.max(e.freeze || 0, 1.2);
+    const sandRadius = 210;
+    for (let k = 0; k < enemies.length; k++) {
+      const lain = enemies[k];
+      if (lain.hp <= 0 || lain.bosKematian || lain === e) continue;
+      const d = dist(e.x, e.y, lain.x, lain.y);
+      if (d < sandRadius) {
+        const sandDmg = applyDamageMusuh(lain, Math.round(dmgAwal * 0.5 * emKali), "dot");
+        lain.hitFlash = 0.1;
+        spawnDamage(lain.x, lain.y - lain.r - 16, sandDmg, "#f59e0b");
+        spawnParticles(lain.x, lain.y, "#d97706", 6);
+      }
+    }
+    reaksi = { nama: "SANDSTORM", warna: "#f59e0b" };
+    spawnParticles(e.x, e.y, "#d97706", 18);
+    spawnParticles(e.x, e.y, "#fbbf24", 14);
+    rings.push({ x: e.x, y: e.y, r: 14, maxR: 130, life: 0.45, t: 0, warna: "#f59e0b" });
   }
 
   if (reaksi) {
