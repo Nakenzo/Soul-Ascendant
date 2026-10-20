@@ -37,10 +37,13 @@
     "admin-akun.js"
   ];
 
+  const BUILD_SEKARANG = 79;
+
   function ambilBuildBawaan() {
+    if (typeof BUILD_TERKINI === "number" && BUILD_TERKINI > 0) return BUILD_TERKINI;
     if (typeof BUILD_GAME !== "undefined") return BUILD_GAME;
     if (typeof BUILD !== "undefined") return BUILD;
-    return 73;
+    return BUILD_SEKARANG;
   }
 
   function ambilBuildAktif() {
@@ -48,7 +51,7 @@
       const tersimpan = localStorage.getItem("se_patch_build");
       if (tersimpan) {
         const n = parseInt(tersimpan, 10);
-        if (Number.isFinite(n) && n > 0) return n;
+        if (Number.isFinite(n) && n >= ambilBuildBawaan()) return n;
       }
     } catch (e) {}
     return ambilBuildBawaan();
@@ -275,7 +278,36 @@
     }
   }
 
+  function bersihkanPatchLama(db) {
+    return new Promise((resolve) => {
+      if (!db) return resolve();
+      try {
+        const tx = db.transaction(STORE_NAME, "readwrite");
+        const store = tx.objectStore(STORE_NAME);
+        store.clear();
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => resolve();
+      } catch (err) {
+        resolve();
+      }
+    });
+  }
+
   async function mulaiBootstrapper() {
+    const buildBawaan = ambilBuildBawaan();
+    let tersimpanBuild = 0;
+    try {
+      tersimpanBuild = parseInt(localStorage.getItem("se_patch_build") || "0", 10);
+    } catch (e) {}
+
+    const db = await bukaDB();
+    if (db && tersimpanBuild < buildBawaan) {
+      await bersihkanPatchLama(db);
+      try {
+        localStorage.setItem("se_patch_build", String(buildBawaan));
+      } catch (e) {}
+    }
+
     const buildAktif = ambilBuildAktif();
     const teksVersi = document.getElementById("updateVersiTeks");
     if (teksVersi) {
@@ -284,7 +316,6 @@
 
     perbaruiStatusUI("Memeriksa pembaruan...");
 
-    const db = await bukaDB();
     let petaPatch = await ambilSemuaPatch(db);
 
     const remote = await periksaManifestRemote(2500);

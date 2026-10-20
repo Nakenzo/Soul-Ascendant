@@ -11,9 +11,13 @@
     <link rel="apple-touch-icon" href="assets/ui/icon-192.png">
     <link rel="stylesheet" href="settings.css" media="all">
     <link rel="stylesheet" href="updater.css" media="all">
+    <script>
+        var PLATFORM = (window.AndroidNative || window.Capacitor) ? "apk" : ((window.__TAURI__ || window.__TAURI_INTERNALS__) ? "pc" : "web");
+        document.documentElement.setAttribute("data-platform", PLATFORM);
+        var BUILD_TERKINI = 79;
+    </script>
 </head>
 <body>
-    <script>var BUILD_TERKINI = 0;</script>
 
     <div class="ruangan-utama">
         <aside id="notaKartu">
@@ -60,12 +64,12 @@
                 </div>
             </div>
 
-            <div id="layarDevice" class="layar-awal hidden">
+            <div id="layarDevice" class="layar-awal">
                 <h1 class="judul-besar">Apa perangkat yang kau gunakan</h1>
                 <p class="sub-judul">Ini penting untuk penyesuaian HUD/UI</p>
                 <div class="grup-device">
-                    <button class="tombol-device" data-device="desktop">KOMPUTER</button>
-                    <button class="tombol-device" data-device="mobile">HP / TABLET</button>
+                    <button class="tombol-device" data-device="desktop" onclick="if(typeof pilihDevice==='function')pilihDevice('desktop');else this.closest('.layar-awal').classList.add('hidden');">KOMPUTER</button>
+                    <button class="tombol-device" data-device="mobile" onclick="if(typeof pilihDevice==='function')pilihDevice('mobile');else this.closest('.layar-awal').classList.add('hidden');">HP / TABLET</button>
                 </div>
                 <p class="keterangan-device">Tersimpan di perangkat ini &middot; suara aktif setelah klik</p>
             </div>

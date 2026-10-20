@@ -301,8 +301,16 @@ body[data-device="mobile"] {
     border-radius: 2px;
 }
 
-.layar-awal.hidden {
-    display: none;
+.layar-awal.hidden,
+#layarDevice.hidden {
+    display: none !important;
+}
+
+html[data-platform="apk"] #layarDevice,
+html[data-platform="pc"] #layarDevice,
+body[data-platform="apk"] #layarDevice,
+body[data-platform="pc"] #layarDevice {
+    display: none !important;
 }
 
 .layar-awal .judul-besar {

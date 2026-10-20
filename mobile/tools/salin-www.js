@@ -68,7 +68,15 @@ try {
     console.error("Ubah 'const BUILD_GAME' di core.js agar sama, lalu jalankan ulang script ini.");
     process.exit(1);
   }
-  console.log("Verifikasi ok: build " + manifest.build + " (manifest == sw.js == core.js)");
+  const bootSrc = fs.readFileSync(path.join(ROOT, "boot.js"), "utf8");
+  const mb = bootSrc.match(/const BUILD_SEKARANG = (\d+)/);
+  const bootBuild = mb ? Number(mb[1]) : null;
+  if (bootBuild !== manifest.build) {
+    console.error("GAGAL: boot.js BUILD_SEKARANG (" + bootBuild + ") != manifest.json build (" + manifest.build + ").");
+    console.error("Ubah 'const BUILD_SEKARANG' di boot.js agar sama, lalu jalankan ulang script ini.");
+    process.exit(1);
+  }
+  console.log("Verifikasi ok: build " + manifest.build + " (manifest == sw.js == core.js == boot.js)");
 } catch (err) {
   console.error("GAGAL verifikasi build: " + err.message);
   process.exit(1);
