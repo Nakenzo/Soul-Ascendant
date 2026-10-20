@@ -421,7 +421,7 @@ function prosesReaksiElemen(e, elemenSerangan, dmgAwal) {
   if ((atkEl === "fisik" && musuhEl === "es") || (atkEl === "es" && musuhEl === "fisik")) {
     const bonusDmg = Math.round(dmgAwal * 1.5 * emKali);
     e.hp -= bonusDmg;
-    reaksi = { nama: "SHATTER x2.5", warna: "#38bdf8" };
+    reaksi = { nama: "SHATTER x2.5", warna: "#38bdf8", anim: "shatter" };
     spawnParticles(e.x, e.y, "#38bdf8", 16);
     rings.push({ x: e.x, y: e.y, r: 10, maxR: 70, life: 0.35, t: 0, warna: "#38bdf8" });
     if (typeof sfxBeku === "function") sfxBeku();
@@ -447,7 +447,7 @@ function prosesReaksiElemen(e, elemenSerangan, dmgAwal) {
         }
       }
     }
-    reaksi = { nama: "VORTEX", warna: "#2dd4bf" };
+    reaksi = { nama: "VORTEX", warna: "#2dd4bf", anim: "vortex" };
     spawnParticles(e.x, e.y, "#2dd4bf", 20);
     rings.push({ x: e.x, y: e.y, r: 12, maxR: 120, life: 0.4, t: 0, warna: "#2dd4bf" });
     if (typeof sfxDash === "function") sfxDash();
@@ -457,32 +457,32 @@ function prosesReaksiElemen(e, elemenSerangan, dmgAwal) {
   ) {
     const bleedDmg = Math.max(4, Math.round((dmgAwal * 0.35 + 5) * emKali));
     e.bleeding = { timer: 0, tick: 0.35, durasi: 4.0, dmg: bleedDmg };
-    reaksi = { nama: "BLEEDING!", warna: "#ef4444" };
+    reaksi = { nama: "BLEEDING!", warna: "#ef4444", anim: "bleeding" };
     spawnParticles(e.x, e.y, "#ef4444", 18);
     rings.push({ x: e.x, y: e.y, r: 10, maxR: 75, life: 0.35, t: 0, warna: "#ef4444" });
   } else if ((atkEl === "fisik" && musuhEl === "nihil") || (atkEl === "nihil" && musuhEl === "fisik")) {
     e.korosi = { timer: 0, tick: 0.4, durasi: 4.0, dmg: Math.max(3, Math.round(8 * emKali)) };
-    reaksi = { nama: "VOID CORROSION", warna: "#c084fc" };
+    reaksi = { nama: "VOID CORROSION", warna: "#c084fc", anim: "void_corrosion" };
     spawnParticles(e.x, e.y, "#a855f7", 14);
   } else if ((atkEl === "nature" && musuhEl === "api") || (atkEl === "api" && musuhEl === "nature")) {
     e.burn = { timer: 0, tick: 0.35, durasi: 4.0, dmg: Math.max(4, Math.round(12 * emKali)) };
-    reaksi = { nama: "COMBUSTION!", warna: "#ff5722" };
+    reaksi = { nama: "COMBUSTION!", warna: "#ff5722", anim: "combustion" };
     spawnParticles(e.x, e.y, "#ff4500", 18);
     rings.push({ x: e.x, y: e.y, r: 12, maxR: 100, life: 0.4, t: 0 });
   } else if ((atkEl === "nature" && musuhEl === "es") || (atkEl === "es" && musuhEl === "nature")) {
     e.freeze = Math.max(e.freeze || 0, 1.5);
     const bonusDmg = Math.round(dmgAwal * 0.8 * emKali);
     e.hp -= bonusDmg;
-    reaksi = { nama: "FROSTBITE!", warna: "#7dd3fc" };
+    reaksi = { nama: "FROSTBITE!", warna: "#7dd3fc", anim: "frostbite" };
     spawnParticles(e.x, e.y, "#7dd3fc", 16);
   } else if ((atkEl === "nature" && musuhEl === "nihil") || (atkEl === "nihil" && musuhEl === "nature")) {
     e.korosi = { timer: 0, tick: 0.4, durasi: 4.0, dmg: Math.max(4, Math.round(10 * emKali)) };
-    reaksi = { nama: "PLAGUE CORROSION", warna: "#a855f7" };
+    reaksi = { nama: "PLAGUE CORROSION", warna: "#a855f7", anim: "void_corrosion" };
     spawnParticles(e.x, e.y, "#a855f7", 16);
   } else if ((atkEl === "api" && musuhEl === "es") || (atkEl === "es" && musuhEl === "api")) {
     const bonusDmg = Math.round(dmgAwal * 1.0 * emKali);
     e.hp -= bonusDmg;
-    reaksi = { nama: "MELT x2.0", warna: "#f43f5e" };
+    reaksi = { nama: "MELT x2.0", warna: "#f43f5e", anim: "melt" };
     spawnParticles(e.x, e.y, "#f43f5e", 18);
   } else if ((atkEl === "angin" && musuhEl === "nihil") || (atkEl === "nihil" && musuhEl === "angin")) {
     e.korosi = { timer: 0, tick: 0.35, durasi: 4.5, dmg: Math.max(4, Math.round((dmgAwal * 0.35 + 8) * emKali)) };
@@ -500,7 +500,7 @@ function prosesReaksiElemen(e, elemenSerangan, dmgAwal) {
         spawnParticles(lain.x, lain.y, "#a855f7", 6);
       }
     }
-    reaksi = { nama: "SWIRL CORROSION", warna: "#c084fc" };
+    reaksi = { nama: "SWIRL CORROSION", warna: "#c084fc", anim: "swirl_corrosion" };
     spawnParticles(e.x, e.y, "#c084fc", 18);
     spawnParticles(e.x, e.y, "#2dd4bf", 12);
     rings.push({ x: e.x, y: e.y, r: 12, maxR: 110, life: 0.4, t: 0, warna: "#c084fc" });
@@ -520,7 +520,7 @@ function prosesReaksiElemen(e, elemenSerangan, dmgAwal) {
         spawnParticles(lain.x, lain.y, "#d97706", 6);
       }
     }
-    reaksi = { nama: "SANDSTORM", warna: "#f59e0b" };
+    reaksi = { nama: "SANDSTORM", warna: "#f59e0b", anim: "sandstorm" };
     spawnParticles(e.x, e.y, "#d97706", 18);
     spawnParticles(e.x, e.y, "#fbbf24", 14);
     rings.push({ x: e.x, y: e.y, r: 14, maxR: 130, life: 0.45, t: 0, warna: "#f59e0b" });
@@ -529,6 +529,9 @@ function prosesReaksiElemen(e, elemenSerangan, dmgAwal) {
   if (reaksi) {
     e.reaksiCooldown = 4.0;
     spawnDamage(e.x, e.y - e.r - 28, reaksi.nama, reaksi.warna);
+    if (typeof spawnAnimasiReaksi === "function") {
+      spawnAnimasiReaksi(reaksi.anim || "vortex", e.x, e.y);
+    }
     if (e.hp <= 0) killEnemy(e);
   }
 }
@@ -1209,6 +1212,13 @@ function updateEfekMati(dt) {
     r.t += dt;
     r.r = 20 + (r.maxR - 20) * (r.t / r.life);
     if (r.t >= r.life) rings.splice(i, 1);
+  }
+  if (typeof animasiReaksi !== "undefined") {
+    for (let i = animasiReaksi.length - 1; i >= 0; i--) {
+      const a = animasiReaksi[i];
+      a.t += dt;
+      if (a.t >= a.life) animasiReaksi.splice(i, 1);
+    }
   }
 }
 
@@ -2366,6 +2376,13 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
     r.t += dt;
     r.r = 20 + (r.maxR - 20) * (r.t / r.life);
     if (r.t >= r.life) rings.splice(i, 1);
+  }
+  if (typeof animasiReaksi !== "undefined") {
+    for (let i = animasiReaksi.length - 1; i >= 0; i--) {
+      const a = animasiReaksi[i];
+      a.t += dt;
+      if (a.t >= a.life) animasiReaksi.splice(i, 1);
+    }
   }
 
   for (let i = souls.length - 1; i >= 0; i--) {

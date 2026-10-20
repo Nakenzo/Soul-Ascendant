@@ -33,7 +33,7 @@ const IS_PC = PLATFORM === "pc";
 const IS_WEB = PLATFORM === "web";
 
 const VERSI_GAME = "0.1.0";
-const BUILD_GAME = 77;
+const BUILD_GAME = 78;
 const EDISI_GAME = IS_APK ? "Android APK" : (IS_PC ? "PC Windows" : "Web Edition");
 
 function saatPlatform(opsi) {
@@ -69,6 +69,7 @@ let voidOrbs = [];
 let prismPulsa = [];
 let flashes, hurtVig;
 let deathPixels = [];
+let animasiReaksi = [];
 let koin, gameOver, lastTime, spawnTimer, shake;
 let errorBanner = null;
 let errorBannerUmur = 0;
@@ -222,6 +223,7 @@ function resetArena({ koinBaru }) {
   flashes = [];
   hurtVig = 0;
   deathPixels = [];
+  animasiReaksi = [];
   soul = 0;
   bossIntro = null;
   if (typeof bosKematian !== "undefined") bosKematian = null;
@@ -368,6 +370,17 @@ function spawnDamage(x, y, teks, warna) {
     warna: w,
     t: 0,
     life: 0.8
+  });
+}
+
+function spawnAnimasiReaksi(jenis, x, y, skala) {
+  animasiReaksi.push({
+    jenis: String(jenis || "vortex").toLowerCase(),
+    x: x,
+    y: y,
+    t: 0,
+    life: 0.55,
+    skala: skala || 1.2
   });
 }
 
