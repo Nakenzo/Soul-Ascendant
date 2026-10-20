@@ -60,6 +60,16 @@
                 </div>
             </div>
 
+            <div id="layarDevice" class="layar-awal hidden">
+                <h1 class="judul-besar">Apa perangkat yang kau gunakan</h1>
+                <p class="sub-judul">Ini penting untuk penyesuaian HUD/UI</p>
+                <div class="grup-device">
+                    <button class="tombol-device" data-device="desktop">KOMPUTER</button>
+                    <button class="tombol-device" data-device="mobile">HP / TABLET</button>
+                </div>
+                <p class="keterangan-device">Tersimpan di perangkat ini &middot; suara aktif setelah klik</p>
+            </div>
+
             <div id="layarPutar" class="layar-putar">
                 <h1 class="judul-besar">PUTAR PERANGKAT</h1>
                 <p class="sub-judul">Miringkan HP / tablet ke posisi LANDSCAPE agar nyaman dimainkan</p>
@@ -335,6 +345,7 @@
 
                             <div class="set-info-platform">
                                 <span id="setLabelEdisi" class="set-edisi-teks"></span>
+                                <button id="tombolGantiDevice" type="button" class="tombol-cek-update" style="margin-top:calc(var(--cs, 0.56) * 6px);background:#2563eb;" hidden>&#128241; Ganti Mode Perangkat (PC / HP)</button>
                                 <button id="tombolCekUpdateManual" type="button" class="tombol-cek-update">&#8635; Cek Pembaruan</button>
                                 <button id="tombolResetPatch" type="button" class="tombol-cek-update" style="margin-top:calc(var(--cs, 0.56) * 6px);background:#334155;">&#8634; Reset Versi Bawaan</button>
                                 <div id="setLinkDownload" class="set-download-grup" hidden>

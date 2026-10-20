@@ -228,6 +228,15 @@ function segarkanInfoPlatform() {
   if (link && typeof IS_WEB !== "undefined") {
     link.hidden = !IS_WEB;
   }
+  const btnDev = document.getElementById("tombolGantiDevice");
+  if (btnDev && typeof IS_WEB !== "undefined") {
+    btnDev.hidden = !IS_WEB;
+    btnDev.onclick = () => {
+      if (typeof sembunyiSemua === "function") sembunyiSemua();
+      const ld = document.getElementById("layarDevice");
+      if (ld) ld.classList.remove("hidden");
+    };
+  }
 }
 
 function segarkanPengaturanUI() {

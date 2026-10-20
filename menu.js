@@ -11,6 +11,7 @@ const koinAkhirEl = document.getElementById("skorAkhir");
 const koinMenangEl = document.getElementById("skorMenang");
 const judulAkhirEl = document.getElementById("judulAkhir");
 
+const layarDevice = document.getElementById("layarDevice");
 const layarPutar = document.getElementById("layarPutar");
 const layarAkun = document.getElementById("layarAkun");
 const layarSetting = document.getElementById("layarSetting");
@@ -127,7 +128,37 @@ function terapkanDevice() {
     if (typeof terapkanHudConfig === "function") terapkanHudConfig();
   }
 }
+
+function pilihDevice(dev) {
+  deviceTerpilih = dev;
+  document.body.dataset.device = dev;
+  try { localStorage.setItem("soul-essence-device", dev); } catch (err) {}
+  if (typeof bukaAudio === "function") bukaAudio();
+
+  if (typeof latarSkala === "function" && latarSkala() !== latarSkalaTerpakai) latarCache = null;
+  if (layarDevice) layarDevice.classList.add("hidden");
+
+  if (statusGame === "title" && layarJudul && layarJudul.classList.contains("hidden")) {
+    layarJudul.classList.remove("hidden");
+  }
+  terapkanDevice();
+  if (typeof terapkanGrupPerangkat === "function") terapkanGrupPerangkat();
+}
+
+function inisialisasiLayarDevice() {
+  if (!layarDevice) return;
+  if (typeof IS_WEB !== "undefined" && IS_WEB) {
+    layarDevice.classList.remove("hidden");
+    layarDevice.querySelectorAll("[data-device]").forEach((b) => {
+      b.onclick = () => pilihDevice(b.dataset.device);
+    });
+  } else {
+    layarDevice.classList.add("hidden");
+  }
+}
+
 terapkanDevice();
+inisialisasiLayarDevice();
 
 let _statusNotaTerakhir = null;
 function aturNotaKartu() {
