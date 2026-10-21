@@ -1,7 +1,7 @@
 (function () {
   const URL_MANIFEST = "https://raw.githubusercontent.com/Nakenzo/Soul-Essence/main/manifest.json?nc=";
   const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/Nakenzo/Soul-Essence/main/";
-  const DB_NAME = "SoulAscendantPatchDB";
+  const DB_NAME = "SoulEssencePatchDB";
   const DB_VERSION = 1;
   const STORE_NAME = "patches";
 
@@ -37,7 +37,7 @@
     "admin-akun.js"
   ];
 
-  const BUILD_SEKARANG = 79;
+  const BUILD_SEKARANG = 80;
 
   function ambilBuildBawaan() {
     if (typeof BUILD_TERKINI === "number" && BUILD_TERKINI > 0) return BUILD_TERKINI;
@@ -151,27 +151,8 @@
 
   async function periksaManifestRemote(timeoutMs) {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeoutMs || 2500);
+    const timer = setTimeout(() => controller.abort(), timeoutMs || 6000);
     try {
-      try {
-        const resSha = await fetch("https://api.github.com/repos/Nakenzo/Soul-Essence/commits/main", {
-          signal: controller.signal
-        });
-        if (resSha.ok) {
-          const dSha = await resSha.json();
-          if (dSha && dSha.sha) {
-            const rawShaUrl = GITHUB_RAW_BASE.replace("/main/", "/" + dSha.sha + "/") + "manifest.json";
-            const resM = await fetch(rawShaUrl, { signal: controller.signal, cache: "no-store" });
-            if (resM.ok) {
-              const data = await resM.json();
-              data._sha = dSha.sha;
-              clearTimeout(timer);
-              return data;
-            }
-          }
-        }
-      } catch (eApi) {}
-
       const res = await fetch(URL_MANIFEST + Date.now(), {
         signal: controller.signal,
         cache: "no-store"
@@ -318,7 +299,7 @@
 
     let petaPatch = await ambilSemuaPatch(db);
 
-    const remote = await periksaManifestRemote(2500);
+    const remote = await periksaManifestRemote(6000);
 
     if (remote && typeof remote.build === "number" && remote.build > buildAktif) {
       const petaTerbaru = await lakukanPatching(db, remote);
