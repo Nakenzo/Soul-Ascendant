@@ -10,7 +10,7 @@ let _volSfx = 1;
 let _volMusik = 1;
 (function _muatVolume() {
   try {
-    const v = JSON.parse(localStorage.getItem("soul-ascendant-volume") || localStorage.getItem("soul-essence-volume") || "{}");
+    const v = JSON.parse(localStorage.getItem("soul-ascendant-volume") || "{}");
     if (typeof v.umum === "number") _volUmum = Math.max(0, Math.min(1, v.umum));
     if (typeof v.sfx === "number") _volSfx = Math.max(0, Math.min(1, v.sfx));
     if (typeof v.musik === "number") _volMusik = Math.max(0, Math.min(1, v.musik));

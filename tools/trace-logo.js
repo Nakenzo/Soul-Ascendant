@@ -804,8 +804,6 @@ ${starNeedleGroup}
 ${sparksSvg}
 </svg>`;
 
-fs.writeFileSync('lobby/assets/logo-soul-essence.svg', svg);
 fs.writeFileSync('lobby/assets/logo-soul-ascendant.svg', svg);
-fs.writeFileSync('assets/ui/logo-soul-essence.svg', svg);
 fs.writeFileSync('assets/ui/logo-soul-ascendant.svg', svg);
 console.log('Done! Generated vector sprite SVG with live dancing soul flames. Length:', svg.length);

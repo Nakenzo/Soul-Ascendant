@@ -1,9 +1,10 @@
 (function () {
-  const URL_MANIFEST = "https://raw.githubusercontent.com/Nakenzo/Soul-Essence/main/manifest.json?nc=";
-  const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/Nakenzo/Soul-Essence/main/";
-  const DB_NAME = "SoulEssencePatchDB";
-  const DB_VERSION = 1;
-  const STORE_NAME = "patches";
+  const URL_MANIFEST = "https://raw.githubusercontent.com/Nakenzo/Soul-Ascendant/main/manifest.json?nc=";
+  const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/Nakenzo/Soul-Ascendant/main/";
+  const DB_NAME = "SoulAscendantPatchDB";
+  const DB_VERSION = 2;
+  const STORE_ACTIVE = "active_patches";
+  const STORE_STAGING = "staging_patches";
 
   const DAFTAR_SKRIP = [
     "core.js",
@@ -40,6 +41,36 @@
   const BUILD_SEKARANG = 83;
   let petaPatchAktif = {};
 
+  let bootErrorCount = 0;
+  try {
+    bootErrorCount = parseInt(sessionStorage.getItem("sa_boot_err_count") || "0", 10);
+  } catch (e) {}
+
+  function tanganiBootCrash() {
+    try {
+      sessionStorage.setItem("sa_boot_err_count", String(bootErrorCount + 1));
+      if (bootErrorCount >= 2) {
+        sessionStorage.removeItem("sa_boot_err_count");
+        localStorage.removeItem("sa_patch_build");
+        if (window.indexedDB) {
+          indexedDB.deleteDatabase(DB_NAME);
+        }
+        window.location.reload();
+      }
+    } catch (e) {}
+  }
+
+  const crashWatchdog = function (e) {
+    tanganiBootCrash();
+  };
+  window.addEventListener("error", crashWatchdog);
+  setTimeout(function () {
+    window.removeEventListener("error", crashWatchdog);
+    try {
+      sessionStorage.removeItem("sa_boot_err_count");
+    } catch (e) {}
+  }, 5000);
+
   function ambilBuildBawaan() {
     if (typeof BUILD_TERKINI === "number" && BUILD_TERKINI > 0) return BUILD_TERKINI;
     if (typeof BUILD_GAME !== "undefined") return BUILD_GAME;
@@ -49,7 +80,7 @@
 
   function ambilBuildAktif() {
     try {
-      const tersimpan = localStorage.getItem("se_patch_build");
+      const tersimpan = localStorage.getItem("sa_patch_build");
       if (tersimpan) {
         const n = parseInt(tersimpan, 10);
         if (Number.isFinite(n) && n >= ambilBuildBawaan()) return n;
@@ -65,8 +96,11 @@
         const req = indexedDB.open(DB_NAME, DB_VERSION);
         req.onupgradeneeded = function (e) {
           const db = e.target.result;
-          if (!db.objectStoreNames.contains(STORE_NAME)) {
-            db.createObjectStore(STORE_NAME, { keyPath: "path" });
+          if (!db.objectStoreNames.contains(STORE_ACTIVE)) {
+            db.createObjectStore(STORE_ACTIVE, { keyPath: "path" });
+          }
+          if (!db.objectStoreNames.contains(STORE_STAGING)) {
+            db.createObjectStore(STORE_STAGING, { keyPath: "path" });
           }
         };
         req.onsuccess = function (e) {
@@ -85,8 +119,8 @@
     return new Promise((resolve) => {
       if (!db) return resolve({});
       try {
-        const tx = db.transaction(STORE_NAME, "readonly");
-        const store = tx.objectStore(STORE_NAME);
+        const tx = db.transaction(STORE_ACTIVE, "readonly");
+        const store = tx.objectStore(STORE_ACTIVE);
         const req = store.getAll();
         req.onsuccess = function () {
           const peta = {};
@@ -107,15 +141,65 @@
     });
   }
 
-  function simpanPatch(db, path, content, build) {
+  function simpanStaging(db, path, content, build) {
     return new Promise((resolve) => {
       if (!db) return resolve(false);
       try {
-        const tx = db.transaction(STORE_NAME, "readwrite");
-        const store = tx.objectStore(STORE_NAME);
-        const req = store.put({ path, content, build, diperbarui: Date.now() });
+        const tx = db.transaction(STORE_STAGING, "readwrite");
+        const store = tx.objectStore(STORE_STAGING);
+        const req = store.put({ path, content, build, waktu: Date.now() });
         req.onsuccess = function () { resolve(true); };
         req.onerror = function () { resolve(false); };
+      } catch (err) {
+        resolve(false);
+      }
+    });
+  }
+
+  function bersihkanStaging(db) {
+    return new Promise((resolve) => {
+      if (!db) return resolve(true);
+      try {
+        const tx = db.transaction(STORE_STAGING, "readwrite");
+        const store = tx.objectStore(STORE_STAGING);
+        const req = store.clear();
+        req.onsuccess = function () { resolve(true); };
+        req.onerror = function () { resolve(false); };
+      } catch (err) {
+        resolve(false);
+      }
+    });
+  }
+
+  function komitAtomicStaging(db, buildBaru) {
+    return new Promise((resolve) => {
+      if (!db) return resolve(false);
+      try {
+        const tx = db.transaction([STORE_STAGING, STORE_ACTIVE], "readwrite");
+        const stagingStore = tx.objectStore(STORE_STAGING);
+        const activeStore = tx.objectStore(STORE_ACTIVE);
+
+        const reqAll = stagingStore.getAll();
+        reqAll.onsuccess = function () {
+          const items = reqAll.result || [];
+          if (items.length === 0) return resolve(false);
+
+          activeStore.clear();
+          for (let i = 0; i < items.length; i++) {
+            activeStore.put(items[i]);
+          }
+          stagingStore.clear();
+        };
+
+        tx.oncomplete = function () {
+          try {
+            localStorage.setItem("sa_patch_build", String(buildBaru));
+          } catch (e) {}
+          resolve(true);
+        };
+        tx.onerror = function () {
+          resolve(false);
+        };
       } catch (err) {
         resolve(false);
       }
@@ -125,15 +209,15 @@
   function hapusSemuaPatch(db) {
     return new Promise((resolve) => {
       try {
-        localStorage.removeItem("se_patch_build");
+        localStorage.removeItem("sa_patch_build");
       } catch (e) {}
       if (!db) return resolve(true);
       try {
-        const tx = db.transaction(STORE_NAME, "readwrite");
-        const store = tx.objectStore(STORE_NAME);
-        const req = store.clear();
-        req.onsuccess = function () { resolve(true); };
-        req.onerror = function () { resolve(false); };
+        const tx = db.transaction([STORE_ACTIVE, STORE_STAGING], "readwrite");
+        tx.objectStore(STORE_ACTIVE).clear();
+        tx.objectStore(STORE_STAGING).clear();
+        tx.oncomplete = () => resolve(true);
+        tx.onerror = () => resolve(false);
       } catch (err) {
         resolve(false);
       }
@@ -152,11 +236,15 @@
 
   async function periksaManifestRemote(timeoutMs) {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeoutMs || 6000);
+    const timer = setTimeout(() => controller.abort(), timeoutMs || 7000);
     try {
       const res = await fetch(URL_MANIFEST + Date.now(), {
         signal: controller.signal,
-        cache: "no-store"
+        cache: "no-store",
+        headers: {
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+          "Pragma": "no-cache"
+        }
       });
       clearTimeout(timer);
       if (!res.ok) return null;
@@ -171,15 +259,23 @@
     try {
       const base = sha ? GITHUB_RAW_BASE.replace("/main/", "/" + sha + "/") : GITHUB_RAW_BASE;
       const url = base + path + "?nc=" + build + "_" + Date.now();
-      const res = await fetch(url, { cache: "no-store" });
+      const res = await fetch(url, {
+        cache: "no-store",
+        headers: {
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+          "Pragma": "no-cache"
+        }
+      });
       if (!res.ok) return null;
-      return await res.text();
+      const text = await res.text();
+      if (!text || text.length === 0) return null;
+      return text;
     } catch (e) {
       return null;
     }
   }
 
-  async function lakukanPatching(db, remote) {
+  async function lakukanPatchingAtomic(db, remote) {
     const buildBaru = Number(remote.build);
     const sha = remote && remote._sha ? remote._sha : "";
     let berkasTarget = Array.isArray(remote.patch_files) && remote.patch_files.length > 0
@@ -187,47 +283,62 @@
       : DAFTAR_SKRIP.concat(["style.css", "settings.css"]);
 
     perbaruiStatusUI("Mengunduh patch Build " + buildBaru + "...", 0);
+    await bersihkanStaging(db);
 
-    let berhasil = 0;
-    const petaBaru = {};
-
+    let gagal = false;
     for (let i = 0; i < berkasTarget.length; i++) {
       const nama = berkasTarget[i];
       const persen = Math.round(((i + 1) / berkasTarget.length) * 100);
       perbaruiStatusUI("Mengunduh " + nama, persen);
 
       const konten = await unduhBerkasTeks(nama, buildBaru, sha);
-      if (konten !== null) {
-        petaBaru[nama] = konten;
-        if (db) await simpanPatch(db, nama, konten, buildBaru);
-        berhasil++;
+      if (konten === null) {
+        gagal = true;
+        break;
+      }
+      if (db) {
+        const ok = await simpanStaging(db, nama, konten, buildBaru);
+        if (!ok) {
+          gagal = true;
+          break;
+        }
       }
     }
 
-    if (berhasil > 0) {
-      try {
-        localStorage.setItem("se_patch_build", String(buildBaru));
-      } catch (e) {}
-      perbaruiStatusUI("Pembaruan Build " + buildBaru + " berhasil dipasang!", 100);
+    if (gagal) {
+      perbaruiStatusUI("Koneksi terganggu. Menggunakan versi stabil.", -1);
+      await bersihkanStaging(db);
+      return false;
     }
-    return petaBaru;
+
+    const komitOk = await komitAtomicStaging(db, buildBaru);
+    if (!komitOk) {
+      await bersihkanStaging(db);
+      return false;
+    }
+
+    perbaruiStatusUI("Pembaruan Build " + buildBaru + " siap! Memuat ulang...", 100);
+    setTimeout(function () {
+      window.location.reload();
+    }, 400);
+    return true;
   }
 
   function terapkanPatchCSS(petaPatch) {
     if (petaPatch["style.css"]) {
-      let st = document.getElementById("se-patch-style");
+      let st = document.getElementById("sa-patch-style");
       if (!st) {
         st = document.createElement("style");
-        st.id = "se-patch-style";
+        st.id = "sa-patch-style";
         document.head.appendChild(st);
       }
       st.textContent = petaPatch["style.css"];
     }
     if (petaPatch["settings.css"]) {
-      let st = document.getElementById("se-patch-settings");
+      let st = document.getElementById("sa-patch-settings");
       if (!st) {
         st = document.createElement("style");
-        st.id = "se-patch-settings";
+        st.id = "sa-patch-settings";
         document.head.appendChild(st);
       }
       st.textContent = petaPatch["settings.css"];
@@ -260,33 +371,18 @@
     }
   }
 
-  function bersihkanPatchLama(db) {
-    return new Promise((resolve) => {
-      if (!db) return resolve();
-      try {
-        const tx = db.transaction(STORE_NAME, "readwrite");
-        const store = tx.objectStore(STORE_NAME);
-        store.clear();
-        tx.oncomplete = () => resolve();
-        tx.onerror = () => resolve();
-      } catch (err) {
-        resolve();
-      }
-    });
-  }
-
   async function mulaiBootstrapper() {
     const buildBawaan = ambilBuildBawaan();
     let tersimpanBuild = 0;
     try {
-      tersimpanBuild = parseInt(localStorage.getItem("se_patch_build") || "0", 10);
+      tersimpanBuild = parseInt(localStorage.getItem("sa_patch_build") || "0", 10);
     } catch (e) {}
 
     const db = await bukaDB();
     if (db && tersimpanBuild < buildBawaan) {
-      await bersihkanPatchLama(db);
+      await hapusSemuaPatch(db);
       try {
-        localStorage.setItem("se_patch_build", String(buildBawaan));
+        localStorage.setItem("sa_patch_build", String(buildBawaan));
       } catch (e) {}
     }
 
@@ -300,20 +396,16 @@
 
     let petaPatch = await ambilSemuaPatch(db);
 
-    const remote = await periksaManifestRemote(6000);
+    const remote = await periksaManifestRemote(7000);
 
     if (remote && typeof remote.build === "number" && remote.build > buildAktif) {
-      const petaTerbaru = await lakukanPatching(db, remote);
-      for (const k in petaTerbaru) {
-        petaPatch[k] = petaTerbaru[k];
+      const berhasil = await lakukanPatchingAtomic(db, remote);
+      if (berhasil) {
+        return;
       }
-      if (teksVersi) {
-        teksVersi.textContent = "Build " + remote.build;
-      }
-    } else {
-      perbaruiStatusUI("Menyiapkan game...");
     }
 
+    perbaruiStatusUI("Menyiapkan game...");
     terapkanPatchCSS(petaPatch);
     petaPatchAktif = petaPatch;
 
@@ -322,7 +414,7 @@
     });
   }
 
-  window.SE_PATCHER = {
+  window.SA_PATCHER = window.SE_PATCHER = {
     ambilBuildAktif: ambilBuildAktif,
     ambilPatch: function (nama) {
       return (petaPatchAktif && petaPatchAktif[nama]) || null;
@@ -332,14 +424,14 @@
       const db = await bukaDB();
       perbaruiStatusUI("Memeriksa pembaruan...");
 
-      const remote = await periksaManifestRemote(6000);
+      const remote = await periksaManifestRemote(7000);
       if (!remote) {
         alert("Tidak dapat terhubung ke server pembaruan. Periksa koneksi internet.");
         return;
       }
 
       if (typeof remote.build === "number" && remote.build > buildAktif) {
-        const konfirm = confirm("Ditemukan pembaruan Build " + remote.build + "!\n\nUnduh dan terapkan pembaruan langsung sekarang?");
+        const konfirm = confirm("Ditemukan pembaruan Build " + remote.build + "!\n\nUnduh dan terapkan pembaruan sekarang?");
         if (!konfirm) return;
 
         const overlay = document.getElementById("layarLoadingUpdate");
@@ -348,9 +440,10 @@
           overlay.classList.remove("fade-out");
         }
 
-        await lakukanPatching(db, remote);
-        alert("Pembaruan Build " + remote.build + " berhasil diterapkan!\nGame akan dimuat ulang.");
-        window.location.reload();
+        const berhasil = await lakukanPatchingAtomic(db, remote);
+        if (!berhasil) {
+          alert("Gagal mengunduh pembaruan secara lengkap. Versi stabil saat ini tetap aktif.");
+        }
       } else {
         if (notifJikaSama) {
           alert("Game kamu sudah versi terbaru (Build " + buildAktif + ").");

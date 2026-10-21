@@ -40,8 +40,7 @@
     "admin-konfig.js",
     "admin-akun.js",
     "style.css",
-    "settings.css",
-    "assets/ui/logo-soul-ascendant.svg"
+    "settings.css"
   ],
   "icons": [
     {

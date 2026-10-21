@@ -219,8 +219,9 @@ function pasangResetIkatan() {
 function segarkanInfoPlatform() {
   const label = document.getElementById("setLabelEdisi");
   if (label && typeof EDISI_GAME !== "undefined" && typeof VERSI_GAME !== "undefined") {
-    const b = (window.SE_PATCHER && typeof window.SE_PATCHER.ambilBuildAktif === "function")
-      ? window.SE_PATCHER.ambilBuildAktif()
+    const p = window.SA_PATCHER || window.SE_PATCHER;
+    const b = (p && typeof p.ambilBuildAktif === "function")
+      ? p.ambilBuildAktif()
       : (typeof BUILD_GAME !== "undefined" ? BUILD_GAME : 74);
     label.textContent = "Soul Ascendant v" + VERSI_GAME + " (Build " + b + " • " + EDISI_GAME + ")";
   }
@@ -288,8 +289,9 @@ function pasangPengaturanUI() {
   const btnReset = document.getElementById("tombolResetPatch");
   if (btnReset) {
     btnReset.addEventListener("click", () => {
-      if (window.SE_PATCHER && typeof window.SE_PATCHER.resetKeBawaan === "function") {
-        window.SE_PATCHER.resetKeBawaan();
+      const p = window.SA_PATCHER || window.SE_PATCHER;
+      if (p && typeof p.resetKeBawaan === "function") {
+        p.resetKeBawaan();
       }
     });
   }

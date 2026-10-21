@@ -2,8 +2,9 @@
   function ambilVersiLokal() {
     const versi = typeof VERSI_GAME !== "undefined" ? VERSI_GAME : "0.1.0";
     let build = typeof BUILD_GAME !== "undefined" ? BUILD_GAME : (typeof BUILD !== "undefined" ? BUILD : 72);
-    if (window.SE_PATCHER && typeof window.SE_PATCHER.ambilBuildAktif === "function") {
-      build = window.SE_PATCHER.ambilBuildAktif();
+    const p = window.SA_PATCHER || window.SE_PATCHER;
+    if (p && typeof p.ambilBuildAktif === "function") {
+      build = p.ambilBuildAktif();
     }
     return { versi, build };
   }
@@ -24,8 +25,9 @@
   window.tutupLoadingUpdate = tutupLoading;
 
   window.cekPembaruanManual = function () {
-    if (window.SE_PATCHER && typeof window.SE_PATCHER.cekUpdateManual === "function") {
-      window.SE_PATCHER.cekUpdateManual(true);
+    const p = window.SA_PATCHER || window.SE_PATCHER;
+    if (p && typeof p.cekUpdateManual === "function") {
+      p.cekUpdateManual(true);
     } else {
       alert("Sistem pembaruan sedang bersiap.");
     }

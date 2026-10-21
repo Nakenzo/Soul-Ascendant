@@ -49,7 +49,7 @@ function cloneHudConfig(src) {
 function muatHudConfig() {
   if (_hudConfigCache) return _hudConfigCache;
   try {
-    const raw = localStorage.getItem(HUD_STORAGE_KEY) || localStorage.getItem("soul-essence-hud-v2");
+    const raw = localStorage.getItem(HUD_STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
       _hudConfigCache = cloneHudConfig(parsed);

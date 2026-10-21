@@ -162,10 +162,10 @@ jobs:
             ## Soul Ascendant - Game Release
 
             Unduh versi game Soul Ascendant yang sesuai dengan perangkatmu:
-            - 📱 **Android**: [Soul-Ascendant.apk](https://github.com/Nakenzo/Soul-Essence/releases/download/${{ steps.release_tag.outputs.tag }}/Soul-Ascendant.apk) *(Langsung pasang di HP tanpa ZIP)*
-            - 💻 **Windows PC (Installer NSIS)**: [Soul-Ascendant-Setup.exe](https://github.com/Nakenzo/Soul-Essence/releases/download/${{ steps.release_tag.outputs.tag }}/Soul-Ascendant-Setup.exe)
-            - 💻 **Windows PC (Paket MSI)**: [Soul-Ascendant.msi](https://github.com/Nakenzo/Soul-Essence/releases/download/${{ steps.release_tag.outputs.tag }}/Soul-Ascendant.msi)
-            - 🌐 **Web Game (Main di Browser)**: [https://nakenzo.github.io/Soul-Essence/](https://nakenzo.github.io/Soul-Essence/)
+            - 📱 **Android**: [Soul-Ascendant.apk](https://github.com/Nakenzo/Soul-Ascendant/releases/download/${{ steps.release_tag.outputs.tag }}/Soul-Ascendant.apk) *(Langsung pasang di HP tanpa ZIP)*
+            - 💻 **Windows PC (Installer NSIS)**: [Soul-Ascendant-Setup.exe](https://github.com/Nakenzo/Soul-Ascendant/releases/download/${{ steps.release_tag.outputs.tag }}/Soul-Ascendant-Setup.exe)
+            - 💻 **Windows PC (Paket MSI)**: [Soul-Ascendant.msi](https://github.com/Nakenzo/Soul-Ascendant/releases/download/${{ steps.release_tag.outputs.tag }}/Soul-Ascendant.msi)
+            - 🌐 **Web Game (Main di Browser)**: [https://nakenzo.github.io/Soul-Ascendant/](https://nakenzo.github.io/Soul-Ascendant/)
           files: |
             Soul-Ascendant.apk
             Soul-Ascendant-Setup.exe

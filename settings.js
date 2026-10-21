@@ -6,7 +6,7 @@
 //   - Ikatan tombol (hanya PC) -> satu tombol per aksi.
 //
 // Volume TIDAK disimpan di sini: audio.js sudah punya penyimpanan sendiri di
-// "soul-essence-volume" (_volUmum/_volSfx/_volMusik). Slider di layar Settings
+// "soul-ascendant-volume" (_volUmum/_volSfx/_volMusik). Slider di layar Settings
 // cuma membaca/menulis nilai yang sudah ada itu.
 //
 // Semua akses ke localStorage dibungkus try/catch supaya game tetap jalan
@@ -128,7 +128,7 @@ let pengaturanData = null;
 function pengaturanMuat() {
   let mentah = null;
   try {
-    mentah = JSON.parse(localStorage.getItem(PENGATURAN_KUNCI) || localStorage.getItem("soul-essence-settings") || "null");
+    mentah = JSON.parse(localStorage.getItem(PENGATURAN_KUNCI) || "null");
   } catch (err) { mentah = null; }
   pengaturanData = pengaturanNormalkan(mentah);
   return pengaturanData;

@@ -1,4 +1,4 @@
-package com.soulescence.app;
+package com.soulascendant.app;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -73,7 +73,7 @@ public class MainActivity extends BridgeActivity {
                                     while (redirects < 8) {
                                         conn = (HttpURLConnection) currentUrl.openConnection();
                                         conn.setInstanceFollowRedirects(true);
-                                        conn.setRequestProperty("User-Agent", "SoulEssence-App");
+                                        conn.setRequestProperty("User-Agent", "SoulAscendant-App");
                                         conn.setConnectTimeout(20000);
                                         conn.setReadTimeout(60000);
                                         conn.connect();

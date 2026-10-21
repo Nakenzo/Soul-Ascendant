@@ -54,7 +54,6 @@ const ASSETS_TO_CACHE = [
   "./assets/music/game.mp3",
   "./assets/ui/logo-kamu.png",
   "./assets/ui/logo-soul-ascendant.svg",
-  "./assets/ui/logo-soul-essence.svg",
   "./assets/ui/icon-192.png",
   "./assets/ui/icon-512.png",
   "./assets/ui/icon.png",

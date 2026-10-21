@@ -49,7 +49,7 @@ let deviceTerpilih = (() => {
     if (IS_APK) return "mobile";
     if (IS_PC) return "desktop";
     try {
-      const s = localStorage.getItem("soul-ascendant-device") || localStorage.getItem("soul-essence-device");
+      const s = localStorage.getItem("soul-ascendant-device");
       if (s === "mobile" || s === "desktop") return s;
     } catch (err) {}
     const isMobileUA = /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
