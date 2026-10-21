@@ -1,4 +1,4 @@
-const BUILD = 80;
+const BUILD = 81;
 const CACHE_FALLBACK = "soul-ascendant-v" + BUILD;
 const ASSETS_TO_CACHE = [
   "./",

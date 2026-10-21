@@ -37,7 +37,8 @@
     "admin-akun.js"
   ];
 
-  const BUILD_SEKARANG = 80;
+  const BUILD_SEKARANG = 81;
+  let petaPatchAktif = {};
 
   function ambilBuildBawaan() {
     if (typeof BUILD_TERKINI === "number" && BUILD_TERKINI > 0) return BUILD_TERKINI;
@@ -314,6 +315,7 @@
     }
 
     terapkanPatchCSS(petaPatch);
+    petaPatchAktif = petaPatch;
 
     muatSkripBerurutan(DAFTAR_SKRIP, 0, petaPatch, function () {
       perbaruiStatusUI("Game siap!");
@@ -322,6 +324,9 @@
 
   window.SE_PATCHER = {
     ambilBuildAktif: ambilBuildAktif,
+    ambilPatch: function (nama) {
+      return (petaPatchAktif && petaPatchAktif[nama]) || null;
+    },
     cekUpdateManual: async function (notifJikaSama) {
       const buildAktif = ambilBuildAktif();
       const db = await bukaDB();

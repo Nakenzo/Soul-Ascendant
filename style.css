@@ -961,18 +961,7 @@ body[data-device="mobile"] .bantuan-canvas {
 }
 
 #layarJudul .logo-aura {
-    position: absolute;
-    left: -6%;
-    top: -28%;
-    width: 112%;
-    height: 156%;
-    opacity: 0.55;
-    pointer-events: none;
-    z-index: 0;
-    mix-blend-mode: screen;
-    animation: auraBreath 2.6s ease-in-out infinite;
-    user-select: none;
-    -webkit-user-drag: none;
+    display: none !important;
 }
 
 #layarJudul .img-logo {

@@ -201,6 +201,52 @@ function sembunyiSemua() {
   }
 }
 
+let _logoAscendantInlined = false;
+
+function segarkanLogoJudul() {
+  const stack = document.querySelector("#layarJudul .logo-stack");
+  if (!stack) return;
+  const aura = stack.querySelector(".logo-aura");
+  if (aura) aura.style.display = "none";
+  if (_logoAscendantInlined) return;
+
+  function pasangSvgText(svgText) {
+    if (!svgText || !svgText.includes("<svg")) return false;
+    const div = document.createElement("div");
+    div.innerHTML = svgText;
+    const svgEl = div.querySelector("svg");
+    if (svgEl) {
+      svgEl.setAttribute("class", "img-logo");
+      svgEl.setAttribute("alt", "SOUL ASCENDANT");
+      const current = stack.querySelector(".img-logo");
+      if (current) current.replaceWith(svgEl);
+      _logoAscendantInlined = true;
+      return true;
+    }
+    return false;
+  }
+
+  if (window.SE_PATCHER && typeof window.SE_PATCHER.ambilPatch === "function") {
+    const patchSvg = window.SE_PATCHER.ambilPatch("assets/ui/logo-soul-ascendant.svg");
+    if (patchSvg && pasangSvgText(patchSvg)) return;
+  }
+
+  fetch("assets/ui/logo-soul-ascendant.svg")
+    .then(function (r) {
+      if (!r.ok) throw new Error("offline");
+      return r.text();
+    })
+    .then(function (text) {
+      if (!pasangSvgText(text)) throw new Error("bad svg");
+    })
+    .catch(function () {
+      fetch("https://raw.githubusercontent.com/Nakenzo/Soul-Essence/main/assets/ui/logo-soul-ascendant.svg?nc=" + Date.now())
+        .then(function (r) { return r.text(); })
+        .then(function (text) { pasangSvgText(text); })
+        .catch(function () {});
+    });
+}
+
 function tampilkanJudul() {
 
   statusGame = "title";
@@ -215,6 +261,7 @@ function tampilkanJudul() {
   try {
     resetArena({ koinBaru: true });
     segarkanSaldoJudul();
+    segarkanLogoJudul();
     aturTombolPause();
     if (typeof setMusik === "function") setMusik("lobby");
   } catch (err) {
