@@ -1,8 +1,8 @@
 {
-  "name": "soul-essence-mobile",
+  "name": "soul-ascendant-mobile",
   "version": "1.0.0",
   "private": true,
-  "description": "Soul Essence - bungkus Android (Capacitor)",
+  "description": "Soul Ascendant - bungkus Android (Capacitor)",
   "scripts": {
     "build:www": "node tools/salin-www.js",
     "sync": "npm run build:www && cap sync android",

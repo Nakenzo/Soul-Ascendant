@@ -4,7 +4,7 @@ const H = 960;
 const WORLD_W = 2560;
 const WORLD_H = 1920;
 const canvas = document.getElementById("game");
-let ctx = canvas.getContext("2d");
+let ctx = canvas.getContext("2d", { alpha: false });
 
 let kam = { x: 0, y: 0 };
 
@@ -49,7 +49,7 @@ let deviceTerpilih = (() => {
     if (IS_APK) return "mobile";
     if (IS_PC) return "desktop";
     try {
-      const s = localStorage.getItem("soul-essence-device");
+      const s = localStorage.getItem("soul-ascendant-device") || localStorage.getItem("soul-essence-device");
       if (s === "mobile" || s === "desktop") return s;
     } catch (err) {}
     const isMobileUA = /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);

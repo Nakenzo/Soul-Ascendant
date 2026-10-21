@@ -132,7 +132,7 @@ function terapkanDevice() {
 function pilihDevice(dev) {
   deviceTerpilih = dev;
   document.body.dataset.device = dev;
-  try { localStorage.setItem("soul-essence-device", dev); } catch (err) {}
+  try { localStorage.setItem("soul-ascendant-device", dev); } catch (err) {}
   if (typeof bukaAudio === "function") bukaAudio();
 
   if (typeof latarSkala === "function" && latarSkala() !== latarSkalaTerpakai) latarCache = null;

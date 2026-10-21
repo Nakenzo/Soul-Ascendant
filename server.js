@@ -84,7 +84,7 @@ const server = http.createServer((req, res) => {
 server.listen(PORT, "127.0.0.1", () => {
   const url = `http://localhost:${PORT}`;
   console.log(`====================================================`);
-  console.log(` Soul Essence PWA Server berjalan di: ${url}`);
+  console.log(` Soul Ascendant PWA Server berjalan di: ${url}`);
   console.log(` Tekan Ctrl+C di terminal ini untuk menghentikan.`);
   console.log(`====================================================`);
   console.log(` Buka URL di browser (Chrome / Edge), lalu klik`);

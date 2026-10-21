@@ -1,5 +1,5 @@
 const BUILD = 79;
-const CACHE_FALLBACK = "soul-essence-v" + BUILD;
+const CACHE_FALLBACK = "soul-ascendant-v" + BUILD;
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",
@@ -54,6 +54,8 @@ const ASSETS_TO_CACHE = [
   "./assets/music/game.mp3",
   "./assets/ui/logo-aura.png",
   "./assets/ui/logo-kamu.png",
+  "./assets/ui/logo-soul-ascendant.svg",
+  "./assets/ui/logo-soul-essence.svg",
   "./assets/ui/icon-192.png",
   "./assets/ui/icon-512.png",
   "./assets/ui/icon.png",
@@ -82,7 +84,7 @@ let AMAN_UNTUK_HAPUS = false;
 
 function namaCacheDari(manifest) {
   const b = manifest && manifest.build;
-  return "soul-essence-v" + (Number.isFinite(b) ? b : BUILD);
+  return "soul-ascendant-v" + (Number.isFinite(b) ? b : BUILD);
 }
 
 self.addEventListener("install", (e) => {

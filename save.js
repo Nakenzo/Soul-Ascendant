@@ -1,8 +1,35 @@
-const SAVE_KUNCI = "soul-essence-progress";
-const SAVE_KUNCI_BAK = "soul-essence-progress-bak";
+const SAVE_KUNCI = "soul-ascendant-progress";
+const SAVE_KUNCI_BAK = "soul-ascendant-progress-bak";
 // Cadangan: 3 slot manual + riwayat otomatis berputar.
-const SAVE_KUNCI_SLOT = "soul-essence-slot-";
-const SAVE_KUNCI_OTO = "soul-essence-auto";
+const SAVE_KUNCI_SLOT = "soul-ascendant-slot-";
+const SAVE_KUNCI_OTO = "soul-ascendant-auto";
+
+(function migrasiDataLama() {
+  try {
+    if (typeof localStorage === "undefined") return;
+    const pairs = [
+      ["soul-essence-progress", SAVE_KUNCI],
+      ["soul-essence-progress-bak", SAVE_KUNCI_BAK],
+      ["soul-essence-auto", SAVE_KUNCI_OTO]
+    ];
+    for (let i = 0; i < pairs.length; i++) {
+      const kl = pairs[i][0];
+      const kb = pairs[i][1];
+      if (!localStorage.getItem(kb)) {
+        const val = localStorage.getItem(kl);
+        if (val) localStorage.setItem(kb, val);
+      }
+    }
+    for (let s = 1; s <= 3; s++) {
+      const kl = "soul-essence-slot-" + s;
+      const kb = SAVE_KUNCI_SLOT + s;
+      if (!localStorage.getItem(kb)) {
+        const val = localStorage.getItem(kl);
+        if (val) localStorage.setItem(kb, val);
+      }
+    }
+  } catch (err) {}
+})();
 const SLOT_CADANGAN_MAKS = 3;
 const CADANGAN_AUTOMATIS_MAKS = 5;
 const CADANGAN_JEDA_MS = 10 * 60 * 1000;

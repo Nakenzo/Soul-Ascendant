@@ -1,8 +1,8 @@
 [package]
-name = "soul-essence"
+name = "soul-ascendant"
 version = "0.1.0"
-description = "Soul Essence - 2D Action Roguelike"
-authors = ["Soul Essence Team"]
+description = "Soul Ascendant - 2D Action Roguelike"
+authors = ["Soul Ascendant Team"]
 edition = "2021"
 
 [build-dependencies]

@@ -3947,7 +3947,7 @@ function bakeReactionSpriteFrames(jenis, canvasW, canvasH) {
   const cy = H / 2;
   const kJenis = String(jenis || "vortex").toLowerCase();
   let totalFrames = 8;
-  if (kJenis === "vortex" || kJenis === "void_corrosion" || kJenis === "swirl_corrosion" || kJenis === "sandstorm") {
+  if (kJenis === "vortex" || kJenis === "void_corrosion" || kJenis === "swirl_corrosion" || kJenis === "sandstorm" || kJenis === "plague_corrosion" || kJenis === "overload" || kJenis === "superconduct" || kJenis === "catalyze" || kJenis === "crush" || kJenis === "swirl_api" || kJenis === "swirl_es" || kJenis === "swirl_petir" || kJenis === "flame_corrosion" || kJenis === "volt_corrosion" || kJenis === "frost_corrosion" || kJenis === "crystallize") {
     totalFrames = 10;
   }
   const frames = [];
@@ -4410,6 +4410,348 @@ function bakeReactionSpriteFrames(jenis, canvasW, canvasH) {
         g.fillStyle = "rgba(251, 191, 36, " + (0.9 * alpha) + ")";
         g.fillRect(gx - 1, gy - 1, 2, 2);
       }
+
+    } else if (kJenis === "plague_corrosion") {
+      const alpha = Math.max(0, 1 - Math.pow(t, 2));
+      const bubbleR = Math.max(4, 18 * Math.sin(t * Math.PI));
+      const gVenom = g.createRadialGradient(cx, cy, 1, cx, cy, bubbleR + 6);
+      gVenom.addColorStop(0, "rgba(168, 85, 247, " + alpha + ")");
+      gVenom.addColorStop(0.5, "rgba(34, 197, 94, " + (0.9 * alpha) + ")");
+      gVenom.addColorStop(1, "rgba(22, 101, 52, 0)");
+      g.fillStyle = gVenom;
+      g.beginPath();
+      g.arc(cx, cy, bubbleR + 6, 0, Math.PI * 2);
+      g.fill();
+
+      for (let sp = 0; sp < 7; sp++) {
+        const aSp = sp * (Math.PI * 2 / 7) + t * 2.5;
+        const dSp = bubbleR * 0.5 + t * 28;
+        const sx = cx + Math.cos(aSp) * dSp;
+        const sy = cy + Math.sin(aSp) * dSp - t * 12;
+        const sR = Math.max(1.5, 4.5 * Math.sin((t + sp * 0.15) * Math.PI));
+        g.fillStyle = sp % 2 === 0 ? "rgba(34, 197, 94, " + (0.9 * alpha) + ")" : "rgba(192, 132, 252, " + (0.9 * alpha) + ")";
+        g.beginPath();
+        g.arc(sx, sy, sR, 0, Math.PI * 2);
+        g.fill();
+        g.fillStyle = "rgba(255, 255, 255, " + (0.8 * alpha) + ")";
+        g.beginPath();
+        g.arc(sx - sR * 0.3, sy - sR * 0.3, sR * 0.35, 0, Math.PI * 2);
+        g.fill();
+      }
+
+    } else if (kJenis === "overload") {
+      const alpha = Math.max(0, 1 - Math.pow(t, 2));
+      const rBlast = 10 + Math.sin(Math.min(1, t * 1.6) * Math.PI * 0.5) * 34;
+
+      if (t < 0.4) {
+        const flashR = Math.max(2, (1 - t / 0.4) * 20);
+        g.fillStyle = "rgba(255, 255, 255, " + alpha + ")";
+        g.beginPath();
+        g.arc(cx, cy, flashR, 0, Math.PI * 2);
+        g.fill();
+        g.fillStyle = "rgba(254, 240, 138, " + (0.9 * alpha) + ")";
+        g.beginPath();
+        g.arc(cx, cy, flashR * 1.5, 0, Math.PI * 2);
+        g.fill();
+      }
+
+      const numBolts = 8;
+      for (let b = 0; b < numBolts; b++) {
+        const aB = b * (Math.PI * 2 / numBolts) + 0.2;
+        const lenB = rBlast * (0.7 + (b % 2) * 0.4);
+        const mx = cx + Math.cos(aB - 0.2) * (lenB * 0.5);
+        const my = cy + Math.sin(aB - 0.2) * (lenB * 0.5);
+        const ex = cx + Math.cos(aB) * lenB;
+        const ey = cy + Math.sin(aB) * lenB;
+        g.strokeStyle = b % 2 === 0 ? "rgba(250, 204, 21, " + alpha + ")" : "rgba(255, 87, 34, " + alpha + ")";
+        g.lineWidth = Math.max(1, 2.5 * (1 - t * 0.7));
+        g.beginPath();
+        g.moveTo(cx, cy);
+        g.lineTo(mx, my);
+        g.lineTo(ex, ey);
+        g.stroke();
+      }
+
+      g.strokeStyle = "rgba(255, 87, 34, " + (0.85 * alpha) + ")";
+      g.lineWidth = 2.5;
+      g.beginPath();
+      g.arc(cx, cy, rBlast, 0, Math.PI * 2);
+      g.stroke();
+
+    } else if (kJenis === "superconduct") {
+      const alpha = Math.max(0, 1 - Math.pow(t, 2));
+      const ringR = 8 + Math.sin(t * Math.PI * 0.7) * 34;
+
+      g.strokeStyle = "rgba(56, 189, 248, " + (0.85 * alpha) + ")";
+      g.lineWidth = 2.2;
+      g.beginPath();
+      g.arc(cx, cy, ringR, 0, Math.PI * 2);
+      g.stroke();
+
+      const numNodes = 6;
+      const pts = [];
+      for (let n = 0; n < numNodes; n++) {
+        const aN = n * (Math.PI * 2 / numNodes) + t * 0.5;
+        const dN = ringR * 0.85;
+        const nx = cx + Math.cos(aN) * dN;
+        const ny = cy + Math.sin(aN) * dN;
+        pts.push({ x: nx, y: ny });
+
+        g.fillStyle = "rgba(186, 230, 253, " + alpha + ")";
+        g.beginPath();
+        g.arc(nx, ny, Math.max(1.5, 3.5 * (1 - t * 0.5)), 0, Math.PI * 2);
+        g.fill();
+      }
+
+      g.strokeStyle = "rgba(192, 132, 252, " + (0.9 * alpha) + ")";
+      g.lineWidth = 1.6;
+      g.beginPath();
+      for (let i = 0; i < pts.length; i++) {
+        const p1 = pts[i];
+        const p2 = pts[(i + 2) % pts.length];
+        const midX = (p1.x + p2.x) / 2 + Math.sin(t * 10 + i) * 4;
+        const midY = (p1.y + p2.y) / 2 + Math.cos(t * 10 + i) * 4;
+        g.moveTo(p1.x, p1.y);
+        g.lineTo(midX, midY);
+        g.lineTo(p2.x, p2.y);
+      }
+      g.stroke();
+
+    } else if (kJenis === "catalyze") {
+      const alpha = Math.max(0, 1 - Math.pow(t, 2));
+      const rBloom = 8 + Math.sin(t * Math.PI) * 26;
+
+      for (let v = 0; v < 4; v++) {
+        const aV = v * (Math.PI / 2) + t * 1.8;
+        const mx = cx + Math.cos(aV + 0.3) * (rBloom * 0.6);
+        const my = cy + Math.sin(aV + 0.3) * (rBloom * 0.6);
+        const ex = cx + Math.cos(aV) * rBloom;
+        const ey = cy + Math.sin(aV) * rBloom;
+        g.strokeStyle = "rgba(16, 185, 129, " + (0.9 * alpha) + ")";
+        g.lineWidth = 2.4;
+        g.beginPath();
+        g.moveTo(cx, cy);
+        g.quadraticCurveTo(mx, my, ex, ey);
+        g.stroke();
+
+        g.fillStyle = "rgba(163, 230, 53, " + (0.95 * alpha) + ")";
+        g.beginPath();
+        g.arc(ex, ey, Math.max(1.5, 4 * (1 - t * 0.5)), 0, Math.PI * 2);
+        g.fill();
+      }
+
+      const numSparks = 8;
+      for (let s = 0; s < numSparks; s++) {
+        const aS = s * (Math.PI * 2 / numSparks) + 0.4;
+        const dS = 6 + t * 36;
+        const sx = cx + Math.cos(aS) * dS;
+        const sy = cy + Math.sin(aS) * dS;
+        g.fillStyle = "rgba(250, 204, 21, " + alpha + ")";
+        g.fillRect(sx - 1.5, sy - 1.5, 3, 3);
+      }
+
+    } else if (kJenis === "crush") {
+      const alpha = Math.max(0, 1 - Math.pow(t, 2));
+      const rDust = 8 + t * 32;
+
+      g.strokeStyle = "rgba(217, 119, 6, " + (0.75 * alpha) + ")";
+      g.lineWidth = 3;
+      g.beginPath();
+      g.arc(cx, cy, rDust, 0, Math.PI * 2);
+      g.stroke();
+
+      const numChunks = 6;
+      for (let k = 0; k < numChunks; k++) {
+        const ang = k * (Math.PI * 2 / numChunks) + 0.3;
+        const distK = 6 + Math.pow(t, 0.7) * 36;
+        const kx = cx + Math.cos(ang) * distK;
+        const ky = cy + Math.sin(ang) * distK;
+        const sz = Math.max(2, 6.5 * (1 - t * 0.6));
+        g.save();
+        g.translate(kx, ky);
+        g.rotate(ang + t * 4);
+        g.fillStyle = "rgba(120, 53, 15, " + alpha + ")";
+        g.beginPath();
+        g.moveTo(0, -sz);
+        g.lineTo(sz, -sz * 0.3);
+        g.lineTo(sz * 0.7, sz);
+        g.lineTo(-sz * 0.6, sz * 0.8);
+        g.closePath();
+        g.fill();
+        g.strokeStyle = "rgba(245, 158, 11, " + (0.9 * alpha) + ")";
+        g.lineWidth = 1.2;
+        g.stroke();
+        g.restore();
+      }
+
+    } else if (kJenis === "swirl_api") {
+      const alpha = Math.max(0, 1 - Math.pow(t, 2));
+      const rot = t * Math.PI * 4;
+
+      for (let b = 0; b < 3; b++) {
+        const aOff = rot + b * (Math.PI * 2 / 3);
+        g.save();
+        g.translate(cx, cy);
+        g.rotate(aOff);
+        g.beginPath();
+        const rIn = 4 + (1 - t) * 6;
+        const rOut = 12 + Math.sin(t * Math.PI) * 26;
+        g.arc(0, 0, rOut, 0, Math.PI * 0.7, false);
+        g.arc(0, 0, rIn, Math.PI * 0.7, 0, true);
+        g.closePath();
+        g.fillStyle = "rgba(249, 115, 22, " + (0.85 * alpha) + ")";
+        g.fill();
+        g.strokeStyle = "rgba(253, 224, 71, " + (0.95 * alpha) + ")";
+        g.lineWidth = 2;
+        g.stroke();
+        g.restore();
+      }
+
+    } else if (kJenis === "swirl_es") {
+      const alpha = Math.max(0, 1 - Math.pow(t, 2));
+      const rot = -t * Math.PI * 4;
+
+      for (let b = 0; b < 3; b++) {
+        const aOff = rot + b * (Math.PI * 2 / 3);
+        g.save();
+        g.translate(cx, cy);
+        g.rotate(aOff);
+        g.beginPath();
+        const rOut = 12 + Math.sin(t * Math.PI) * 26;
+        g.arc(0, 0, rOut, 0, Math.PI * 0.6, false);
+        g.arc(0, 0, 4, Math.PI * 0.6, 0, true);
+        g.closePath();
+        g.fillStyle = "rgba(56, 189, 248, " + (0.85 * alpha) + ")";
+        g.fill();
+        g.strokeStyle = "rgba(224, 242, 254, " + (0.95 * alpha) + ")";
+        g.lineWidth = 1.8;
+        g.stroke();
+        g.restore();
+      }
+
+    } else if (kJenis === "swirl_petir") {
+      const alpha = Math.max(0, 1 - Math.pow(t, 2));
+      const rot = t * Math.PI * 4.5;
+
+      for (let b = 0; b < 3; b++) {
+        const aOff = rot + b * (Math.PI * 2 / 3);
+        g.save();
+        g.translate(cx, cy);
+        g.rotate(aOff);
+        g.beginPath();
+        const rOut = 14 + Math.sin(t * Math.PI) * 26;
+        g.arc(0, 0, rOut, 0, Math.PI * 0.55, false);
+        g.arc(0, 0, 4, Math.PI * 0.55, 0, true);
+        g.closePath();
+        g.fillStyle = "rgba(45, 212, 191, " + (0.85 * alpha) + ")";
+        g.fill();
+        g.strokeStyle = "rgba(250, 204, 21, " + (0.95 * alpha) + ")";
+        g.lineWidth = 2.2;
+        g.stroke();
+        g.restore();
+      }
+
+    } else if (kJenis === "flame_corrosion") {
+      const alpha = Math.max(0, 1 - Math.pow(t, 2));
+      const rCore = 6 + Math.sin(t * Math.PI) * 14;
+
+      const gCore = g.createRadialGradient(cx, cy, 2, cx, cy, rCore + 8);
+      gCore.addColorStop(0, "rgba(59, 7, 100, " + alpha + ")");
+      gCore.addColorStop(0.6, "rgba(168, 85, 247, " + (0.85 * alpha) + ")");
+      gCore.addColorStop(1, "rgba(236, 72, 153, 0)");
+      g.fillStyle = gCore;
+      g.beginPath();
+      g.arc(cx, cy, rCore + 8, 0, Math.PI * 2);
+      g.fill();
+
+      for (let f = 0; f < 5; f++) {
+        const aF = f * (Math.PI * 2 / 5) + t * 2.5;
+        const dF = rCore + t * 22;
+        const fx = cx + Math.cos(aF) * dF;
+        const fy = cy + Math.sin(aF) * dF - t * 16;
+        const fR = Math.max(2, 5 * (1 - t * 0.7));
+        g.fillStyle = "rgba(236, 72, 153, " + (0.9 * alpha) + ")";
+        g.beginPath();
+        g.arc(fx, fy, fR, 0, Math.PI * 2);
+        g.fill();
+      }
+
+    } else if (kJenis === "volt_corrosion") {
+      const alpha = Math.max(0, 1 - Math.pow(t, 2));
+      const rDistort = 8 + t * 28;
+
+      g.strokeStyle = "rgba(192, 132, 252, " + (0.85 * alpha) + ")";
+      g.lineWidth = 1.8;
+      g.beginPath();
+      g.arc(cx, cy, rDistort, 0, Math.PI * 2);
+      g.stroke();
+
+      for (let z = 0; z < 6; z++) {
+        const aZ = z * (Math.PI * 2 / 6) + t * 3;
+        const lenZ = rDistort * 0.9;
+        const zx = cx + Math.cos(aZ) * lenZ;
+        const zy = cy + Math.sin(aZ) * lenZ;
+        g.strokeStyle = "rgba(255, 255, 255, " + alpha + ")";
+        g.lineWidth = 1.5;
+        g.beginPath();
+        g.moveTo(cx, cy);
+        g.lineTo((cx + zx) / 2 + (z % 2 === 0 ? 5 : -5), (cy + zy) / 2 + (z % 2 === 0 ? -5 : 5));
+        g.lineTo(zx, zy);
+        g.stroke();
+      }
+
+    } else if (kJenis === "frost_corrosion") {
+      const alpha = Math.max(0, 1 - Math.pow(t, 2));
+      const rIce = 10 + Math.sin(t * Math.PI) * 26;
+
+      for (let s = 0; s < 6; s++) {
+        const aS = s * (Math.PI / 3);
+        g.save();
+        g.translate(cx, cy);
+        g.rotate(aS);
+        g.beginPath();
+        g.moveTo(0, 0);
+        g.lineTo(4, rIce * 0.4);
+        g.lineTo(0, rIce);
+        g.lineTo(-4, rIce * 0.4);
+        g.closePath();
+        g.fillStyle = "rgba(88, 28, 135, " + (0.9 * alpha) + ")";
+        g.fill();
+        g.strokeStyle = "rgba(56, 189, 248, " + (0.95 * alpha) + ")";
+        g.lineWidth = 1.5;
+        g.stroke();
+        g.restore();
+      }
+
+    } else if (kJenis === "crystallize") {
+      const alpha = Math.max(0, 1 - Math.pow(t, 2));
+      const rHex = 8 + Math.sin(t * Math.PI * 0.8) * 24;
+
+      g.save();
+      g.translate(cx, cy);
+      g.rotate(t * 1.5);
+      g.beginPath();
+      for (let h = 0; h < 6; h++) {
+        const aH = h * (Math.PI / 3);
+        const hx = Math.cos(aH) * rHex;
+        const hy = Math.sin(aH) * rHex;
+        if (h === 0) g.moveTo(hx, hy); else g.lineTo(hx, hy);
+      }
+      g.closePath();
+      g.strokeStyle = "rgba(245, 158, 11, " + (0.9 * alpha) + ")";
+      g.lineWidth = 2.4;
+      g.stroke();
+      g.fillStyle = "rgba(251, 191, 36, " + (0.45 * alpha) + ")";
+      g.fill();
+
+      for (let gIdx = 0; gIdx < 6; gIdx++) {
+        const aG = gIdx * (Math.PI / 3) + Math.PI / 6;
+        const gx = Math.cos(aG) * (rHex * 0.6);
+        const gy = Math.sin(aG) * (rHex * 0.6);
+        g.fillStyle = "rgba(255, 255, 255, " + (0.9 * alpha) + ")";
+        g.fillRect(gx - 2, gy - 2, 4, 4);
+      }
+      g.restore();
     }
 
     frames.push(cs);

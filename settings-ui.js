@@ -222,7 +222,7 @@ function segarkanInfoPlatform() {
     const b = (window.SE_PATCHER && typeof window.SE_PATCHER.ambilBuildAktif === "function")
       ? window.SE_PATCHER.ambilBuildAktif()
       : (typeof BUILD_GAME !== "undefined" ? BUILD_GAME : 74);
-    label.textContent = "Soul Essence v" + VERSI_GAME + " (Build " + b + " • " + EDISI_GAME + ")";
+    label.textContent = "Soul Ascendant v" + VERSI_GAME + " (Build " + b + " • " + EDISI_GAME + ")";
   }
   const link = document.getElementById("setLinkDownload");
   if (link && typeof IS_WEB !== "undefined") {

@@ -1,4 +1,4 @@
-name: Release Soul Essence
+name: Release Soul Ascendant
 
 on:
   push:
@@ -68,13 +68,13 @@ jobs:
 
       - name: Prepare APK Release File
         run: |
-          cp mobile/android/app/build/outputs/apk/debug/app-debug.apk Soul-Essence.apk
+          cp mobile/android/app/build/outputs/apk/debug/app-debug.apk Soul-Ascendant.apk
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: android-artifact
-          path: Soul-Essence.apk
+          path: Soul-Ascendant.apk
           retention-days: 7
 
   build-pc:
@@ -114,16 +114,16 @@ jobs:
       - name: Prepare Windows Release Files
         shell: bash
         run: |
-          cp src-tauri/target/release/bundle/nsis/*.exe Soul-Essence-Setup.exe
-          cp src-tauri/target/release/bundle/msi/*.msi Soul-Essence.msi || true
+          cp src-tauri/target/release/bundle/nsis/*.exe Soul-Ascendant-Setup.exe
+          cp src-tauri/target/release/bundle/msi/*.msi Soul-Ascendant.msi || true
 
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4
         with:
           name: windows-artifact
           path: |
-            Soul-Essence-Setup.exe
-            Soul-Essence.msi
+            Soul-Ascendant-Setup.exe
+            Soul-Ascendant.msi
           retention-days: 7
 
   publish-release:
@@ -157,19 +157,19 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.release_tag.outputs.tag }}
-          name: "Soul Essence (${{ steps.release_tag.outputs.tag }})"
+          name: "Soul Ascendant (${{ steps.release_tag.outputs.tag }})"
           body: |
-            ## Soul Essence - Game Release
+            ## Soul Ascendant - Game Release
 
-            Unduh versi game Soul Essence yang sesuai dengan perangkatmu:
-            - 📱 **Android**: [Soul-Essence.apk](https://github.com/Nakenzo/Soul-Essence/releases/download/${{ steps.release_tag.outputs.tag }}/Soul-Essence.apk) *(Langsung pasang di HP tanpa ZIP)*
-            - 💻 **Windows PC (Installer NSIS)**: [Soul-Essence-Setup.exe](https://github.com/Nakenzo/Soul-Essence/releases/download/${{ steps.release_tag.outputs.tag }}/Soul-Essence-Setup.exe)
-            - 💻 **Windows PC (Paket MSI)**: [Soul-Essence.msi](https://github.com/Nakenzo/Soul-Essence/releases/download/${{ steps.release_tag.outputs.tag }}/Soul-Essence.msi)
+            Unduh versi game Soul Ascendant yang sesuai dengan perangkatmu:
+            - 📱 **Android**: [Soul-Ascendant.apk](https://github.com/Nakenzo/Soul-Essence/releases/download/${{ steps.release_tag.outputs.tag }}/Soul-Ascendant.apk) *(Langsung pasang di HP tanpa ZIP)*
+            - 💻 **Windows PC (Installer NSIS)**: [Soul-Ascendant-Setup.exe](https://github.com/Nakenzo/Soul-Essence/releases/download/${{ steps.release_tag.outputs.tag }}/Soul-Ascendant-Setup.exe)
+            - 💻 **Windows PC (Paket MSI)**: [Soul-Ascendant.msi](https://github.com/Nakenzo/Soul-Essence/releases/download/${{ steps.release_tag.outputs.tag }}/Soul-Ascendant.msi)
             - 🌐 **Web Game (Main di Browser)**: [https://nakenzo.github.io/Soul-Essence/](https://nakenzo.github.io/Soul-Essence/)
           files: |
-            Soul-Essence.apk
-            Soul-Essence-Setup.exe
-            Soul-Essence.msi
+            Soul-Ascendant.apk
+            Soul-Ascendant-Setup.exe
+            Soul-Ascendant.msi
           make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

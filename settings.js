@@ -13,7 +13,7 @@
 // kalau storage diblokir (mode privat, iframe, dst).
 // =============================================================================
 
-const PENGATURAN_KUNCI = "soul-essence-settings";
+const PENGATURAN_KUNCI = "soul-ascendant-settings";
 
 // Tombol bawaan. Nilai disimpan sebagai e.key.toLowerCase() supaya cocok dengan
 // indeks objek `keys` di input.js.
@@ -128,7 +128,7 @@ let pengaturanData = null;
 function pengaturanMuat() {
   let mentah = null;
   try {
-    mentah = JSON.parse(localStorage.getItem(PENGATURAN_KUNCI) || "null");
+    mentah = JSON.parse(localStorage.getItem(PENGATURAN_KUNCI) || localStorage.getItem("soul-essence-settings") || "null");
   } catch (err) { mentah = null; }
   pengaturanData = pengaturanNormalkan(mentah);
   return pengaturanData;

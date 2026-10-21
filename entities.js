@@ -460,6 +460,13 @@ function prosesReaksiElemen(e, elemenSerangan, dmgAwal) {
     reaksi = { nama: "BLEEDING!", warna: "#ef4444", anim: "bleeding" };
     spawnParticles(e.x, e.y, "#ef4444", 18);
     rings.push({ x: e.x, y: e.y, r: 10, maxR: 75, life: 0.35, t: 0, warna: "#ef4444" });
+  } else if ((atkEl === "fisik" && musuhEl === "tanah") || (atkEl === "tanah" && musuhEl === "fisik")) {
+    const bonusDmg = Math.round(dmgAwal * 1.3 * emKali);
+    e.hp -= bonusDmg;
+    e.hitStun = 0.35;
+    reaksi = { nama: "CRUSH!", warna: "#d97706", anim: "crush" };
+    spawnParticles(e.x, e.y, "#b45309", 18);
+    rings.push({ x: e.x, y: e.y, r: 14, maxR: 90, life: 0.4, t: 0, warna: "#d97706" });
   } else if ((atkEl === "fisik" && musuhEl === "nihil") || (atkEl === "nihil" && musuhEl === "fisik")) {
     e.korosi = { timer: 0, tick: 0.4, durasi: 4.0, dmg: Math.max(3, Math.round(8 * emKali)) };
     reaksi = { nama: "VOID CORROSION", warna: "#c084fc", anim: "void_corrosion" };
@@ -476,14 +483,97 @@ function prosesReaksiElemen(e, elemenSerangan, dmgAwal) {
     reaksi = { nama: "FROSTBITE!", warna: "#7dd3fc", anim: "frostbite" };
     spawnParticles(e.x, e.y, "#7dd3fc", 16);
   } else if ((atkEl === "nature" && musuhEl === "nihil") || (atkEl === "nihil" && musuhEl === "nature")) {
-    e.korosi = { timer: 0, tick: 0.4, durasi: 4.0, dmg: Math.max(4, Math.round(10 * emKali)) };
-    reaksi = { nama: "PLAGUE CORROSION", warna: "#a855f7", anim: "void_corrosion" };
-    spawnParticles(e.x, e.y, "#a855f7", 16);
+    e.korosi = { timer: 0, tick: 0.35, durasi: 4.5, dmg: Math.max(4, Math.round(10 * emKali)) };
+    reaksi = { nama: "PLAGUE CORROSION", warna: "#22c55e", anim: "plague_corrosion" };
+    spawnParticles(e.x, e.y, "#22c55e", 14);
+    spawnParticles(e.x, e.y, "#a855f7", 14);
   } else if ((atkEl === "api" && musuhEl === "es") || (atkEl === "es" && musuhEl === "api")) {
     const bonusDmg = Math.round(dmgAwal * 1.0 * emKali);
     e.hp -= bonusDmg;
     reaksi = { nama: "MELT x2.0", warna: "#f43f5e", anim: "melt" };
     spawnParticles(e.x, e.y, "#f43f5e", 18);
+  } else if (
+    (atkEl === "api" && (musuhEl === "petir" || musuhEl === "listrik")) ||
+    ((atkEl === "petir" || atkEl === "listrik") && musuhEl === "api")
+  ) {
+    const bonusDmg = Math.round(dmgAwal * 1.4 * emKali);
+    e.hp -= bonusDmg;
+    reaksi = { nama: "OVERLOAD!", warna: "#ff5722", anim: "overload" };
+    spawnParticles(e.x, e.y, "#facc15", 14);
+    spawnParticles(e.x, e.y, "#ff5722", 14);
+    rings.push({ x: e.x, y: e.y, r: 12, maxR: 110, life: 0.35, t: 0, warna: "#ff5722" });
+  } else if (
+    (atkEl === "es" && (musuhEl === "petir" || musuhEl === "listrik")) ||
+    ((atkEl === "petir" || atkEl === "listrik") && musuhEl === "es")
+  ) {
+    const bonusDmg = Math.round(dmgAwal * 0.9 * emKali);
+    e.hp -= bonusDmg;
+    e.armorBreak = 4.0;
+    reaksi = { nama: "SUPERCONDUCT!", warna: "#38bdf8", anim: "superconduct" };
+    spawnParticles(e.x, e.y, "#38bdf8", 14);
+    spawnParticles(e.x, e.y, "#c084fc", 14);
+    rings.push({ x: e.x, y: e.y, r: 10, maxR: 95, life: 0.35, t: 0, warna: "#38bdf8" });
+  } else if (
+    (atkEl === "nature" && (musuhEl === "petir" || musuhEl === "listrik")) ||
+    ((atkEl === "petir" || atkEl === "listrik") && musuhEl === "nature")
+  ) {
+    const bonusDmg = Math.round(dmgAwal * 1.2 * emKali);
+    e.hp -= bonusDmg;
+    reaksi = { nama: "CATALYZE!", warna: "#a3e635", anim: "catalyze" };
+    spawnParticles(e.x, e.y, "#a3e635", 14);
+    spawnParticles(e.x, e.y, "#facc15", 14);
+  } else if ((atkEl === "angin" && musuhEl === "api") || (atkEl === "api" && musuhEl === "angin")) {
+    const bonusDmg = Math.round(dmgAwal * 0.8 * emKali);
+    e.hp -= bonusDmg;
+    reaksi = { nama: "FIRE SWIRL", warna: "#f97316", anim: "swirl_api" };
+    spawnParticles(e.x, e.y, "#f97316", 16);
+    spawnParticles(e.x, e.y, "#2dd4bf", 10);
+  } else if ((atkEl === "angin" && musuhEl === "es") || (atkEl === "es" && musuhEl === "angin")) {
+    const bonusDmg = Math.round(dmgAwal * 0.8 * emKali);
+    e.hp -= bonusDmg;
+    e.freeze = Math.max(e.freeze || 0, 1.0);
+    reaksi = { nama: "FROST SWIRL", warna: "#7dd3fc", anim: "swirl_es" };
+    spawnParticles(e.x, e.y, "#7dd3fc", 16);
+    spawnParticles(e.x, e.y, "#2dd4bf", 10);
+  } else if (
+    (atkEl === "angin" && (musuhEl === "petir" || musuhEl === "listrik")) ||
+    ((atkEl === "petir" || atkEl === "listrik") && musuhEl === "angin")
+  ) {
+    const bonusDmg = Math.round(dmgAwal * 0.9 * emKali);
+    e.hp -= bonusDmg;
+    reaksi = { nama: "THUNDER SWIRL", warna: "#facc15", anim: "swirl_petir" };
+    spawnParticles(e.x, e.y, "#facc15", 16);
+    spawnParticles(e.x, e.y, "#2dd4bf", 10);
+  } else if ((atkEl === "angin" && musuhEl === "nature") || (atkEl === "nature" && musuhEl === "angin")) {
+    const bonusDmg = Math.round(dmgAwal * 0.8 * emKali);
+    e.hp -= bonusDmg;
+    reaksi = { nama: "NATURE SWIRL", warna: "#22c55e", anim: "vortex" };
+    spawnParticles(e.x, e.y, "#22c55e", 16);
+    spawnParticles(e.x, e.y, "#2dd4bf", 10);
+  } else if ((atkEl === "tanah" && (musuhEl === "api" || musuhEl === "es" || musuhEl === "petir" || musuhEl === "listrik" || musuhEl === "nature")) ||
+    ((atkEl === "api" || atkEl === "es" || atkEl === "petir" || atkEl === "listrik" || atkEl === "nature") && musuhEl === "tanah")
+  ) {
+    const bonusDmg = Math.round(dmgAwal * 0.7 * emKali);
+    e.hp -= bonusDmg;
+    reaksi = { nama: "CRYSTALLIZE", warna: "#f59e0b", anim: "crystallize" };
+    spawnParticles(e.x, e.y, "#f59e0b", 16);
+    rings.push({ x: e.x, y: e.y, r: 12, maxR: 85, life: 0.35, t: 0, warna: "#f59e0b" });
+  } else if ((atkEl === "nihil" && musuhEl === "api") || (atkEl === "api" && musuhEl === "nihil")) {
+    e.korosi = { timer: 0, tick: 0.35, durasi: 4.0, dmg: Math.max(4, Math.round(11 * emKali)) };
+    reaksi = { nama: "FLAME CORROSION", warna: "#ec4899", anim: "flame_corrosion" };
+    spawnParticles(e.x, e.y, "#ec4899", 14);
+    spawnParticles(e.x, e.y, "#a855f7", 12);
+  } else if ((atkEl === "nihil" && (musuhEl === "petir" || musuhEl === "listrik")) || ((atkEl === "petir" || atkEl === "listrik") && musuhEl === "nihil")) {
+    e.korosi = { timer: 0, tick: 0.35, durasi: 4.0, dmg: Math.max(4, Math.round(11 * emKali)) };
+    reaksi = { nama: "VOLT CORROSION", warna: "#c084fc", anim: "volt_corrosion" };
+    spawnParticles(e.x, e.y, "#c084fc", 14);
+    spawnParticles(e.x, e.y, "#facc15", 10);
+  } else if ((atkEl === "nihil" && musuhEl === "es") || (atkEl === "es" && musuhEl === "nihil")) {
+    e.freeze = Math.max(e.freeze || 0, 1.2);
+    e.korosi = { timer: 0, tick: 0.4, durasi: 3.5, dmg: Math.max(3, Math.round(9 * emKali)) };
+    reaksi = { nama: "FROST CORROSION", warna: "#38bdf8", anim: "frost_corrosion" };
+    spawnParticles(e.x, e.y, "#38bdf8", 14);
+    spawnParticles(e.x, e.y, "#a855f7", 12);
   } else if ((atkEl === "angin" && musuhEl === "nihil") || (atkEl === "nihil" && musuhEl === "angin")) {
     e.korosi = { timer: 0, tick: 0.35, durasi: 4.5, dmg: Math.max(4, Math.round((dmgAwal * 0.35 + 8) * emKali)) };
     const bonusDmg = Math.round(dmgAwal * 0.5 * emKali);

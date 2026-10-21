@@ -1,4 +1,4 @@
-# Soul Essence
+# Soul Ascendant
 
 2D top-down action roguelike. Vanilla JS tanpa dependency, bisa dijalankan sebagai PWA offline.
 
@@ -67,9 +67,9 @@ Tiap layar punya tombol `X`, dan `ESC` naik satu jenjang: AKUN -> SETTINGS -> JU
 
 ## Layar SETTINGS
 
-Pengaturan in-game, disimpan di localStorage kunci `soul-essence-settings` (`settings.js`):
+Pengaturan in-game, disimpan di localStorage kunci `soul-ascendant-settings` (`settings.js`):
 
-- **SUARA** - tiga slider (umum/efek/musik). Nilainya tidak punya penyimpanan sendiri: slider membaca dan menulis `_volUmum/_volSfx/_volMusik` milik `audio.js` (kunci `soul-essence-volume`), jadi sama persis dengan slider di layar Pause.
+- **SUARA** - tiga slider (umum/efek/musik). Nilainya tidak punya penyimpanan sendiri: slider membaca dan menulis `_volUmum/_volSfx/_volMusik` milik `audio.js` (kunci `soul-ascendant-volume`), jadi sama persis dengan slider di layar Pause.
 - **GAMEPLAY** - saklar *Goyang kamera* (dipakai di `draw.js`) dan *Layar penuh*. Status layar penuh selalu disinkronkan dengan kenyataan lewat event `fullscreenchange`, karena browser keluar dari fullscreen saat reload.
 - **KONTROL** - ikatan tombol, hanya tampil di perangkat non-sentuh. Delapan aksi: maju/mundur/kiri/kanan/skill 1/skill 2/skill 3/ultimate. Panah arah tetap aktif sebagai cadangan gerak, dan `Q` tetap cadangan skill 1 (`1/Q`). Keybind bawaan skill adalah 1, 2, dan 3. Tombol sistem (Enter, Esc, Tab, F11/F12, modifier) ditolak, begitu juga tombol yang sudah dipakai aksi lain.
 

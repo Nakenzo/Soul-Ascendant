@@ -1,4 +1,4 @@
-const HUD_STORAGE_KEY = "soul-essence-hud-v2";
+const HUD_STORAGE_KEY = "soul-ascendant-hud-v2";
 
 const HUD_DEFAULT = {
   joy:    { x: 15.0, y: 75.0, s: 1.0 },
@@ -49,7 +49,7 @@ function cloneHudConfig(src) {
 function muatHudConfig() {
   if (_hudConfigCache) return _hudConfigCache;
   try {
-    const raw = localStorage.getItem(HUD_STORAGE_KEY);
+    const raw = localStorage.getItem(HUD_STORAGE_KEY) || localStorage.getItem("soul-essence-hud-v2");
     if (raw) {
       const parsed = JSON.parse(raw);
       _hudConfigCache = cloneHudConfig(parsed);

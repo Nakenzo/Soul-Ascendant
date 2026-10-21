@@ -1,6 +1,6 @@
 # ATURAN PENGEMBANGAN GAME BLJR
 
-Aturan ini wajib dipatuhi di setiap sesi pengerjaan proyek Soul Essence (folder `bljr`):
+Aturan ini wajib dipatuhi di setiap sesi pengerjaan proyek Soul Ascendant (folder `bljr`):
 
 1. **Dilarang Menulis Blok Komen (`/* ... */`) di Semua File**
    - Tidak boleh menulis blok komentar sama sekali di semua file proyek (JavaScript, CSS, HTML, dll.) agar file ringan dan game berjalan maksimal.

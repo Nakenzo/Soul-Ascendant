@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Soul Essence",
+  "productName": "Soul Ascendant",
   "version": "0.1.0",
-  "identifier": "com.soulescence.game",
+  "identifier": "com.soulascendant.game",
   "build": {
     "frontendDist": "../mobile/www",
     "devUrl": "http://localhost:8080"
@@ -11,7 +11,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "Soul Essence",
+        "title": "Soul Ascendant",
         "width": 1280,
         "height": 720,
         "minWidth": 960,

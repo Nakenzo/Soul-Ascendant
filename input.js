@@ -603,52 +603,78 @@ function gambarSoulUlt() {
 // - tombolSkill3 -> slot 4
 // Persembunyian (non-mode) pakai style.display langsung, jadi dijamin
 // terlihat saat mode 3 skill aktif, tanpa bergantung class/CSS.
-function perbaruiCdSkillSentuh() {
-  const mode = typeof pakaiModeTigaSkill === "function" && pakaiModeTigaSkill();
-  const ids = ["tombolSkill", "tombolSkill2", "tombolSkill3"];
-  const slots = [2, 3, 4];
-  const sisa = Math.max(0, player && player.specialCd ? player.specialCd : 0);
-  for (let i = 0; i < ids.length; i++) {
-    const btn = document.getElementById(ids[i]);
-    if (!btn) continue;
-    if (i > 0) {
-      btn.style.display = mode ? "" : "none";
-      if (!mode) continue;
-    }
-    const slot = slots[i];
-    const tutup = btn.querySelector(".cd-tutup");
-    const ang = btn.querySelector(".cd-angka");
-    const def = karakter && typeof daftarSkill === "function"
-      ? daftarSkill(karakter.kunci).filter(function (s) { return s.slot === slot; })[0]
-      : null;
-    const cd = typeof cdSkill === "function" && karakter ? cdSkill(karakter.kunci, slot) : 0;
-    const terkunci = typeof apakahSkillTerbuka === "function" && karakter
-      ? !apakahSkillTerbuka(karakter.kunci, slot)
-      : (def && karakter && typeof levelKarakter === "function" && levelKarakter(karakter.kunci) < def.level);
-    if (terkunci) {
-      btn.classList.add("tombol-terkunci");
-      if (tutup) {
-        tutup.style.background = "rgba(6, 8, 14, 0.78)";
-      }
-      if (ang) ang.textContent = "🔒";
-    } else {
-      btn.classList.remove("tombol-terkunci");
-      const lapis = cd > 0 && sisa > 0 ? Math.max(0, Math.min(100, sisa / cd * 100)) : 0;
-      if (tutup) {
-        tutup.style.background = "conic-gradient(rgba(8,10,16,.78) " + lapis + "%, rgba(8,10,16,0) " + lapis + "%)";
-      }
-      if (ang) ang.textContent = sisa > 0 ? sisa.toFixed(1) : "";
-    }
-  }
-  try { if (typeof perbaruiIkonSkillSentuh === "function") perbaruiIkonSkillSentuh(karakter); } catch (err) {}
-}
+const _cacheTombolSkill = [
+  { id: "tombolSkill", slot: 2, el: null, tutup: null, ang: null, lapis: -1, teks: "", terkunci: null, display: null },
+  { id: "tombolSkill2", slot: 3, el: null, tutup: null, ang: null, lapis: -1, teks: "", terkunci: null, display: null },
+  { id: "tombolSkill3", slot: 4, el: null, tutup: null, ang: null, lapis: -1, teks: "", terkunci: null, display: null }
+];
+let _lastKarIkonSkill = null;
 
-(function loopSoulUlt() {
-  requestAnimationFrame(loopSoulUlt);
+function perbaruiCdSkillSentuh() {
   if (deviceTerpilih !== "mobile") return;
   try { gambarSoulUlt(); } catch (err) {}
-  try { perbaruiCdSkillSentuh(); } catch (err) {}
-})();
+  const mode = typeof pakaiModeTigaSkill === "function" && pakaiModeTigaSkill();
+  const sisa = Math.max(0, player && player.specialCd ? player.specialCd : 0);
+  for (let i = 0; i < _cacheTombolSkill.length; i++) {
+    const item = _cacheTombolSkill[i];
+    if (!item.el) {
+      item.el = document.getElementById(item.id);
+      if (!item.el) continue;
+      item.tutup = item.el.querySelector(".cd-tutup");
+      item.ang = item.el.querySelector(".cd-angka");
+    }
+    if (i > 0) {
+      const targetDisplay = mode ? "" : "none";
+      if (item.display !== targetDisplay) {
+        item.display = targetDisplay;
+        item.el.style.display = targetDisplay;
+      }
+      if (!mode) continue;
+    }
+    const def = karakter && typeof daftarSkill === "function"
+      ? daftarSkill(karakter.kunci).find(function (s) { return s.slot === item.slot; })
+      : null;
+    const cd = typeof cdSkill === "function" && karakter ? cdSkill(karakter.kunci, item.slot) : 0;
+    const terkunci = typeof apakahSkillTerbuka === "function" && karakter
+      ? !apakahSkillTerbuka(karakter.kunci, item.slot)
+      : (def && karakter && typeof levelKarakter === "function" && levelKarakter(karakter.kunci) < def.level);
+    if (terkunci) {
+      if (item.terkunci !== true) {
+        item.terkunci = true;
+        item.el.classList.add("tombol-terkunci");
+        if (item.tutup) item.tutup.style.background = "rgba(6, 8, 14, 0.78)";
+        if (item.ang) item.ang.textContent = "🔒";
+        item.lapis = -1;
+        item.teks = "🔒";
+      }
+    } else {
+      if (item.terkunci !== false) {
+        item.terkunci = false;
+        item.el.classList.remove("tombol-terkunci");
+      }
+      const rawLapis = cd > 0 && sisa > 0 ? Math.max(0, Math.min(100, (sisa / cd) * 100)) : 0;
+      const lapis = Math.round(rawLapis);
+      if (item.lapis !== lapis) {
+        item.lapis = lapis;
+        if (item.tutup) {
+          item.tutup.style.background = lapis > 0
+            ? "conic-gradient(rgba(8,10,16,.78) " + lapis + "%, rgba(8,10,16,0) " + lapis + "%)"
+            : "";
+        }
+      }
+      const teksAng = sisa > 0 ? sisa.toFixed(1) : "";
+      if (item.teks !== teksAng) {
+        item.teks = teksAng;
+        if (item.ang) item.ang.textContent = teksAng;
+      }
+    }
+  }
+  const karKey = karakter ? karakter.kunci : "";
+  if (_lastKarIkonSkill !== karKey) {
+    _lastKarIkonSkill = karKey;
+    try { if (typeof perbaruiIkonSkillSentuh === "function") perbaruiIkonSkillSentuh(karakter); } catch (err) {}
+  }
+}
 
 function pasangIkonSentuh() {
   const dekat = karakter && karakter.tipe === "dekat";

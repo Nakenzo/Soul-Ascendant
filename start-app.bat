@@ -1,5 +1,5 @@
 @echo off
-title Soul Essence - PWA App Server
-echo Memulai server aplikasi Soul Essence...
+title Soul Ascendant - PWA App Server
+echo Memulai server aplikasi Soul Ascendant...
 node "%~dp0server.js"
 pause

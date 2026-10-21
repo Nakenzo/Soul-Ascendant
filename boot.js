@@ -1,7 +1,7 @@
 (function () {
   const URL_MANIFEST = "https://raw.githubusercontent.com/Nakenzo/Soul-Essence/main/manifest.json?nc=";
   const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/Nakenzo/Soul-Essence/main/";
-  const DB_NAME = "SoulEssencePatchDB";
+  const DB_NAME = "SoulAscendantPatchDB";
   const DB_VERSION = 1;
   const STORE_NAME = "patches";
 

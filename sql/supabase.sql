@@ -1,5 +1,5 @@
 -- ============================================================================
--- SOUL ESSENCE - SETUP DATABASE (SUPABASE)
+-- SOUL ASCENDANT - SETUP DATABASE (SUPABASE)
 -- ============================================================================
 --
 -- CARA PAKAI (sekali jalan saja, boleh diulang kapan saja):

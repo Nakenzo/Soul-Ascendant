@@ -101,7 +101,7 @@ public class MainActivity extends BridgeActivity {
                                     if (dir == null) dir = getCacheDir();
                                     if (!dir.exists()) dir.mkdirs();
 
-                                    final File apkFile = new File(dir, "Soul-Essence-Update.apk");
+                                    final File apkFile = new File(dir, "Soul-Ascendant-Update.apk");
                                     if (apkFile.exists()) apkFile.delete();
 
                                     in = conn.getInputStream();
