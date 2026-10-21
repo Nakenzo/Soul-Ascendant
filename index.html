@@ -14,7 +14,7 @@
     <script>
         var PLATFORM = (window.AndroidNative || window.Capacitor) ? "apk" : ((window.__TAURI__ || window.__TAURI_INTERNALS__) ? "pc" : "web");
         document.documentElement.setAttribute("data-platform", PLATFORM);
-        var BUILD_TERKINI = 81;
+        var BUILD_TERKINI = 82;
     </script>
 </head>
 <body>
@@ -171,10 +171,9 @@
                 </div>
                 <h1 class="judul-logo">
                     <span class="logo-stack">
-                        <img src="assets/ui/logo-aura.png" alt="" class="logo-aura" draggable="false" aria-hidden="true">
                         <i class="orn-line" aria-hidden="true"></i>
                         <i class="orn-cross" aria-hidden="true"></i>
-                        <img src="assets/ui/logo-soul-ascendant.svg" alt="SOUL ASCENDANT" class="img-logo" draggable="false">
+                        <img src="assets/ui/logo-soul-ascendant.svg" onerror="this.onerror=null;this.src='assets/ui/logo-kamu.png';" alt="SOUL ASCENDANT" class="img-logo" draggable="false">
                     </span>
                 </h1>
                 <button id="tombolSetting" class="tombol-setting-pojok" type="button" title="Pengaturan">

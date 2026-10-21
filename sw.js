@@ -1,4 +1,4 @@
-const BUILD = 81;
+const BUILD = 82;
 const CACHE_FALLBACK = "soul-ascendant-v" + BUILD;
 const ASSETS_TO_CACHE = [
   "./",
@@ -52,7 +52,6 @@ const ASSETS_TO_CACHE = [
   "./assets/sfx/menang.mp3",
   "./assets/music/lobby.mp3",
   "./assets/music/game.mp3",
-  "./assets/ui/logo-aura.png",
   "./assets/ui/logo-kamu.png",
   "./assets/ui/logo-soul-ascendant.svg",
   "./assets/ui/logo-soul-essence.svg",

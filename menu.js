@@ -212,6 +212,7 @@ function segarkanLogoJudul() {
 
   function pasangSvgText(svgText) {
     if (!svgText || !svgText.includes("<svg")) return false;
+    if (svgText.includes('fill="#01100e"')) return false;
     const div = document.createElement("div");
     div.innerHTML = svgText;
     const svgEl = div.querySelector("svg");
