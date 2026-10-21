@@ -38,7 +38,7 @@
     "admin-akun.js"
   ];
 
-  const BUILD_SEKARANG = 83;
+  const BUILD_SEKARANG = 84;
   let petaPatchAktif = {};
 
   let bootErrorCount = 0;
@@ -235,8 +235,11 @@
   }
 
   async function periksaManifestRemote(timeoutMs) {
+    if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      return null;
+    }
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeoutMs || 7000);
+    const timer = setTimeout(() => controller.abort(), timeoutMs || 3500);
     try {
       const res = await fetch(URL_MANIFEST + Date.now(), {
         signal: controller.signal,

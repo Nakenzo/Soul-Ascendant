@@ -103,6 +103,24 @@ function daftarAsetMusuh() {
 }
 
 function mulai() {
+  if (typeof pasangTombol === "function") {
+    try { pasangTombol(); } catch (e) {}
+  }
+  if (typeof segarkanSaldoJudul === "function") {
+    try { segarkanSaldoJudul(); } catch (e) {}
+  }
+  if (typeof segarkanLogoJudul === "function") {
+    try { segarkanLogoJudul(); } catch (e) {}
+  }
+  if (typeof pengaturanSiapkan === "function") {
+    try { pengaturanSiapkan(); } catch (err) {}
+  }
+  try {
+    if (!bgPartikels || !bgPartikels.length) buatBgPartikel();
+    resetArena({ koinBaru: true });
+    jalankanLoop();
+  } catch (e) {}
+
   const listSrc = daftarAsetKarakter().concat(daftarAsetMusuh());
 
   const muat = listSrc.map((item) =>
@@ -153,41 +171,33 @@ function mulai() {
     requestAnimationFrame(loop);
   };
 
-  Promise.all(muat)
-    .then(() => Promise.all(sfxList.map((s) => muatSfxLokal(s.kunci, s.src, s.vol))))
-    .then(() => Promise.all(musikList.map((m) => muatLaguLokal(m.kunci, m.src))))
+  const batasWaktuAset = new Promise((resolve) => setTimeout(resolve, 2000));
+  const muatSemua = Promise.all([
+    Promise.all(muat),
+    Promise.all(sfxList.map((s) => muatSfxLokal(s.kunci, s.src, s.vol))),
+    Promise.all(musikList.map((m) => muatLaguLokal(m.kunci, m.src)))
+  ]);
+
+  Promise.race([muatSemua, batasWaktuAset])
     .then(() => {
-      if (typeof pengaturanSiapkan === "function") {
-        try { pengaturanSiapkan(); } catch (err) { }
+      if (typeof pasangTombol === "function") {
+        try { pasangTombol(); } catch (err) {}
       }
-      pasangTombol();
-      // Akun hanya disiapkan kalau config-nya sudah diisi; kalau tidak,
-      // akunSiapkan() langsung selesai tanpa menyentuh jaringan.
       if (typeof akunSiapkan === "function") {
-        try {
-          akunSiapkan().catch(() => {});
-        } catch (err) { }
+        try { akunSiapkan().catch(() => {}); } catch (err) {}
       }
-      buatBgPartikel();
-      resetArena({ koinBaru: true });
-      jalankanLoop();
       tampilkanJudul();
     })
     .catch((err) => {
-
       errorBanner = err && err.message ? err.message : String(err);
       if (err && err.stack) {
         const st = err.stack.split("\n");
         if (st[1]) errorBanner += " — " + st[1].trim();
       }
       try {
-        if (!bgPartikels || !bgPartikels.length) buatBgPartikel();
         pasangTombol();
-        jalankanLoop();
+        tampilkanJudul();
       } catch (e2) {}
-      try { tampilkanJudul(); } catch (e3) {
-        layarJudul.classList.remove("hidden");
-      }
     });
 }
 

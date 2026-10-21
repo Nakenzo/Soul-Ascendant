@@ -157,16 +157,30 @@ function muatSfxLokal(kunci, src, vol) {
   _sfxVol[kunci] = vol != null ? vol : 1;
   const daftar = Array.isArray(src) ? src.slice() : [src];
   return new Promise((resolve) => {
+    let resolved = false;
+    const selesai = (res) => {
+      if (resolved) return;
+      resolved = true;
+      resolve(res);
+    };
     const coba = (i) => {
-      if (i >= daftar.length) return resolve(false);
+      if (i >= daftar.length) return selesai(false);
       const a = new Audio();
       a.preload = "auto";
       a.volume = _sfxVol[kunci];
-      const ok = () => { _sfxFiles[kunci] = a; resolve(true); };
+      const ok = () => { _sfxFiles[kunci] = a; selesai(true); };
       const gagal = () => coba(i + 1);
       a.addEventListener("canplaythrough", ok, { once: true });
+      a.addEventListener("canplay", ok, { once: true });
+      a.addEventListener("loadeddata", ok, { once: true });
       a.addEventListener("error", gagal, { once: true });
       a.src = daftar[i];
+      setTimeout(() => {
+        if (!resolved) {
+          _sfxFiles[kunci] = a;
+          selesai(true);
+        }
+      }, 800);
     };
     coba(0);
   });
@@ -456,14 +470,28 @@ function _volFileMusik(kunci) {
 
 function muatLaguLokal(kunci, src) {
   return new Promise((resolve) => {
+    let resolved = false;
+    const selesai = (res) => {
+      if (resolved) return;
+      resolved = true;
+      resolve(res);
+    };
     const a = new Audio();
     a.preload = "auto";
     a.loop = true;
-    const ok = () => { _musFiles[kunci] = a; resolve(true); };
-    const gagal = () => resolve(false);
+    const ok = () => { _musFiles[kunci] = a; selesai(true); };
+    const gagal = () => selesai(false);
     a.addEventListener("canplaythrough", ok, { once: true });
+    a.addEventListener("canplay", ok, { once: true });
+    a.addEventListener("loadeddata", ok, { once: true });
     a.addEventListener("error", gagal, { once: true });
     a.src = src;
+    setTimeout(() => {
+      if (!resolved) {
+        _musFiles[kunci] = a;
+        selesai(true);
+      }
+    }, 1000);
   });
 }
 
