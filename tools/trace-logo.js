@@ -423,7 +423,7 @@ function buildLayeredGroup(catFilter, id, className, cx, cy, animDuration, animD
 
   let res = `  <g id="${id}" class="${className}"${styleAttr}>\n`;
   if (sil) {
-    res += `    <path d="${sil}" fill="url(#soulEmeraldGrad) #3eb84e" fill-rule="evenodd" class="layer-body"/>\n`;
+    res += `    <path d="${sil}" fill="url(#soulEmeraldGrad)" fill-rule="evenodd" class="layer-body"/>\n`;
   }
   if (brightLime) {
     res += `    <path d="${brightLime}" fill="#d4f686" fill-rule="evenodd" class="layer-highlight" opacity="0.95"/>\n`;
@@ -495,7 +495,7 @@ function buildFlameGroup(frames, id, className) {
   let res = `  <g id="${id}" class="${className}">\n`;
   frames.forEach((f, idx) => {
     res += `    <g class="fbf-frame fbf-f${idx}">\n`;
-    if (f.sil) res += `      <path d="${f.sil}" fill="url(#soulEmeraldGrad) #3eb84e" fill-rule="evenodd" class="layer-body"/>\n`;
+    if (f.sil) res += `      <path d="${f.sil}" fill="url(#soulEmeraldGrad)" fill-rule="evenodd" class="layer-body"/>\n`;
     if (f.lime) res += `      <path d="${f.lime}" fill="#d4f686" fill-rule="evenodd" class="layer-highlight" opacity="0.95"/>\n`;
     if (f.white) res += `      <path d="${f.white}" fill="#ffffff" fill-rule="evenodd" class="layer-core"/>\n`;
     res += `    </g>\n`;
@@ -694,6 +694,11 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" wid
   </defs>
 
   <style>
+    .layer-body {
+      fill: #3eb84e;
+      fill: url(#soulEmeraldGrad);
+    }
+
     .fbf-frame {
       opacity: 0;
       visibility: hidden;

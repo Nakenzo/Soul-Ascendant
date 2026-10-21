@@ -37,7 +37,7 @@
     "admin-akun.js"
   ];
 
-  const BUILD_SEKARANG = 82;
+  const BUILD_SEKARANG = 83;
   let petaPatchAktif = {};
 
   function ambilBuildBawaan() {
