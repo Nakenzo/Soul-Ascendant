@@ -962,3 +962,6 @@ if (typeof document !== "undefined") {
   }
 }
 
+window.bukaInventory = bukaInventory;
+window.tutupInventory = tutupInventory;
+

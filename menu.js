@@ -2485,3 +2485,9 @@ function pasangAkun() {
     });
   }
 }
+
+window.tampilkanLevel = tampilkanLevel;
+window.tampilkanKarakter = tampilkanKarakter;
+window.tampilkanJudul = tampilkanJudul;
+window.bukaSetting = bukaSetting;
+

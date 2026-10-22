@@ -14,7 +14,7 @@
     <script>
         var PLATFORM = (window.AndroidNative || window.Capacitor) ? "apk" : ((window.__TAURI__ || window.__TAURI_INTERNALS__) ? "pc" : "web");
         document.documentElement.setAttribute("data-platform", PLATFORM);
-        var BUILD_TERKINI = 84;
+        var BUILD_TERKINI = 85;
     </script>
 </head>
 <body>
@@ -176,15 +176,15 @@
                         <img src="assets/ui/logo-kamu.png" alt="SOUL ASCENDANT" class="img-logo" draggable="false">
                     </span>
                 </h1>
-                <button id="tombolSetting" class="tombol-setting-pojok" type="button" title="Pengaturan">
+                <button id="tombolSetting" class="tombol-setting-pojok" type="button" title="Pengaturan" onclick="if(typeof bukaSetting==='function')bukaSetting();">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ikon-gear">
                         <circle cx="12" cy="12" r="3"></circle>
                         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
                     </svg>
                 </button>
-                <button id="tombolPlay" class="tombol-play">&#9654; PLAY</button>
-                <button id="tombolKarakter" class="tombol-karakter-menu">&#9733; KARAKTER</button>
-                <button id="tombolInventory" class="tombol-inventory-menu">&#127890; INVENTORY</button>
+                <button id="tombolPlay" class="tombol-play" type="button" onclick="if(typeof tampilkanLevel==='function')tampilkanLevel();">&#9654; PLAY</button>
+                <button id="tombolKarakter" class="tombol-karakter-menu" type="button" onclick="if(typeof tampilkanKarakter==='function')tampilkanKarakter();">&#9733; KARAKTER</button>
+                <button id="tombolInventory" class="tombol-inventory-menu" type="button" onclick="if(typeof bukaInventory==='function')bukaInventory();">&#127890; INVENTORY</button>
                 <div id="saldoJudul" class="teks-skor" hidden></div>
                 <div id="labelVersiJudul" class="teks-skor" style="font-size:calc(var(--cs, 0.56) * 12px);color:#64748b;margin-top:calc(var(--cs, 0.56) * 6px);letter-spacing:1px;"></div>
             </div>
