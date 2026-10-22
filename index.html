@@ -12,9 +12,11 @@
     <link rel="stylesheet" href="settings.css" media="all">
     <link rel="stylesheet" href="updater.css" media="all">
     <script>
-        var PLATFORM = (window.AndroidNative || window.Capacitor) ? "apk" : ((window.__TAURI__ || window.__TAURI_INTERNALS__) ? "pc" : "web");
-        document.documentElement.setAttribute("data-platform", PLATFORM);
-        var BUILD_TERKINI = 85;
+        (function () {
+            var p = (window.AndroidNative || window.Capacitor) ? "apk" : ((window.__TAURI__ || window.__TAURI_INTERNALS__) ? "pc" : "web");
+            document.documentElement.setAttribute("data-platform", p);
+        })();
+        var BUILD_TERKINI = 86;
     </script>
 </head>
 <body>

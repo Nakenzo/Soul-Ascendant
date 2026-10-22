@@ -39,7 +39,7 @@
     "admin-akun.js"
   ];
 
-  const BUILD_SEKARANG = 85;
+  const BUILD_SEKARANG = 86;
   let petaPatchAktif = {};
 
   let bootErrorCount = 0;
@@ -311,7 +311,7 @@
       ? remote.patch_files
       : DAFTAR_SKRIP.concat(["style.css", "settings.css"]);
 
-    perbaruiStatusUI("Mengunduh patch Build " + buildBaru + "...", 0);
+    perbaruiStatusUI("Mengunduh pembaruan...", 0);
     await bersihkanStaging(db);
 
     let gagal = false;
@@ -367,7 +367,7 @@
     if (!modal) return;
     const badge = document.getElementById("modalUpdateBadgeVersi");
     if (badge) {
-      badge.textContent = remote.build ? ("Build " + remote.build + " Tersedia") : "Pembaruan Baru";
+      badge.textContent = "Pembaruan Tersedia";
     }
     const pesan = document.getElementById("modalUpdatePesan");
     if (pesan) {
@@ -484,7 +484,7 @@
     const buildAktif = ambilBuildAktif();
     const teksVersi = document.getElementById("updateVersiTeks");
     if (teksVersi) {
-      teksVersi.textContent = "Build " + buildAktif;
+      teksVersi.textContent = "v0.1.0";
     }
 
     perbaruiStatusUI("Menyiapkan game...");

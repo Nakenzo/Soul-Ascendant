@@ -2490,4 +2490,5 @@ window.tampilkanLevel = tampilkanLevel;
 window.tampilkanKarakter = tampilkanKarakter;
 window.tampilkanJudul = tampilkanJudul;
 window.bukaSetting = bukaSetting;
+window.pilihDevice = pilihDevice;
 

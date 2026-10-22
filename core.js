@@ -20,7 +20,7 @@ function hitungKamera() {
 let karakter = null;
 let statusGame = "title";
 
-const PLATFORM = (() => {
+var PLATFORM = (() => {
   if (typeof window !== "undefined") {
     if (window.AndroidNative || window.Capacitor) return "apk";
     if (window.__TAURI__ || window.__TAURI_INTERNALS__) return "pc";
@@ -28,12 +28,12 @@ const PLATFORM = (() => {
   return "web";
 })();
 
-const IS_APK = PLATFORM === "apk";
-const IS_PC = PLATFORM === "pc";
-const IS_WEB = PLATFORM === "web";
+var IS_APK = PLATFORM === "apk";
+var IS_PC = PLATFORM === "pc";
+var IS_WEB = PLATFORM === "web";
 
 const VERSI_GAME = "0.1.0";
-const BUILD_GAME = 85;
+const BUILD_GAME = 86;
 const EDISI_GAME = IS_APK ? "Android APK" : (IS_PC ? "PC Windows" : "Web Edition");
 
 function saatPlatform(opsi) {

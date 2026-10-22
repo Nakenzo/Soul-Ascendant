@@ -1,7 +1,7 @@
 {
-  "timestamp": 1792633212554,
-  "build": 85,
-  "pesan": "Versi baru Soul Ascendant telah dirilis dengan perbaikan performa, kestabilan tombol, dan peningkatan gameplay.",
+  "timestamp": 1792636934677,
+  "build": 86,
+  "pesan": "Versi baru Soul Ascendant telah tersedia dengan perbaikan inisialisasi menu dan peningkatan kestabilan.",
   "patch_files": [
     "core.js",
     "save.js",
@@ -35,5 +35,5 @@
     "style.css",
     "settings.css"
   ],
-  "tanggal": "2026-10-22T01:40:12.554Z"
+  "tanggal": "2026-10-22T02:42:14.677Z"
 }
