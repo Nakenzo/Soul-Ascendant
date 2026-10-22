@@ -487,20 +487,9 @@
       teksVersi.textContent = "Build " + buildAktif;
     }
 
-    perbaruiStatusUI("Memeriksa pembaruan...");
+    perbaruiStatusUI("Menyiapkan game...");
 
     let petaPatch = await ambilSemuaPatch(db);
-
-    const remote = await periksaManifestRemote(7000);
-
-    if (remote && typeof remote.build === "number" && remote.build > buildAktif) {
-      const berhasil = await lakukanPatchingAtomic(db, remote);
-      if (berhasil) {
-        return;
-      }
-    }
-
-    perbaruiStatusUI("Menyiapkan game...");
     terapkanPatchCSS(petaPatch);
     petaPatchAktif = petaPatch;
 
