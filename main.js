@@ -70,6 +70,15 @@ function loop(now) {
   requestAnimationFrame(loop);
 }
 
+let loopDijadwalkan = false;
+function jalankanLoop() {
+  if (loopDijadwalkan) return;
+  loopDijadwalkan = true;
+  if (!lastTime) lastTime = performance.now();
+  requestAnimationFrame(loop);
+}
+window.jalankanLoop = jalankanLoop;
+
 function daftarAsetKarakter() {
   const daftar = [];
   for (const k of KARAKTER) {
@@ -163,14 +172,6 @@ function mulai() {
     { kunci: "game", src: "assets/music/game.mp3" }
   ];
 
-  let loopDijadwalkan = false;
-  const jalankanLoop = () => {
-    if (loopDijadwalkan) return;
-    loopDijadwalkan = true;
-    if (!lastTime) lastTime = performance.now();
-    requestAnimationFrame(loop);
-  };
-
   const batasWaktuAset = new Promise((resolve) => setTimeout(resolve, 2000));
   const muatSemua = Promise.all([
     Promise.all(muat),
@@ -180,6 +181,7 @@ function mulai() {
 
   Promise.race([muatSemua, batasWaktuAset])
     .then(() => {
+      jalankanLoop();
       if (typeof pasangTombol === "function") {
         try { pasangTombol(); } catch (err) {}
       }
@@ -189,6 +191,7 @@ function mulai() {
       tampilkanJudul();
     })
     .catch((err) => {
+      jalankanLoop();
       errorBanner = err && err.message ? err.message : String(err);
       if (err && err.stack) {
         const st = err.stack.split("\n");

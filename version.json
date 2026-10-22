@@ -1,12 +1,10 @@
 {
-  "timestamp": 1792636934677,
-  "build": 86,
-  "pesan": "Versi baru Soul Ascendant telah tersedia dengan perbaikan inisialisasi menu dan peningkatan kestabilan.",
+  "timestamp": 1792640773556,
+  "build": 87,
+  "pesan": "Versi baru Soul Ascendant telah tersedia dengan perbaikan in-game render loop dan performa kanvas.",
   "patch_files": [
     "core.js",
     "save.js",
-    "settings.js",
-    "akun-konfig.js",
     "akun.js",
     "akun-ui.js",
     "audio.js",
@@ -35,5 +33,5 @@
     "style.css",
     "settings.css"
   ],
-  "tanggal": "2026-10-22T02:42:14.677Z"
+  "tanggal": "2026-10-22T03:46:13.557Z"
 }

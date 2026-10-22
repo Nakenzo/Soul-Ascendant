@@ -240,6 +240,7 @@ function tampilkanJudul() {
     segarkanLogoJudul();
     aturTombolPause();
     if (typeof setMusik === "function") setMusik("lobby");
+    if (typeof jalankanLoop === "function") jalankanLoop();
   } catch (err) {
     errorBanner = err && err.message ? err.message : String(err);
     if (err && err.stack) {
@@ -1937,6 +1938,7 @@ function mulaiGameBaru() {
   aturTombolPause();
   if (typeof siapkanSentuh === "function") siapkanSentuh();
   if (typeof setMusik === "function") setMusik("game");
+  if (typeof jalankanLoop === "function") jalankanLoop();
 }
 
 function ulangDenganKarakter() {
@@ -1947,6 +1949,7 @@ function ulangDenganKarakter() {
   aturTombolPause();
   if (typeof siapkanSentuh === "function") siapkanSentuh();
   if (typeof setMusik === "function") setMusik("game");
+  if (typeof jalankanLoop === "function") jalankanLoop();
 }
 
 let tombolTerpasang = false;
