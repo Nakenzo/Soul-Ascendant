@@ -1,4 +1,5 @@
 (function () {
+  const URL_VERSION = "https://raw.githubusercontent.com/Nakenzo/Soul-Ascendant/main/version.json?nc=";
   const URL_MANIFEST = "https://raw.githubusercontent.com/Nakenzo/Soul-Ascendant/main/manifest.json?nc=";
   const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/Nakenzo/Soul-Ascendant/main/";
   const DB_NAME = "SoulAscendantPatchDB";
@@ -87,6 +88,21 @@
       }
     } catch (e) {}
     return ambilBuildBawaan();
+  }
+
+  function ambilTimestampBawaan() {
+    return 1740000000000;
+  }
+
+  function ambilTimestampAktif() {
+    try {
+      const tersimpan = localStorage.getItem("sa_patch_timestamp");
+      if (tersimpan) {
+        const n = parseInt(tersimpan, 10);
+        if (Number.isFinite(n) && n > 0) return n;
+      }
+    } catch (e) {}
+    return ambilTimestampBawaan();
   }
 
   function bukaDB() {
@@ -234,14 +250,14 @@
     }
   }
 
-  async function periksaManifestRemote(timeoutMs) {
+  async function periksaRemoteUpdate(timeoutMs) {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       return null;
     }
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeoutMs || 3500);
+    const timer = setTimeout(() => controller.abort(), timeoutMs || 4000);
     try {
-      const res = await fetch(URL_MANIFEST + Date.now(), {
+      let res = await fetch(URL_VERSION + Date.now(), {
         signal: controller.signal,
         cache: "no-store",
         headers: {
@@ -249,6 +265,16 @@
           "Pragma": "no-cache"
         }
       });
+      if (!res.ok) {
+        res = await fetch(URL_MANIFEST + Date.now(), {
+          signal: controller.signal,
+          cache: "no-store",
+          headers: {
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache"
+          }
+        });
+      }
       clearTimeout(timer);
       if (!res.ok) return null;
       return await res.json();
@@ -320,11 +346,77 @@
       return false;
     }
 
-    perbaruiStatusUI("Pembaruan Build " + buildBaru + " siap! Memuat ulang...", 100);
+    try {
+      if (remote.timestamp) {
+        localStorage.setItem("sa_patch_timestamp", String(remote.timestamp));
+      }
+      if (remote.build) {
+        localStorage.setItem("sa_patch_build", String(remote.build));
+      }
+    } catch (e) {}
+
+    perbaruiStatusUI("Pembaruan siap! Memuat ulang...", 100);
     setTimeout(function () {
       window.location.reload();
     }, 400);
     return true;
+  }
+
+  function tampilkanModalUpdate(remote, db) {
+    const modal = document.getElementById("modalUpdate");
+    if (!modal) return;
+    const badge = document.getElementById("modalUpdateBadgeVersi");
+    if (badge) {
+      badge.textContent = remote.build ? ("Build " + remote.build + " Tersedia") : "Pembaruan Baru";
+    }
+    const pesan = document.getElementById("modalUpdatePesan");
+    if (pesan) {
+      pesan.textContent = remote.pesan || "Versi baru Soul Ascendant telah tersedia dari developer. Pilih untuk memperbarui sekarang atau nanti saja.";
+    }
+    const catatan = document.getElementById("modalUpdateCatatan");
+    if (catatan) {
+      if (remote.catatan) {
+        catatan.textContent = remote.catatan;
+        catatan.hidden = false;
+      } else {
+        catatan.hidden = true;
+      }
+    }
+
+    const btnBatal = document.getElementById("tombolBatalUpdate");
+    const btnUnduh = document.getElementById("tombolAksiUpdate");
+
+    const tutupModal = () => {
+      modal.classList.add("hidden");
+    };
+
+    if (btnBatal) {
+      btnBatal.onclick = () => {
+        try {
+          sessionStorage.setItem("sa_update_ditunda", "1");
+        } catch (e) {}
+        tutupModal();
+      };
+    }
+
+    if (btnUnduh) {
+      btnUnduh.onclick = async () => {
+        tutupModal();
+        const overlay = document.getElementById("layarLoadingUpdate");
+        if (overlay) {
+          overlay.style.display = "flex";
+          overlay.classList.remove("fade-out");
+        }
+        perbaruiStatusUI("Menyiapkan unduhan pembaruan...", 0);
+        const berhasil = await lakukanPatchingAtomic(db, remote);
+        if (!berhasil) {
+          alert("Gagal mengunduh pembaruan secara lengkap. Versi stabil saat ini tetap aktif.");
+          if (overlay) overlay.classList.add("fade-out");
+        }
+      };
+    }
+
+    modal.classList.remove("hidden");
   }
 
   function terapkanPatchCSS(petaPatch) {
@@ -415,41 +507,50 @@
     muatSkripBerurutan(DAFTAR_SKRIP, 0, petaPatch, function () {
       perbaruiStatusUI("Game siap!");
     });
+
+    setTimeout(async () => {
+      try {
+        if (sessionStorage.getItem("sa_update_ditunda") === "1") return;
+        const remote = await periksaRemoteUpdate(4500);
+        if (!remote) return;
+        const tsAktif = ambilTimestampAktif();
+        const bAktif = ambilBuildAktif();
+        const adaUpdateTS = remote.timestamp && remote.timestamp > tsAktif;
+        const adaUpdateBuild = typeof remote.build === "number" && remote.build > bAktif;
+        if (adaUpdateTS || adaUpdateBuild) {
+          tampilkanModalUpdate(remote, db);
+        }
+      } catch (err) {}
+    }, 1200);
   }
 
   window.SA_PATCHER = window.SE_PATCHER = {
     ambilBuildAktif: ambilBuildAktif,
+    ambilTimestampAktif: ambilTimestampAktif,
     ambilPatch: function (nama) {
       return (petaPatchAktif && petaPatchAktif[nama]) || null;
     },
     cekUpdateManual: async function (notifJikaSama) {
-      const buildAktif = ambilBuildAktif();
+      try {
+        sessionStorage.removeItem("sa_update_ditunda");
+      } catch (e) {}
       const db = await bukaDB();
-      perbaruiStatusUI("Memeriksa pembaruan...");
-
-      const remote = await periksaManifestRemote(7000);
+      const remote = await periksaRemoteUpdate(6000);
       if (!remote) {
         alert("Tidak dapat terhubung ke server pembaruan. Periksa koneksi internet.");
         return;
       }
 
-      if (typeof remote.build === "number" && remote.build > buildAktif) {
-        const konfirm = confirm("Ditemukan pembaruan Build " + remote.build + "!\n\nUnduh dan terapkan pembaruan sekarang?");
-        if (!konfirm) return;
+      const tsAktif = ambilTimestampAktif();
+      const bAktif = ambilBuildAktif();
+      const adaUpdateTS = remote.timestamp && remote.timestamp > tsAktif;
+      const adaUpdateBuild = typeof remote.build === "number" && remote.build > bAktif;
 
-        const overlay = document.getElementById("layarLoadingUpdate");
-        if (overlay) {
-          overlay.style.display = "flex";
-          overlay.classList.remove("fade-out");
-        }
-
-        const berhasil = await lakukanPatchingAtomic(db, remote);
-        if (!berhasil) {
-          alert("Gagal mengunduh pembaruan secara lengkap. Versi stabil saat ini tetap aktif.");
-        }
+      if (adaUpdateTS || adaUpdateBuild) {
+        tampilkanModalUpdate(remote, db);
       } else {
         if (notifJikaSama) {
-          alert("Game kamu sudah versi terbaru (Build " + buildAktif + ").");
+          alert("Game kamu sudah versi terbaru.");
         }
       }
     },

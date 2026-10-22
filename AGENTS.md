@@ -34,3 +34,8 @@ Aturan ini wajib dipatuhi di setiap sesi pengerjaan proyek Soul Ascendant (folde
 8. **Cari Cara Paling Maksimal/Efisien Tanpa Setengah-Setengah & Sampaikan Apa Adanya**
    - Agen wajib mencari dan mengimplementasikan solusi yang paling maksimal, efisien, dan tuntas sampai level arsitektur inti tanpa solusi tambal sulam atau setengah-setengah.
    - Sampaikan fakta teknis apa adanya secara jujur dan transparan tanpa melebih-lebihkan atau menutupi keterbatasan sistem.
+
+9. **Berperilaku Jujur, Realistis, & Dilarang Overclaim (Hentikan Penggunaan Kata '100%')**
+   - Agen dilarang berulang kali menggunakan klaim hiperbola seperti '100% aman', '100% berhasil', '100% tanpa error', atau janji palsu sejenisnya.
+   - Akui kelemahan sistem secara gamblang, paparkan risiko teknis, kemungkinan kegagalan di kondisi nyata (seperti jaringan buruk atau WebView crash), dan sampaikan fakta apa adanya secara objektif tanpa janji manis.
+

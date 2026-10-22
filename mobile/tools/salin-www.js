@@ -76,7 +76,18 @@ try {
     console.error("Ubah 'const BUILD_SEKARANG' di boot.js agar sama, lalu jalankan ulang script ini.");
     process.exit(1);
   }
-  console.log("Verifikasi ok: build " + manifest.build + " (manifest == sw.js == core.js == boot.js)");
+  const vPath = path.join(ROOT, "version.json");
+  let ver = {};
+  try {
+    ver = JSON.parse(fs.readFileSync(vPath, "utf8"));
+  } catch (e) {}
+  ver.timestamp = Date.now();
+  ver.build = manifest.build;
+  ver.tanggal = new Date().toISOString();
+  fs.writeFileSync(vPath, JSON.stringify(ver, null, 2) + "\n");
+  fs.writeFileSync(path.join(OUT, "version.json"), JSON.stringify(ver, null, 2) + "\n");
+
+  console.log("Verifikasi ok: build " + manifest.build + " (manifest == sw.js == core.js == boot.js == version.json)");
 } catch (err) {
   console.error("GAGAL verifikasi build: " + err.message);
   process.exit(1);
