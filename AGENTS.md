@@ -39,3 +39,15 @@ Aturan ini wajib dipatuhi di setiap sesi pengerjaan proyek Soul Ascendant (folde
    - Agen dilarang berulang kali menggunakan klaim hiperbola seperti '100% aman', '100% berhasil', '100% tanpa error', atau janji palsu sejenisnya.
    - Akui kelemahan sistem secara gamblang, paparkan risiko teknis, kemungkinan kegagalan di kondisi nyata (seperti jaringan buruk atau WebView crash), dan sampaikan fakta apa adanya secara objektif tanpa janji manis.
 
+10. **Wajib Cek Bersih Seluruh File & Kode Terkait Setiap Kali Selesai Menangani Error**
+    - Setiap kali selesai memperbaiki bug atau menangani error, agen wajib langsung melakukan verifikasi dan pembersihan menyeluruh terhadap semua file dan kode yang bersangkutan sebelum menyatakan tugas selesai:
+      - **Cek Sintaks & Runtime Nyata**: Jangan hanya mengandalkan cek statis pasif (`node -c`). Wajib memeriksa potensi error runtime seperti TDZ (*Temporal Dead Zone* / pemanggilan `const`/`let` sebelum deklarasi), *scope* variabel, *export/global binding*, dan *null-pointer*.
+      - **Uji Siklus Eksekusi Utuh**: Uji alur dari hulu ke hilir (misalnya transisi menu -> loop in-game -> render kanvas) untuk memastikan tidak ada error tersembunyi yang tertelan blok *catch* kosong.
+      - **Pembersihan Tuntas Tanpa Sisa**: Bersihkan semua kode coba-coba, fungsi duplikat/mati, file uji sementara (*scratch files*), dan pastikan seluruh modul terkait dalam kondisi rapi, bersih, dan siap dijalankan.
+
+11. **Persetujuan Wajib untuk Aset Audio (SFX/BGM) & Tekstur Senjata**
+    - Dilarang langsung memasang, mengaitkan, atau mengimplementasikan berkas suara (SFX), musik latar (BGM), maupun tekstur visual senjata ke dalam kode permainan sebelum desain atau suaranya diperiksa dan disetujui secara eksplisit oleh pengguna.
+    - Agen wajib menunjukkan contoh/rancangan terlebih dahulu dan menunggu konfirmasi, karena pengguna berhak dan mungkin ingin membuat serta menyediakan aset versi rancangannya sendiri.
+
+
+

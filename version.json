@@ -1,7 +1,7 @@
 {
-  "timestamp": 1792640773556,
-  "build": 87,
-  "pesan": "Versi baru Soul Ascendant telah tersedia dengan perbaikan in-game render loop dan performa kanvas.",
+  "timestamp": 1792670112385,
+  "build": 88,
+  "pesan": "Versi baru Soul Ascendant telah tersedia dengan pembaruan logo vektor SVG interaktif dan efek aura pendaran.",
   "patch_files": [
     "core.js",
     "save.js",
@@ -33,5 +33,5 @@
     "style.css",
     "settings.css"
   ],
-  "tanggal": "2026-10-22T03:46:13.557Z"
+  "tanggal": "2026-10-22T11:55:12.386Z"
 }

@@ -204,8 +204,18 @@ function sembunyiSemua() {
 function segarkanLogoJudul() {
   const stack = document.querySelector("#layarJudul .logo-stack");
   if (!stack) return;
-  const aura = stack.querySelector(".logo-aura");
-  if (aura) aura.style.display = "none";
+  let aura = stack.querySelector(".logo-aura");
+  if (!aura) {
+    aura = document.createElement("img");
+    aura.src = "assets/ui/logo-aura.png";
+    aura.alt = "";
+    aura.className = "logo-aura";
+    aura.draggable = false;
+    aura.setAttribute("aria-hidden", "true");
+    stack.insertBefore(aura, stack.firstChild);
+  } else {
+    aura.style.display = "";
+  }
 
   let logo = stack.querySelector(".img-logo");
   if (logo) {
@@ -217,8 +227,8 @@ function segarkanLogoJudul() {
       logo.replaceWith(img);
       logo = img;
     }
-    if (logo.getAttribute("src") !== "assets/ui/logo-kamu.png") {
-      logo.src = "assets/ui/logo-kamu.png";
+    if (logo.getAttribute("src") !== "assets/ui/logo-soul-ascendant.svg") {
+      logo.src = "assets/ui/logo-soul-ascendant.svg";
     }
   }
 }
