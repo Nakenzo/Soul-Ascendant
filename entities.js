@@ -2428,6 +2428,11 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
     player.racunTick = 0;
   }
 
+  if (deviceTerpilih === "mobile") {
+    if (particles.length > 55) particles.splice(0, particles.length - 55);
+    if (deathPixels.length > 35) deathPixels.splice(0, deathPixels.length - 35);
+  }
+
   for (let i = particles.length - 1; i >= 0; i--) {
     const p = particles[i];
     p.t += dt;

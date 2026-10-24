@@ -12,7 +12,7 @@ let ambDaunSprites = [];
 let ambCloudSprite = null;
 
 function ambKualitas() {
-  return deviceTerpilih === "mobile" ? 0.55 : 1;
+  return deviceTerpilih === "mobile" ? 0.35 : 1;
 }
 
 function ambBakeDaun(warna) {

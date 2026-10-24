@@ -2323,12 +2323,12 @@ function gambarKartuUpgrade() {
     const tAksen = tierDef.aksen || "#9a7b3c";
     const bg = tierDef.bg || TIER_DEF.common.bg;
     ctx.fillStyle = hover ? bg.hover : bg.gelap;
-    if (kart.tier !== "common") { ctx.shadowColor = tGaris + "88"; ctx.shadowBlur = 20; }
+    if (deviceTerpilih !== "mobile" && kart.tier !== "common") { ctx.shadowColor = tGaris + "88"; ctx.shadowBlur = 20; }
     gambarBundar(-r.w / 2, 0, r.w, r.h, 12);
     ctx.fill();
     ctx.shadowBlur = 0;
 
-    if (hover) {
+    if (deviceTerpilih !== "mobile" && hover) {
       ctx.shadowColor = wr + "aa";
       ctx.shadowBlur = 22;
     }
@@ -2336,7 +2336,7 @@ function gambarKartuUpgrade() {
     ctx.lineWidth = hover ? 3 : 1.5;
     gambarBundar(-r.w / 2, 0, r.w, r.h, 12);
     ctx.stroke();
-    if (hover) ctx.shadowBlur = 0;
+    ctx.shadowBlur = 0;
     ctx.strokeStyle = hover ? wr + "66" : tGaris + "55";
     ctx.lineWidth = hover ? 1.5 : 1;
     gambarBundar(-r.w / 2 + 6, 6, r.w - 12, r.h - 12, 8);
@@ -3135,9 +3135,10 @@ function gambarVoidTepi(px, py, pw, ph, t, progress) {
   const blok = Math.max(8, Math.round(h * 0.8));
   const tebal = Math.max(3, h * 0.16);
   ctx.save();
-  ctx.globalCompositeOperation = "lighter";
-  ctx.shadowColor = aksen;
-  ctx.shadowBlur = 15;
+  if (deviceTerpilih !== "mobile") {
+    ctx.shadowColor = aksen;
+    ctx.shadowBlur = 15;
+  }
   ctx.strokeStyle = aksen;
   ctx.lineWidth = tebal;
   ctx.strokeRect(x + 1.5, y + 1.5, w - 3, h - 3);
@@ -3857,7 +3858,7 @@ function drawHUD() {
       ctx.fillStyle = "#ffd23f";
     }
     ctx.fillText("ULTIMATE SIAP [R]", 0, 0);
-    if (umurText < 0.8 && (apiMenyala || esMenyala || voidMenyala)) {
+    if (deviceTerpilih !== "mobile" && umurText < 0.8 && (apiMenyala || esMenyala || voidMenyala)) {
       ctx.shadowColor = "rgba(" + gl + ", 0.9)";
       ctx.shadowBlur = 18;
       ctx.fillStyle = "rgba(255, 255, 255, " + (0.6 * (1 - umurText / 0.8)).toFixed(3) + ")";

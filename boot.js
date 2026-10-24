@@ -1,7 +1,18 @@
 (function () {
-  const URL_VERSION = "https://raw.githubusercontent.com/Nakenzo/Soul-Ascendant/main/version.json?nc=";
-  const URL_MANIFEST = "https://raw.githubusercontent.com/Nakenzo/Soul-Ascendant/main/manifest.json?nc=";
-  const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/Nakenzo/Soul-Ascendant/main/";
+  const ENDPOINTS_VERSION = [
+    "https://nakenzo.github.io/Soul-Ascendant/version.json?nc=",
+    "https://raw.githubusercontent.com/Nakenzo/Soul-Ascendant/main/version.json?nc=",
+    "https://cdn.jsdelivr.net/gh/Nakenzo/Soul-Ascendant@main/version.json?nc="
+  ];
+  const ENDPOINTS_MANIFEST = [
+    "https://nakenzo.github.io/Soul-Ascendant/manifest.json?nc=",
+    "https://raw.githubusercontent.com/Nakenzo/Soul-Ascendant/main/manifest.json?nc="
+  ];
+  const BASES_CDN = [
+    "https://nakenzo.github.io/Soul-Ascendant/",
+    "https://raw.githubusercontent.com/Nakenzo/Soul-Ascendant/main/",
+    "https://cdn.jsdelivr.net/gh/Nakenzo/Soul-Ascendant@main/"
+  ];
   const DB_NAME = "SoulAscendantPatchDB";
   const DB_VERSION = 2;
   const STORE_ACTIVE = "active_patches";
@@ -39,7 +50,7 @@
     "admin-akun.js"
   ];
 
-  const BUILD_SEKARANG = 88;
+  const BUILD_SEKARANG = 89;
   let petaPatchAktif = {};
 
   let bootErrorCount = 0;
@@ -251,22 +262,13 @@
   }
 
   async function periksaRemoteUpdate(timeoutMs) {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      return null;
-    }
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeoutMs || 4000);
-    try {
-      let res = await fetch(URL_VERSION + Date.now(), {
-        signal: controller.signal,
-        cache: "no-store",
-        headers: {
-          "Cache-Control": "no-cache, no-store, must-revalidate",
-          "Pragma": "no-cache"
-        }
-      });
-      if (!res.ok) {
-        res = await fetch(URL_MANIFEST + Date.now(), {
+    const batasWaktu = timeoutMs || 8000;
+    for (let i = 0; i < ENDPOINTS_VERSION.length; i++) {
+      const url = ENDPOINTS_VERSION[i] + Date.now();
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), batasWaktu);
+      try {
+        const res = await fetch(url, {
           signal: controller.signal,
           cache: "no-store",
           headers: {
@@ -274,34 +276,62 @@
             "Pragma": "no-cache"
           }
         });
+        clearTimeout(timer);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && (data.build || data.timestamp)) return data;
+        }
+      } catch (err) {
+        clearTimeout(timer);
       }
-      clearTimeout(timer);
-      if (!res.ok) return null;
-      return await res.json();
-    } catch (err) {
-      clearTimeout(timer);
-      return null;
     }
+    for (let i = 0; i < ENDPOINTS_MANIFEST.length; i++) {
+      const url = ENDPOINTS_MANIFEST[i] + Date.now();
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), batasWaktu);
+      try {
+        const res = await fetch(url, {
+          signal: controller.signal,
+          cache: "no-store",
+          headers: {
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache"
+          }
+        });
+        clearTimeout(timer);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && (data.build || data.timestamp)) return data;
+        }
+      } catch (err) {
+        clearTimeout(timer);
+      }
+    }
+    return null;
   }
 
   async function unduhBerkasTeks(path, build, sha) {
-    try {
-      const base = sha ? GITHUB_RAW_BASE.replace("/main/", "/" + sha + "/") : GITHUB_RAW_BASE;
+    for (let i = 0; i < BASES_CDN.length; i++) {
+      let base = BASES_CDN[i];
+      if (sha && base.includes("/main/")) {
+        base = base.replace("/main/", "/" + sha + "/");
+      }
       const url = base + path + "?nc=" + build + "_" + Date.now();
-      const res = await fetch(url, {
-        cache: "no-store",
-        headers: {
-          "Cache-Control": "no-cache, no-store, must-revalidate",
-          "Pragma": "no-cache"
+      try {
+        const res = await fetch(url, {
+          cache: "no-store",
+          headers: {
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache"
+          }
+        });
+        if (res.ok) {
+          const text = await res.text();
+          if (text && text.length > 0) return text;
         }
-      });
-      if (!res.ok) return null;
-      const text = await res.text();
-      if (!text || text.length === 0) return null;
-      return text;
-    } catch (e) {
-      return null;
+      } catch (e) {}
     }
+    return null;
   }
 
   async function lakukanPatchingAtomic(db, remote) {
@@ -524,7 +554,7 @@
         sessionStorage.removeItem("sa_update_ditunda");
       } catch (e) {}
       const db = await bukaDB();
-      const remote = await periksaRemoteUpdate(6000);
+      const remote = await periksaRemoteUpdate(10000);
       if (!remote) {
         alert("Tidak dapat terhubung ke server pembaruan. Periksa koneksi internet.");
         return;
