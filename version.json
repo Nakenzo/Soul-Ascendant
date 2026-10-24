@@ -1,7 +1,7 @@
 {
-  "timestamp": 1792839960429,
-  "build": 90,
-  "pesan": "Versi baru Soul Ascendant telah tersedia dengan proporsi UI menu mobile 16:9 yang rapi, ramping, dan proporsional.",
+  "timestamp": 1792841897688,
+  "build": 92,
+  "pesan": "Versi baru Soul Ascendant telah tersedia dengan auto-update online otomatis di startup dan perbaikan CORS preflight untuk Android APK dan PC Tauri.",
   "patch_files": [
     "core.js",
     "save.js",
@@ -24,6 +24,7 @@
     "upgrades.js",
     "skills.js",
     "entities.js",
+    "vfx.js",
     "draw.js",
     "ambience.js",
     "updater.js",
@@ -33,5 +34,5 @@
     "style.css",
     "settings.css"
   ],
-  "tanggal": "2026-10-24T11:06:00.429Z"
+  "tanggal": "2026-10-24T11:38:17.688Z"
 }

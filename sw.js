@@ -1,4 +1,4 @@
-const BUILD = 90;
+const BUILD = 92;
 const CACHE_FALLBACK = "soul-ascendant-v" + BUILD;
 const ASSETS_TO_CACHE = [
   "./",
@@ -32,6 +32,7 @@ const ASSETS_TO_CACHE = [
   "./upgrades.js",
   "./skills.js",
   "./entities.js",
+  "./vfx.js",
   "./draw.js",
   "./ambience.js",
   "./main.js",

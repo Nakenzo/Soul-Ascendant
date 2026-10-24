@@ -1,16 +1,16 @@
 (function () {
   const ENDPOINTS_VERSION = [
-    "https://nakenzo.github.io/Soul-Ascendant/version.json?nc=",
     "https://raw.githubusercontent.com/Nakenzo/Soul-Ascendant/main/version.json?nc=",
+    "https://nakenzo.github.io/Soul-Ascendant/version.json?nc=",
     "https://cdn.jsdelivr.net/gh/Nakenzo/Soul-Ascendant@main/version.json?nc="
   ];
   const ENDPOINTS_MANIFEST = [
-    "https://nakenzo.github.io/Soul-Ascendant/manifest.json?nc=",
-    "https://raw.githubusercontent.com/Nakenzo/Soul-Ascendant/main/manifest.json?nc="
+    "https://raw.githubusercontent.com/Nakenzo/Soul-Ascendant/main/manifest.json?nc=",
+    "https://nakenzo.github.io/Soul-Ascendant/manifest.json?nc="
   ];
   const BASES_CDN = [
-    "https://nakenzo.github.io/Soul-Ascendant/",
     "https://raw.githubusercontent.com/Nakenzo/Soul-Ascendant/main/",
+    "https://nakenzo.github.io/Soul-Ascendant/",
     "https://cdn.jsdelivr.net/gh/Nakenzo/Soul-Ascendant@main/"
   ];
   const DB_NAME = "SoulAscendantPatchDB";
@@ -42,6 +42,7 @@
     "upgrades.js",
     "skills.js",
     "entities.js",
+    "vfx.js",
     "draw.js",
     "ambience.js",
     "updater.js",
@@ -50,7 +51,7 @@
     "admin-akun.js"
   ];
 
-  const BUILD_SEKARANG = 90;
+  const BUILD_SEKARANG = 92;
   let petaPatchAktif = {};
 
   let bootErrorCount = 0;
@@ -269,12 +270,7 @@
       const timer = setTimeout(() => controller.abort(), batasWaktu);
       try {
         const res = await fetch(url, {
-          signal: controller.signal,
-          cache: "no-store",
-          headers: {
-            "Cache-Control": "no-cache, no-store, must-revalidate",
-            "Pragma": "no-cache"
-          }
+          signal: controller.signal
         });
         clearTimeout(timer);
         if (res.ok) {
@@ -291,12 +287,7 @@
       const timer = setTimeout(() => controller.abort(), batasWaktu);
       try {
         const res = await fetch(url, {
-          signal: controller.signal,
-          cache: "no-store",
-          headers: {
-            "Cache-Control": "no-cache, no-store, must-revalidate",
-            "Pragma": "no-cache"
-          }
+          signal: controller.signal
         });
         clearTimeout(timer);
         if (res.ok) {
@@ -318,13 +309,7 @@
       }
       const url = base + path + "?nc=" + build + "_" + Date.now();
       try {
-        const res = await fetch(url, {
-          cache: "no-store",
-          headers: {
-            "Cache-Control": "no-cache, no-store, must-revalidate",
-            "Pragma": "no-cache"
-          }
-        });
+        const res = await fetch(url);
         if (res.ok) {
           const text = await res.text();
           if (text && text.length > 0) return text;
@@ -517,30 +502,32 @@
       teksVersi.textContent = "v0.1.0";
     }
 
-    perbaruiStatusUI("Menyiapkan game...");
+    perbaruiStatusUI("Memeriksa pembaruan online...", 15);
+
+    try {
+      const remote = await periksaRemoteUpdate(3500);
+      if (remote) {
+        const tsAktif = ambilTimestampAktif();
+        const bAktif = ambilBuildAktif();
+        const adaUpdateTS = remote.timestamp && remote.timestamp > tsAktif;
+        const adaUpdateBuild = typeof remote.build === "number" && remote.build > bAktif;
+        if (adaUpdateTS || adaUpdateBuild) {
+          perbaruiStatusUI("Mengunduh patch otomatis...", 25);
+          await lakukanPatchingAtomic(db, remote);
+          return;
+        }
+      }
+    } catch (errCheck) {}
+
+    perbaruiStatusUI("Menyiapkan game...", 80);
 
     let petaPatch = await ambilSemuaPatch(db);
     terapkanPatchCSS(petaPatch);
     petaPatchAktif = petaPatch;
 
     muatSkripBerurutan(DAFTAR_SKRIP, 0, petaPatch, function () {
-      perbaruiStatusUI("Game siap!");
+      perbaruiStatusUI("Game siap!", 100);
     });
-
-    setTimeout(async () => {
-      try {
-        if (sessionStorage.getItem("sa_update_ditunda") === "1") return;
-        const remote = await periksaRemoteUpdate(4500);
-        if (!remote) return;
-        const tsAktif = ambilTimestampAktif();
-        const bAktif = ambilBuildAktif();
-        const adaUpdateTS = remote.timestamp && remote.timestamp > tsAktif;
-        const adaUpdateBuild = typeof remote.build === "number" && remote.build > bAktif;
-        if (adaUpdateTS || adaUpdateBuild) {
-          tampilkanModalUpdate(remote, db);
-        }
-      } catch (err) {}
-    }, 1200);
   }
 
   window.SA_PATCHER = window.SE_PATCHER = {

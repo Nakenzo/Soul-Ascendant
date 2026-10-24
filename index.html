@@ -16,7 +16,7 @@
             var p = (window.AndroidNative || window.Capacitor) ? "apk" : ((window.__TAURI__ || window.__TAURI_INTERNALS__) ? "pc" : "web");
             document.documentElement.setAttribute("data-platform", p);
         })();
-        var BUILD_TERKINI = 90;
+        var BUILD_TERKINI = 92;
     </script>
 </head>
 <body>
@@ -31,6 +31,7 @@
         <div class="kotak-game">
             <div class="posisi-game">
             <canvas id="game" width="1707" height="960"></canvas>
+            <canvas id="gameVfx" width="1707" height="960"></canvas>
 
             <div id="layarLoadingUpdate" class="layar-loading-update">
                 <div class="update-kotak-tengah">

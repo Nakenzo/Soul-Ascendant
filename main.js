@@ -60,7 +60,13 @@ function loop(now) {
   // update atau draw error di satu frame, yang lain tetap berjalan:
   // controls (tombol & joystik HP) tidak akan pernah "nyangkut" hilang.
   try { update(dt); } catch (err) { catatError(err); }
+  if (typeof vfx !== "undefined" && vfx.siap) {
+    try { vfx.update(dt); } catch (err) {}
+  }
   try { draw(); } catch (err) { catatError(err); }
+  if (typeof vfx !== "undefined" && vfx.siap) {
+    try { vfx.render(); } catch (err) {}
+  }
   try { aturNotaKartu(); } catch (err) {}
   sinkronkanKontrolSentuh();
   if (typeof sinkronkanMusikGame === "function") sinkronkanMusikGame();
@@ -74,6 +80,9 @@ let loopDijadwalkan = false;
 function jalankanLoop() {
   if (loopDijadwalkan) return;
   loopDijadwalkan = true;
+  if (typeof vfx !== "undefined" && !vfx.siap) {
+    try { vfx.init(); } catch (e) {}
+  }
   if (!lastTime) lastTime = performance.now();
   requestAnimationFrame(loop);
 }

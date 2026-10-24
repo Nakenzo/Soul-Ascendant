@@ -33,7 +33,7 @@ var IS_PC = PLATFORM === "pc";
 var IS_WEB = PLATFORM === "web";
 
 const VERSI_GAME = "0.1.0";
-const BUILD_GAME = 90;
+const BUILD_GAME = 92;
 const EDISI_GAME = IS_APK ? "Android APK" : (IS_PC ? "PC Windows" : "Web Edition");
 
 function saatPlatform(opsi) {
@@ -314,6 +314,10 @@ function segDist(sx, sy, ex, ey, px, py) {
 }
 
 function spawnParticles(x, y, color, n) {
+  if (typeof vfx !== "undefined" && vfx.siap) {
+    vfx.spawn("spark", x, y, { warna: color, jumlah: n, speed: 220, size: 14 });
+    return;
+  }
   for (let i = 0; i < n; i++) {
     const angle = Math.random() * Math.PI * 2;
     const speed = 80 + Math.random() * 240;
