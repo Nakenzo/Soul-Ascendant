@@ -233,6 +233,94 @@ body[data-device="mobile"] .dekor-bg .jalur-aura {
     mix-blend-mode: normal;
 }
 
+body[data-device="mobile"] #layarJudul .img-logo {
+    width: calc(var(--cs, 0.56) * 580px);
+    max-width: 68vw;
+}
+
+body[data-device="mobile"] .tombol-play {
+    font-size: calc(var(--cs, 0.56) * 19px);
+    padding: calc(var(--cs, 0.56) * 8px) calc(var(--cs, 0.56) * 36px);
+    letter-spacing: 2px;
+    margin-top: 1.2%;
+}
+
+body[data-device="mobile"] .tombol-karakter-menu,
+body[data-device="mobile"] .tombol-inventory-menu {
+    font-size: calc(var(--cs, 0.56) * 15px);
+    padding: calc(var(--cs, 0.56) * 7px) calc(var(--cs, 0.56) * 26px);
+    letter-spacing: 1.5px;
+    margin-top: calc(var(--cs, 0.56) * 7px);
+}
+
+body[data-device="mobile"] .sub-judul {
+    font-size: calc(var(--cs, 0.56) * 13px);
+}
+
+body[data-device="mobile"] .tombol-setting-pojok {
+    width: calc(var(--cs, 0.56) * 36px);
+    height: calc(var(--cs, 0.56) * 36px);
+}
+
+body[data-device="mobile"] .layar-inventory .modal-pilih.inventory-wide,
+body[data-device="mobile"] .inv-layar .modal-pilih.inventory-wide {
+    --cs: clamp(0.38, calc(var(--cs-akar) * 0.65), 0.68);
+    padding: clamp(6px, 1.5vw, 14px);
+}
+
+body[data-device="mobile"] #layarKarakter .judul-pilih {
+    font-size: calc(var(--cs, 0.56) * 26px);
+}
+
+body[data-device="mobile"] #layarKarakter .saldo-pojok {
+    font-size: calc(var(--cs, 0.56) * 13px);
+    top: calc(var(--cs, 0.56) * 6px);
+    right: calc(var(--cs, 0.56) * 10px);
+}
+
+body[data-device="mobile"] .kartu-up {
+    width: calc(var(--cs, 0.56) * 92px);
+    padding: calc(var(--cs, 0.56) * 6px);
+    gap: calc(var(--cs, 0.56) * 3px);
+}
+
+body[data-device="mobile"] .kartu-up canvas {
+    width: calc(var(--cs, 0.56) * 56px);
+    height: calc(var(--cs, 0.56) * 56px);
+}
+
+body[data-device="mobile"] #layarLevel h2 {
+    font-size: calc(var(--cs, 0.56) * 26px);
+    letter-spacing: 2px;
+}
+
+body[data-device="mobile"] .kartu-level {
+    width: calc(var(--cs, 0.56) * 235px);
+    padding: calc(var(--cs, 0.56) * 8px) calc(var(--cs, 0.56) * 12px);
+}
+
+body[data-device="mobile"] .judul-level {
+    font-size: calc(var(--cs, 0.56) * 16px);
+}
+
+body[data-device="mobile"] .nama-level {
+    font-size: calc(var(--cs, 0.56) * 11px);
+}
+
+body[data-device="mobile"] .judul-pause,
+body[data-device="mobile"] .judul-gameover,
+body[data-device="mobile"] .judul-menang {
+    font-size: calc(var(--cs, 0.56) * 28px);
+    letter-spacing: 2px;
+}
+
+body[data-device="mobile"] .tombol-ulang,
+body[data-device="mobile"] .tombol-menu,
+body[data-device="mobile"] .tombol-pause-menu {
+    font-size: calc(var(--cs, 0.56) * 16px);
+    padding: calc(var(--cs, 0.56) * 8px) calc(var(--cs, 0.56) * 26px);
+}
+
 .posisi-game {
     position: relative;
     display: inline-block;

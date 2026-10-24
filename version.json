@@ -1,7 +1,7 @@
 {
-  "timestamp": 1792838244248,
-  "build": 89,
-  "pesan": "Versi baru Soul Ascendant telah tersedia dengan optimasi performa HP kentang 60 FPS, layar penuh 16:9, dan ketahanan multi-CDN.",
+  "timestamp": 1792839960429,
+  "build": 90,
+  "pesan": "Versi baru Soul Ascendant telah tersedia dengan proporsi UI menu mobile 16:9 yang rapi, ramping, dan proporsional.",
   "patch_files": [
     "core.js",
     "save.js",
@@ -33,5 +33,5 @@
     "style.css",
     "settings.css"
   ],
-  "tanggal": "2026-10-24T10:37:24.248Z"
+  "tanggal": "2026-10-24T11:06:00.429Z"
 }

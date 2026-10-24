@@ -329,3 +329,8 @@
     color: #ffffff;
     border-color: #64748b;
 }
+
+body[data-device="mobile"] .setting-layar .modal-pilih.setting-wide {
+    --cs: clamp(0.38, calc(var(--cs-akar) * 0.65), 0.68);
+    padding: clamp(6px, 1.5vw, 14px);
+}
