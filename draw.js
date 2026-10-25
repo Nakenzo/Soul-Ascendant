@@ -1080,6 +1080,16 @@ function draw() {
       ctx.stroke();
     }
 
+    if (e.crystalize > 0) {
+      ctx.fillStyle = "rgba(245, 158, 11, 0.28)";
+      ctx.beginPath();
+      ctx.arc(e.x, e.y, e.r + 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#f59e0b";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
     if (e.paralyze > 0) {
       ctx.fillStyle = "rgba(168, 85, 247, 0.3)";
       ctx.beginPath();

@@ -476,6 +476,7 @@ function picuEfekElemen(e, tipe, dmgAwal, emKali) {
     spawnParticles(e.x, e.y, "#facc15", 16);
     rings.push({ x: e.x, y: e.y, r: 8, maxR: 50, life: 0.25, t: 0, warna: "#facc15" });
   } else if (tipe === "tanah") {
+    e.crystalize = 3.5;
     const crysDmg = Math.max(6, Math.round(dmg * 0.8 * em));
     e.hp -= crysDmg;
     spawnDamage(e.x, e.y - e.r - 28, "CRYSTALIZE", "#f59e0b");
@@ -495,24 +496,79 @@ function picuEfekElemen(e, tipe, dmgAwal, emKali) {
 
 function prosesReaksiElemen(e, elemenSerangan, dmgAwal) {
   if (!e || e.hp <= 0) return;
-  if ((e.reaksiCooldown || 0) > 0) return;
 
   const atkEl = (elemenSerangan || (typeof elemenSeranganBiasa === "function" ? elemenSeranganBiasa() : "fisik")).toLowerCase();
   const musuhEl = (e.element || (TIPE_MUSUH[e.tipe] ? TIPE_MUSUH[e.tipe].element : "fisik") || "fisik").toLowerCase();
 
-  if (!atkEl || !musuhEl || atkEl === musuhEl) return;
-
   const emKali = typeof pengaliElement === "function" && karakter ? pengaliElement(karakter.kunci) : 1;
   let reaksi = null;
 
-  if ((atkEl === "fisik" && musuhEl === "es") || (atkEl === "es" && musuhEl === "fisik")) {
-    const bonusDmg = Math.round(dmgAwal * 1.5 * emKali);
-    e.hp -= bonusDmg;
-    reaksi = { nama: "SHATTER x2.5", warna: "#38bdf8", anim: "shatter" };
-    spawnParticles(e.x, e.y, "#38bdf8", 16);
-    rings.push({ x: e.x, y: e.y, r: 10, maxR: 70, life: 0.35, t: 0, warna: "#38bdf8" });
-    if (typeof sfxBeku === "function") sfxBeku();
-  } else if ((atkEl === "fisik" && musuhEl === "angin") || (atkEl === "angin" && musuhEl === "fisik")) {
+  if (atkEl === "fisik") {
+    if ((e.freeze || 0) > 0) {
+      e.freeze = 0;
+      const bonusDmg = Math.round(dmgAwal * 2.5 * emKali);
+      e.hp -= bonusDmg;
+      reaksi = { nama: "SHATTERS", warna: "#38bdf8", anim: "shatter" };
+      spawnParticles(e.x, e.y, "#38bdf8", 22);
+      spawnParticles(e.x, e.y, "#e0f2fe", 12);
+      rings.push({ x: e.x, y: e.y, r: 12, maxR: 85, life: 0.35, t: 0, warna: "#38bdf8" });
+      if (typeof sfxBeku === "function") sfxBeku();
+    } else if ((e.crystalize || 0) > 0) {
+      e.crystalize = 0;
+      const bonusDmg = Math.round(dmgAwal * 2.2 * emKali);
+      e.hp -= bonusDmg;
+      e.hitStun = 0.4;
+      reaksi = { nama: "CRUSH!", warna: "#f59e0b", anim: "crush" };
+      spawnParticles(e.x, e.y, "#f59e0b", 22);
+      spawnParticles(e.x, e.y, "#b45309", 14);
+      rings.push({ x: e.x, y: e.y, r: 14, maxR: 95, life: 0.4, t: 0, warna: "#f59e0b" });
+      if (typeof sfxTebasan === "function") sfxTebasan();
+    } else if (e.burn) {
+      const sisaBurn = (e.burn.dmg || 4) * 3;
+      e.burn = null;
+      const bonusDmg = Math.round(dmgAwal * 1.8 * emKali + sisaBurn);
+      e.hp -= bonusDmg;
+      reaksi = { nama: "ASSAULT!", warna: "#ff5722", anim: "combustion" };
+      spawnParticles(e.x, e.y, "#ff5722", 22);
+      spawnParticles(e.x, e.y, "#ff8c3f", 14);
+      rings.push({ x: e.x, y: e.y, r: 12, maxR: 90, life: 0.35, t: 0, warna: "#ff5722" });
+      if (typeof sfxTebasan === "function") sfxTebasan();
+    } else if ((e.paralyze || 0) > 0) {
+      e.paralyze = 0;
+      const bonusDmg = Math.round(dmgAwal * 1.9 * emKali);
+      e.hp -= bonusDmg;
+      const chainRadius = 180;
+      for (let k = 0; k < enemies.length; k++) {
+        const lain = enemies[k];
+        if (lain.hp <= 0 || lain.bosKematian || lain === e) continue;
+        const d = dist(e.x, e.y, lain.x, lain.y);
+        if (d < chainRadius) {
+          const chainDmg = applyDamageMusuh(lain, Math.round(bonusDmg * 0.45), "dot");
+          spawnDamage(lain.x, lain.y - lain.r - 16, chainDmg, "#facc15");
+          spawnParticles(lain.x, lain.y, "#facc15", 8);
+        }
+      }
+      reaksi = { nama: "DISCHARGE!", warna: "#facc15", anim: "swirl_petir" };
+      spawnParticles(e.x, e.y, "#facc15", 22);
+      spawnParticles(e.x, e.y, "#eab308", 14);
+      rings.push({ x: e.x, y: e.y, r: 12, maxR: 110, life: 0.35, t: 0, warna: "#facc15" });
+    }
+  }
+
+  if (reaksi) {
+    e.reaksiCooldown = 1.0;
+    spawnDamage(e.x, e.y - e.r - 28, reaksi.nama, reaksi.warna);
+    if (typeof spawnAnimasiReaksi === "function") {
+      spawnAnimasiReaksi(reaksi.anim || "vortex", e.x, e.y);
+    }
+    if (e.hp <= 0) killEnemy(e);
+    return;
+  }
+
+  if ((e.reaksiCooldown || 0) > 0) return;
+  if (!atkEl || !musuhEl || atkEl === musuhEl) return;
+
+  if ((atkEl === "fisik" && musuhEl === "angin") || (atkEl === "angin" && musuhEl === "fisik")) {
     const bonusDmg = Math.round(dmgAwal * 0.9 * emKali);
     e.hp -= bonusDmg;
     const vortexRadius = 240;
@@ -538,22 +594,12 @@ function prosesReaksiElemen(e, elemenSerangan, dmgAwal) {
     spawnParticles(e.x, e.y, "#2dd4bf", 20);
     rings.push({ x: e.x, y: e.y, r: 12, maxR: 120, life: 0.4, t: 0, warna: "#2dd4bf" });
     if (typeof sfxDash === "function") sfxDash();
-  } else if (
-    (atkEl === "fisik" && (musuhEl === "api" || musuhEl === "petir" || musuhEl === "listrik" || musuhEl === "nature")) ||
-    ((atkEl === "api" || atkEl === "petir" || atkEl === "listrik" || atkEl === "nature") && musuhEl === "fisik")
-  ) {
+  } else if ((atkEl === "fisik" && musuhEl === "nature") || (atkEl === "nature" && musuhEl === "fisik")) {
     const bleedDmg = Math.max(4, Math.round((dmgAwal * 0.35 + 5) * emKali));
     e.bleeding = { timer: 0, tick: 0.35, durasi: 4.0, dmg: bleedDmg };
     reaksi = { nama: "BLEEDING!", warna: "#ef4444", anim: "bleeding" };
     spawnParticles(e.x, e.y, "#ef4444", 18);
     rings.push({ x: e.x, y: e.y, r: 10, maxR: 75, life: 0.35, t: 0, warna: "#ef4444" });
-  } else if ((atkEl === "fisik" && musuhEl === "tanah") || (atkEl === "tanah" && musuhEl === "fisik")) {
-    const bonusDmg = Math.round(dmgAwal * 1.3 * emKali);
-    e.hp -= bonusDmg;
-    e.hitStun = 0.35;
-    reaksi = { nama: "CRUSH!", warna: "#d97706", anim: "crush" };
-    spawnParticles(e.x, e.y, "#b45309", 18);
-    rings.push({ x: e.x, y: e.y, r: 14, maxR: 90, life: 0.4, t: 0, warna: "#d97706" });
   } else if ((atkEl === "fisik" && musuhEl === "nihil") || (atkEl === "nihil" && musuhEl === "fisik")) {
     e.korosi = { timer: 0, tick: 0.4, durasi: 4.0, dmg: Math.max(3, Math.round(8 * emKali)) };
     reaksi = { nama: "VOID CORROSION", warna: "#c084fc", anim: "void_corrosion" };
@@ -1029,6 +1075,7 @@ function mulaiKematianBos(e) {
   e.bleeding = null;
   e.korosi = null;
   e.gaugeElemen = null;
+  e.crystalize = 0;
   bossIntro = null;
   bosKematian = { e: e, t: 0, sudahBayar: false };
   spawnTimer = 999;
@@ -2257,6 +2304,7 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
     e.hitFlash = Math.max(0, e.hitFlash - dt);
     e.freeze = Math.max(0, (e.freeze || 0) - dt);
     e.paralyze = Math.max(0, (e.paralyze || 0) - dt);
+    e.crystalize = Math.max(0, (e.crystalize || 0) - dt);
     e.contactCd = Math.max(0, (e.contactCd || 0) - dt);
     e.reaksiCooldown = Math.max(0, (e.reaksiCooldown || 0) - dt);
 
