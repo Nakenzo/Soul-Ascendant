@@ -275,11 +275,7 @@ function segarkanSaldoJudul() {
   }
   const elV = document.getElementById("labelVersiJudul");
   if (elV) {
-    const p = window.SA_PATCHER || window.SE_PATCHER;
-    const b = (p && typeof p.ambilBuildAktif === "function")
-      ? p.ambilBuildAktif()
-      : (typeof BUILD_GAME !== "undefined" ? BUILD_GAME : 74);
-    elV.textContent = "v" + (typeof VERSI_GAME !== "undefined" ? VERSI_GAME : "0.1.0") + " (Build " + b + ")";
+    elV.textContent = "v" + (typeof VERSI_GAME !== "undefined" ? VERSI_GAME : "0.1.0");
   }
 }
 

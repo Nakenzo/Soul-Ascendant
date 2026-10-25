@@ -3581,18 +3581,18 @@ function drawHUD() {
     const daftar = daftarSkill(karakter.kunci);
     const slots = [2, 3, 4];
     const lbls = ["1", "2", "3"];
-    const bb = Math.max(6, Math.round(hpBarH * 0.5));
-    const step = bb + Math.max(4, Math.round(5 * s));
+    const bb = Math.max(16, Math.round(hpBarH * 0.85));
+    const step = bb + Math.max(4, Math.round(6 * s));
     let by = skY;
     ctx.font = "bold " + fs(17) + "px Zen Dots";
-    ctx.textBaseline = "alphabetic";
+    ctx.textBaseline = "middle";
     for (let i = 0; i < 3; i++) {
       const def = daftar[slots[i] - 1] || {};
       const slot = slots[i];
       const terkunci = typeof apakahSkillTerbuka === "function"
         ? !apakahSkillTerbuka(karakter.kunci, slot)
         : levelKarakter(karakter.kunci) < (typeof def.level === "number" ? def.level : 0);
-      const mm = Math.max(3, Math.round(4 * s));
+      const mm = Math.max(4, Math.round(6 * s));
       const nm = (def.nama || "SKILL").slice(0, 12);
       ctx.textAlign = "left";
       if (terkunci) {
@@ -3602,50 +3602,60 @@ function drawHUD() {
       }
       const cd = cdSkill(karakter.kunci, slots[i]);
       const ratio = cd > 0 ? Math.max(0, Math.min(1, 1 - player.specialCd / cd)) : 0;
-      ctx.fillStyle = "rgba(0,0,0,.8)";
+      ctx.fillStyle = "#000";
       ctx.fillRect(hpX, by, hpBarW, bb);
       ctx.fillStyle = warnaSkill;
       ctx.fillRect(hpX + Math.max(2, Math.round(2 * s)), by + Math.max(2, Math.round(2 * s)),
         (hpBarW - Math.max(4, Math.round(4 * s))) * ratio, bb - Math.max(4, Math.round(4 * s)));
+      ctx.strokeStyle = "#fff";
+      ctx.lineWidth = Math.max(1, Math.round(1.5 * s));
+      ctx.strokeRect(hpX + Math.round(0.5 * s), by + Math.round(0.5 * s), hpBarW - Math.round(1 * s), bb - Math.round(1 * s));
+      const textY = by + bb / 2;
       ctx.fillStyle = player.specialCd > 0 ? "rgba(255,255,255,.45)" : "#fff";
-      ctx.fillText(lbls[i], hpX + mm, by + bb * 0.72);
+      ctx.fillText(lbls[i], hpX + mm, textY);
       ctx.fillStyle = player.specialCd > 0 ? "rgba(255,255,255,.7)" : "#dbeafe";
-      ctx.fillText(nm, hpX + Math.max(18, Math.round(20 * s)), by + bb * 0.72);
+      ctx.fillText(nm, hpX + Math.max(22, Math.round(24 * s)), textY);
       if (player.specialCd > 0) {
         ctx.textAlign = "right";
         ctx.strokeStyle = "#000";
         ctx.lineWidth = Math.max(1, Math.round(2 * s));
-        ctx.strokeText(player.specialCd.toFixed(1), hpX + hpBarW - mm, by + bb * 0.72);
+        ctx.strokeText(player.specialCd.toFixed(1), hpX + hpBarW - mm, textY);
         ctx.fillStyle = "#fff";
-        ctx.fillText(player.specialCd.toFixed(1), hpX + hpBarW - mm, by + bb * 0.72);
+        ctx.fillText(player.specialCd.toFixed(1), hpX + hpBarW - mm, textY);
         ctx.textAlign = "left";
       }
       by += step;
     }
   } else {
+    const skBarTinggi = Math.round(hpBarH * 0.9);
     const skFillW = skBarW - Math.round(8 * s);
-    const skFillH = skBarH - Math.round(8 * s);
+    const skFillH = skBarTinggi - Math.round(8 * s);
     const skFillX = hpX + Math.round(4 * s);
     const skFillY = skY + Math.round(4 * s);
     const ratio = 1 - player.specialCd / player.specialMax;
 
     ctx.fillStyle = "#000";
-    ctx.fillRect(hpX, skY, skBarW, skBarH);
+    ctx.fillRect(hpX, skY, skBarW, skBarTinggi);
     ctx.fillStyle = warnaSkill;
     ctx.fillRect(skFillX, skFillY, skFillW * ratio, skFillH);
-    ctx.font = "bold " + fs(22) + "px Zen Dots";
+    ctx.strokeStyle = "#fff";
+    ctx.lineWidth = Math.max(1, Math.round(1.5 * s));
+    ctx.strokeRect(hpX + Math.round(0.5 * s), skY + Math.round(0.5 * s), skBarW - Math.round(1 * s), skBarTinggi - Math.round(1 * s));
+    ctx.font = "bold " + fs(18) + "px Zen Dots";
+    ctx.textBaseline = "middle";
+    const textY = skY + skBarTinggi / 2;
     if (player.specialCd > 0) {
       ctx.textAlign = "right";
       ctx.strokeStyle = "#000";
       ctx.lineWidth = Math.max(1, Math.round(2 * s));
-      ctx.strokeText(player.specialCd.toFixed(1), hpX + skBarW - Math.round(4 * s), skY + skBarH * 0.7);
+      ctx.strokeText(player.specialCd.toFixed(1), hpX + skBarW - Math.round(8 * s), textY);
       ctx.fillStyle = "#fff";
-      ctx.fillText(player.specialCd.toFixed(1), hpX + skBarW - Math.round(4 * s), skY + skBarH * 0.7);
+      ctx.fillText(player.specialCd.toFixed(1), hpX + skBarW - Math.round(8 * s), textY);
       ctx.textAlign = "left";
     } else {
       ctx.textAlign = "center";
       ctx.fillStyle = "#0d1219";
-      ctx.fillText(namaSkill, hpX + skBarW / 2, skY + skBarH * 0.7);
+      ctx.fillText(namaSkill, hpX + skBarW / 2, textY);
       ctx.textAlign = "left";
     }
   }
@@ -3664,7 +3674,8 @@ function drawHUD() {
       }
       if (nota.length > 0) {
         const nx = hpX;
-        const ny = skY + skBarH + Math.round(10 * s);
+        const totalSkH = mode3 ? (Math.max(16, Math.round(hpBarH * 0.85)) + Math.max(4, Math.round(6 * s))) * 3 : hpBarH;
+        const ny = skY + totalSkH + Math.round(10 * s);
         const lh = Math.round(18 * s);
         const pad = Math.round(8 * s);
         const lebar = hpBarW;
