@@ -40,6 +40,8 @@ const windowVfx = {
   init: function () {
     const cvs = document.getElementById("gameVfx");
     if (!cvs) return false;
+    cvs.style.background = "transparent";
+    cvs.style.border = "none";
 
     try {
       vfxGl = cvs.getContext("webgl2", { alpha: true, premultipliedAlpha: false, antialias: false, depth: false }) ||

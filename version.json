@@ -1,8 +1,8 @@
 {
-  "timestamp": 1792899981858,
-  "build": 93,
-  "pesan": "Fitur auto-update cerdas: opsi otomatis unduh & instal ulang APK / PC jika pembaruan mempengaruhi struktur aplikasi.",
-  "perlu_instal_ulang": true,
+  "timestamp": 1792901210293,
+  "build": 94,
+  "pesan": "Perbaikan layar hijau: latar #gameVfx dibuat transparan agar gameplay tidak terhalang.",
+  "perlu_instal_ulang": false,
   "min_shell_build": 93,
   "url_apk": "https://github.com/Nakenzo/Soul-Ascendant/releases/latest/download/Soul-Ascendant.apk",
   "url_pc": "https://github.com/Nakenzo/Soul-Ascendant/releases/latest",
@@ -42,5 +42,5 @@
     "settings.css",
     "updater.css"
   ],
-  "tanggal": "2026-10-25T03:46:21.858Z"
+  "tanggal": "2026-10-25T04:06:50.294Z"
 }
