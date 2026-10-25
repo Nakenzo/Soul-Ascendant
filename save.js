@@ -469,7 +469,24 @@ try {
   progres = progresBaru();
 }
 
+function apakahAkunAdminSave() {
+  try {
+    if (typeof apakahAkunAdmin === "function" && apakahAkunAdmin()) return true;
+    if (typeof window !== "undefined" && window.ADMIN_BUKA) return true;
+    if (typeof ADMIN_BUKA !== "undefined" && ADMIN_BUKA) return true;
+    if (typeof akunInfo === "function") {
+      const info = akunInfo();
+      const mau = (typeof ADMIN_KONFIG !== "undefined" && ADMIN_KONFIG.username) || "admin";
+      if (info && info.masuk && info.nama && String(info.nama).trim().toLowerCase() === String(mau).trim().toLowerCase()) {
+        return true;
+      }
+    }
+  } catch (e) {}
+  return false;
+}
+
 function apakahLevelTerbuka(idx) {
+  if (apakahAkunAdminSave()) return true;
   if (!Number.isInteger(idx) || idx < 0) return false;
   if (idx === 0) return true;
   return progres.selesai.includes(idx - 1);
@@ -504,6 +521,9 @@ function bosSudahKalah(bos) {
 //   terkunci: { level: 3, bos: "raja-slime" }
 // artinya: tuntaskan level ke-3 DAN kalahkan bos "raja-slime".
 function syaratKarakter(kar) {
+  if (apakahAkunAdminSave()) {
+    return { terbuka: true, syarat: "Akses Akun Admin" };
+  }
   const s = kar && kar.terkunci;
   if (!s) return { terbuka: true, syarat: "" };
 
@@ -536,6 +556,7 @@ function syaratKarakter(kar) {
 }
 
 function karakterTerbuka(kunci) {
+  if (apakahAkunAdminSave()) return true;
   if (typeof KARAKTER === "undefined") return true;
   const kar = KARAKTER.filter(function (k) { return k && k.kunci === kunci; })[0];
   return syaratKarakter(kar).terbuka;

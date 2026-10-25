@@ -32,6 +32,14 @@ function adminNamaCocok() {
   }
 }
 
+function apakahAkunAdmin() {
+  if (typeof ADMIN_BUKA !== "undefined" && ADMIN_BUKA) return true;
+  if (typeof window !== "undefined" && window.ADMIN_BUKA) return true;
+  if (typeof adminNamaCocok === "function" && adminNamaCocok()) return true;
+  return false;
+}
+if (typeof window !== "undefined") window.apakahAkunAdmin = apakahAkunAdmin;
+
 function adminDeviceId() {
   var kunci = "se_admin_device";
   var id = null;
@@ -163,7 +171,9 @@ function adminNyalakan(catatan) {
   adminDock().style.display = "flex";
   adminMuatSkrip();
   adminPesan(catatan || "aktif");
-  if (window.console) console.log("[admin] mode admin aktif");
+  if (typeof buatPilihanKarakter === "function") buatPilihanKarakter();
+  if (typeof buatPilihanLevel === "function") buatPilihanLevel();
+  if (window.console) console.log("[admin] mode admin aktif: semua level dan karakter terbuka");
 }
 
 function adminMatikan() {
@@ -172,6 +182,8 @@ function adminMatikan() {
   ADMIN_BUKA = false;
   window.ADMIN_BUKA = false;
   adminBuangPanel();
+  if (typeof buatPilihanKarakter === "function") buatPilihanKarakter();
+  if (typeof buatPilihanLevel === "function") buatPilihanLevel();
   if (window.console) console.log("[admin] mode admin nonaktif");
 }
 

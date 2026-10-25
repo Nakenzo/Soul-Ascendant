@@ -129,6 +129,7 @@ window.addEventListener("keydown", (e) => {
   if (k >= "1" && k <= "9" && statusGame === "level" && DAFTAR_LEVEL.length) {
     const idx = Number(k) - 1;
     if (idx >= 0 && idx < DAFTAR_LEVEL.length) {
+      if (typeof apakahLevelTerbuka === "function" && !apakahLevelTerbuka(idx)) return;
       levelPilihan = idx;
       tampilkanPilih();
       return;
