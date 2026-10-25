@@ -1,7 +1,7 @@
 {
-  "timestamp": 1792841897688,
-  "build": 92,
-  "pesan": "Versi baru Soul Ascendant telah tersedia dengan auto-update online otomatis di startup dan perbaikan CORS preflight untuk Android APK dan PC Tauri.",
+  "timestamp": 1792898218434,
+  "build": 93,
+  "pesan": "Pembaruan visual logo judul: pendaran aura nebula lembut zamrud yang bersih dan tajam tanpa bayangan teks ganda.",
   "patch_files": [
     "core.js",
     "save.js",
@@ -34,5 +34,5 @@
     "style.css",
     "settings.css"
   ],
-  "tanggal": "2026-10-24T11:38:17.688Z"
+  "tanggal": "2026-10-25T03:16:58.434Z"
 }

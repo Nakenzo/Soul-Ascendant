@@ -51,7 +51,7 @@
     "admin-akun.js"
   ];
 
-  const BUILD_SEKARANG = 92;
+  const BUILD_SEKARANG = 93;
   let petaPatchAktif = {};
 
   let bootErrorCount = 0;
@@ -254,11 +254,19 @@
 
   function perbaruiStatusUI(teks, persen) {
     const el = document.getElementById("updateStatusTeks");
-    if (!el) return;
+    if (el) {
+      if (typeof persen === "number" && persen >= 0) {
+        el.textContent = teks + " (" + persen + "%)";
+      } else {
+        el.textContent = teks;
+      }
+    }
     if (typeof persen === "number" && persen >= 0) {
-      el.textContent = teks + " (" + persen + "%)";
-    } else {
-      el.textContent = teks;
+      const p = Math.max(0, Math.min(100, persen));
+      const bar = document.getElementById("updateProgressBar");
+      if (bar) bar.style.width = p + "%";
+      const kepala = document.getElementById("updateProgressKepala");
+      if (kepala) kepala.style.left = p + "%";
     }
   }
 
@@ -462,6 +470,8 @@
     }
     const nama = daftar[indeks];
     const kodePatch = petaPatch && petaPatch[nama];
+    const pMuat = Math.min(96, Math.round(35 + ((indeks + 1) / daftar.length) * 60));
+    perbaruiStatusUI("Memuat aset game...", pMuat);
 
     const s = document.createElement("script");
     if (kodePatch) {
@@ -521,12 +531,37 @@
 
     perbaruiStatusUI("Menyiapkan game...", 80);
 
+    const waktuMulaiBoot = Date.now();
     let petaPatch = await ambilSemuaPatch(db);
     terapkanPatchCSS(petaPatch);
     petaPatchAktif = petaPatch;
 
-    muatSkripBerurutan(DAFTAR_SKRIP, 0, petaPatch, function () {
+    function selesaikanLoadingScreen() {
       perbaruiStatusUI("Game siap!", 100);
+      if (typeof window.tutupLoadingUpdate === "function") {
+        window.tutupLoadingUpdate();
+      } else {
+        const layar = document.getElementById("layarLoadingUpdate");
+        if (layar) {
+          layar.classList.add("loading-selesai");
+          setTimeout(function () {
+            layar.classList.add("fade-out");
+            setTimeout(function () {
+              layar.style.display = "none";
+              const lj = document.getElementById("layarJudul");
+              if (lj) lj.classList.remove("hidden");
+            }, 450);
+          }, 850);
+        }
+      }
+    }
+
+    muatSkripBerurutan(DAFTAR_SKRIP, 0, petaPatch, function () {
+      const durasiBerjalan = Date.now() - waktuMulaiBoot;
+      const sisaTunggu = Math.max(0, 1600 - durasiBerjalan);
+      setTimeout(function () {
+        selesaikanLoadingScreen();
+      }, sisaTunggu);
     });
   }
 

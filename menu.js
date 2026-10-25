@@ -199,6 +199,10 @@ function sembunyiSemua() {
     zoomKamera = 1;
     aturFilterMati(0);
   }
+  const bCanvas = document.getElementById("bantuanCanvas") || document.querySelector(".bantuan-canvas");
+  if (bCanvas) {
+    bCanvas.style.display = (statusGame === "main" && (typeof deviceTerpilih === "undefined" || deviceTerpilih !== "mobile")) ? "block" : "none";
+  }
 }
 
 function segarkanLogoJudul() {
@@ -206,11 +210,8 @@ function segarkanLogoJudul() {
   if (!stack) return;
   let aura = stack.querySelector(".logo-aura");
   if (!aura) {
-    aura = document.createElement("img");
-    aura.src = "assets/ui/logo-aura.png";
-    aura.alt = "";
+    aura = document.createElement("span");
     aura.className = "logo-aura";
-    aura.draggable = false;
     aura.setAttribute("aria-hidden", "true");
     stack.insertBefore(aura, stack.firstChild);
   } else {
@@ -244,6 +245,8 @@ function tampilkanJudul() {
     errorBanner = err && err.message ? err.message : String(err);
   }
   layarJudul.classList.remove("hidden");
+  const bCanvasJudul = document.getElementById("bantuanCanvas") || document.querySelector(".bantuan-canvas");
+  if (bCanvasJudul) bCanvasJudul.style.display = "none";
   try {
     resetArena({ koinBaru: true });
     segarkanSaldoJudul();

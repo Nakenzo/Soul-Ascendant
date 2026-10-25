@@ -814,11 +814,11 @@ body[data-device="mobile"] .bantuan-canvas {
 }
 
 #layarJudul {
-    background: linear-gradient(
-        180deg,
-        rgba(7, 9, 18, 0.55) 0%,
-        rgba(10, 12, 25, 0.35) 45%,
-        rgba(13, 18, 36, 0.6) 100%
+    background: radial-gradient(
+        ellipse at center,
+        #0e1a38 0%,
+        #060c1c 65%,
+        #02050f 100%
     );
 }
 
@@ -1107,22 +1107,36 @@ body[data-device="mobile"] .bantuan-canvas {
 
 #layarJudul .logo-aura {
     position: absolute;
-    left: -6%;
-    top: -28%;
-    width: 112%;
-    height: 156%;
-    opacity: 0.55;
+    left: 50%;
+    top: 50%;
+    width: 104%;
+    height: 124%;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(
+        ellipse at center,
+        rgba(74, 222, 128, 0.45) 0%,
+        rgba(34, 197, 94, 0.24) 40%,
+        rgba(16, 185, 129, 0.08) 65%,
+        transparent 80%
+    );
+    filter: blur(calc(var(--cs, 0.56) * 16px));
+    border-radius: 50%;
     pointer-events: none;
     z-index: 0;
-    mix-blend-mode: screen;
-    animation: auraBreath 2.6s ease-in-out infinite;
+    animation: auraBreath 3.2s ease-in-out infinite;
     user-select: none;
     -webkit-user-drag: none;
 }
 
 @keyframes auraBreath {
-    0%, 100% { opacity: 0.32; transform: scale(0.96); }
-    50% { opacity: 0.78; transform: scale(1.05); }
+    0%, 100% {
+        opacity: 0.45;
+        transform: translate(-50%, -50%) scale(0.94);
+    }
+    50% {
+        opacity: 0.95;
+        transform: translate(-50%, -50%) scale(1.08);
+    }
 }
 
 #layarJudul .img-logo {
@@ -1162,12 +1176,12 @@ body[data-device="mobile"] .bantuan-canvas {
     background: linear-gradient(
         90deg,
         transparent 0%,
-        rgba(74, 222, 128, 0.75) 18%,
-        rgba(167, 243, 208, 0.95) 38%,
-        transparent 44%,
-        transparent 56%,
-        rgba(167, 243, 208, 0.95) 62%,
-        rgba(74, 222, 128, 0.75) 82%,
+        rgba(74, 222, 128, 0.6) 10%,
+        rgba(167, 243, 208, 0.85) 20%,
+        transparent 28%,
+        transparent 72%,
+        rgba(167, 243, 208, 0.85) 80%,
+        rgba(74, 222, 128, 0.6) 90%,
         transparent 100%
     );
     pointer-events: none;
@@ -1203,10 +1217,10 @@ body[data-device="mobile"] .bantuan-canvas {
         180deg,
         transparent 0%,
         rgba(74, 222, 128, 0.0) 12%,
-        rgba(167, 243, 208, 0.9) 28%,
-        transparent 42%,
-        transparent 58%,
-        rgba(167, 243, 208, 0.9) 72%,
+        rgba(167, 243, 208, 0.9) 24%,
+        transparent 32%,
+        transparent 68%,
+        rgba(167, 243, 208, 0.9) 76%,
         rgba(74, 222, 128, 0.0) 88%,
         transparent 100%
     );
@@ -4064,6 +4078,7 @@ body[data-device="mobile"] .bantuan-canvas {
 }
 
 .bantuan-canvas {
+    display: none;
     position: absolute;
     bottom: 2%;
     left: 1.5%;

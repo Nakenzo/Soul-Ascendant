@@ -87,7 +87,15 @@ try {
   fs.writeFileSync(vPath, JSON.stringify(ver, null, 2) + "\n");
   fs.writeFileSync(path.join(OUT, "version.json"), JSON.stringify(ver, null, 2) + "\n");
 
-  console.log("Verifikasi ok: build " + manifest.build + " (manifest == sw.js == core.js == boot.js == version.json)");
+  const gradlePath = path.join(ROOT, "mobile", "android", "app", "build.gradle");
+  if (fs.existsSync(gradlePath)) {
+    let gradleSrc = fs.readFileSync(gradlePath, "utf8");
+    gradleSrc = gradleSrc.replace(/versionCode\s+\d+/, "versionCode " + manifest.build);
+    gradleSrc = gradleSrc.replace(/versionName\s+"[^"]+"/, 'versionName "0.1.' + manifest.build + '"');
+    fs.writeFileSync(gradlePath, gradleSrc);
+  }
+
+  console.log("Verifikasi ok: build " + manifest.build + " (manifest == sw.js == core.js == boot.js == version.json == build.gradle)");
 } catch (err) {
   console.error("GAGAL verifikasi build: " + err.message);
   process.exit(1);

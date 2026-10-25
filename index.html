@@ -16,7 +16,7 @@
             var p = (window.AndroidNative || window.Capacitor) ? "apk" : ((window.__TAURI__ || window.__TAURI_INTERNALS__) ? "pc" : "web");
             document.documentElement.setAttribute("data-platform", p);
         })();
-        var BUILD_TERKINI = 92;
+        var BUILD_TERKINI = 93;
     </script>
 </head>
 <body>
@@ -34,16 +34,28 @@
             <canvas id="gameVfx" width="1707" height="960"></canvas>
 
             <div id="layarLoadingUpdate" class="layar-loading-update">
-                <div class="update-kotak-tengah">
-                    <div class="update-logo-mini">
-                        <img src="assets/ui/icon-192.png" alt="Soul Ascendant" class="update-app-ikon">
+                <div class="loading-wadah-tengah">
+                    <div class="loading-logo-wadah">
+                        <span class="loading-logo-aura" aria-hidden="true"></span>
+                        <img src="assets/ui/logo-soul-ascendant.svg" alt="Soul Ascendant" class="loading-logo-img" draggable="false">
                     </div>
-                    <h2 class="update-judul-game">SOUL ASCENDANT</h2>
-                    <div class="update-spinner-wadah">
-                        <div class="update-spinner"></div>
+                </div>
+                <div class="loading-balok-bawah">
+                    <div class="loading-track-wadah">
+                        <div class="loading-track-rel">
+                            <div id="updateProgressBar" class="loading-bar-isi"></div>
+                            <div id="updateProgressKepala" class="loading-kepala-bintang">
+                                <i class="loading-dash dash-atas"></i>
+                                <i class="loading-bintang-ikon">&#10022;</i>
+                                <i class="loading-dash dash-bawah"></i>
+                            </div>
+                        </div>
                     </div>
-                    <p id="updateStatusTeks" class="update-status-teks">Memeriksa pembaruan...</p>
-                    <span id="updateVersiTeks" class="update-versi-teks">v0.1.0</span>
+                    <div class="loading-balok-isi">
+                        <span id="updateStatusTeks" class="loading-status-teks">MEMERIKSA PEMBARUAN...</span>
+                        <span id="updatePromptTeks" class="loading-prompt-teks" style="display:none">&#9654; SENTUH / KLIK LAYAR UNTUK MEMULAI &#9664;</span>
+                        <span id="updateVersiTeks" class="loading-versi-teks">v0.1.0</span>
+                    </div>
                 </div>
             </div>
 
@@ -82,7 +94,7 @@
                 <p class="sub-judul">Miringkan HP / tablet ke posisi LANDSCAPE agar nyaman dimainkan</p>
             </div>
 
-            <div class="bantuan-canvas">
+            <div id="bantuanCanvas" class="bantuan-canvas" style="display: none;">
                 <p><b>WASD / Panah</b> Gerak</p>
                 <p><b>Klik Kiri</b> Serang</p>
                 <p><b>Klik Kanan</b> Dash</p>
@@ -174,7 +186,7 @@
                 </div>
                 <h1 class="judul-logo">
                     <span class="logo-stack">
-                        <img src="assets/ui/logo-aura.png" alt="" class="logo-aura" draggable="false" aria-hidden="true">
+                        <span class="logo-aura" aria-hidden="true"></span>
                         <i class="orn-line" aria-hidden="true"></i>
                         <i class="orn-cross" aria-hidden="true"></i>
                         <img src="assets/ui/logo-soul-ascendant.svg" alt="SOUL ASCENDANT" class="img-logo" draggable="false">

@@ -455,17 +455,80 @@ function generateFlameFrames(compIds, deformFn, numFrames = 5) {
     const limeGrid = new Uint8Array(W * H);
     const whiteGrid = new Uint8Array(W * H);
 
+    const mappedPixels = new Map();
     for (const sp of sourcePixels) {
       const res = deformFn(sp.x, sp.y, sp.cid, f, numFrames);
       if (res.drop) continue;
       const tx = sp.x + (res.dx || 0);
       const ty = sp.y + (res.dy || 0);
+      mappedPixels.set(sp.y * W + sp.x, { tx, ty, sp });
       if (tx >= 0 && tx < W && ty >= 0 && ty < H) {
         const idx = ty * W + tx;
         silGrid[idx] = 1;
         if (sp.g > 35 && (sp.g > sp.r * 0.9 || sp.g > sp.b * 0.9)) bodyGrid[idx] = 1;
         if (sp.g > 185 && sp.r > 110) limeGrid[idx] = 1;
         if (sp.r > 210 && sp.g > 235 && sp.b > 180) whiteGrid[idx] = 1;
+      }
+    }
+
+    for (const sp of sourcePixels) {
+      const p1 = mappedPixels.get(sp.y * W + sp.x);
+      const p2 = mappedPixels.get(sp.y * W + (sp.x + 1));
+      if (p1 && p2 && p1.ty === p2.ty && p2.tx > p1.tx + 1 && p2.tx <= p1.tx + 4) {
+        for (let bx = p1.tx + 1; bx < p2.tx; bx++) {
+          if (bx >= 0 && bx < W && p1.ty >= 0 && p1.ty < H) {
+            const idx = p1.ty * W + bx;
+            silGrid[idx] = 1;
+            bodyGrid[idx] = 1;
+            if (p1.sp.g > 185 || p2.sp.g > 185) limeGrid[idx] = 1;
+            if (p1.sp.r > 210 && p2.sp.r > 210) whiteGrid[idx] = 1;
+          }
+        }
+      }
+    }
+
+    for (const sp of sourcePixels) {
+      const p1 = mappedPixels.get(sp.y * W + sp.x);
+      const p2 = mappedPixels.get((sp.y + 1) * W + sp.x);
+      if (p1 && p2 && p1.tx === p2.tx && p2.ty > p1.ty + 1 && p2.ty <= p1.ty + 4) {
+        for (let by = p1.ty + 1; by < p2.ty; by++) {
+          if (p1.tx >= 0 && p1.tx < W && by >= 0 && by < H) {
+            const idx = by * W + p1.tx;
+            silGrid[idx] = 1;
+            bodyGrid[idx] = 1;
+            if (p1.sp.g > 185 || p2.sp.g > 185) limeGrid[idx] = 1;
+            if (p1.sp.r > 210 && p2.sp.r > 210) whiteGrid[idx] = 1;
+          }
+        }
+      }
+    }
+
+    for (let pass = 0; pass < 2; pass++) {
+      for (let y = 0; y < H; y++) {
+        for (let x = 1; x < W - 1; x++) {
+          const idx = y * W + x;
+          if (!silGrid[idx]) {
+            if (silGrid[idx - 1] && silGrid[idx + 1]) {
+              silGrid[idx] = 1;
+              bodyGrid[idx] = 1;
+              if (limeGrid[idx - 1] || limeGrid[idx + 1]) limeGrid[idx] = 1;
+              if (whiteGrid[idx - 1] && whiteGrid[idx + 1]) whiteGrid[idx] = 1;
+            }
+          }
+        }
+      }
+      for (let y = 1; y < H - 1; y++) {
+        for (let x = 0; x < W; x++) {
+          const idx = y * W + x;
+          if (!silGrid[idx]) {
+            if (silGrid[idx - W] && silGrid[idx + W]) {
+              silGrid[idx] = 1;
+              bodyGrid[idx] = 1;
+              if (limeGrid[idx - W] || limeGrid[idx + W]) limeGrid[idx] = 1;
+              if (whiteGrid[idx - W] && whiteGrid[idx + W]) whiteGrid[idx] = 1;
+            }
+          }
+        }
       }
     }
 
@@ -477,6 +540,7 @@ function generateFlameFrames(compIds, deformFn, numFrames = 5) {
           if (n >= 3) {
             silGrid[idx] = 1;
             bodyGrid[idx] = 1;
+            if ((limeGrid[idx - 1] + limeGrid[idx + 1] + limeGrid[idx - W] + limeGrid[idx + W]) >= 2) limeGrid[idx] = 1;
           }
         }
       }
