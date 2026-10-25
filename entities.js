@@ -1649,6 +1649,14 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
   player.attackCd -= dt;
   player.attackAnimT = Math.max(0, (player.attackAnimT || 0) - dt);
   player.specialCd = Math.max(0, player.specialCd - dt);
+  if (player.skillCds) {
+    for (const s in player.skillCds) {
+      if (player.skillCds[s] > 0) {
+        player.skillCds[s] = Math.max(0, player.skillCds[s] - dt);
+      }
+    }
+    if (player.skillCds[2] !== undefined) player.specialCd = player.skillCds[2];
+  }
   player.specialBuff = Math.max(0, (player.specialBuff || 0) - dt);
   player.igniteBuff = Math.max(0, (player.igniteBuff || 0) - dt);
   player.swing = Math.max(0, (player.swing || 0) - dt);

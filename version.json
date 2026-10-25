@@ -1,7 +1,7 @@
 {
-  "timestamp": 1792931297058,
-  "build": 107,
-  "pesan": "Visual Efek: aura infusi senjata kini berupa pendar siluet berelemen yang menyelimuti bentuk asli PNG senjata tanpa garis kotak.",
+  "timestamp": 1792932463120,
+  "build": 108,
+  "pesan": "Gameplay Mekanik: tiap skill kini memiliki cooldown terpisah masing-masing secara independen.",
   "perlu_instal_ulang": false,
   "min_shell_build": 93,
   "url_apk": "https://github.com/Nakenzo/Soul-Ascendant/releases/latest/download/Soul-Ascendant.apk",
@@ -42,5 +42,5 @@
     "settings.css",
     "updater.css"
   ],
-  "tanggal": "2026-10-25T12:28:17.058Z"
+  "tanggal": "2026-10-25T12:47:43.121Z"
 }

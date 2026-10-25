@@ -615,7 +615,6 @@ function perbaruiCdSkillSentuh() {
   if (deviceTerpilih !== "mobile") return;
   try { gambarSoulUlt(); } catch (err) {}
   const mode = typeof pakaiModeTigaSkill === "function" && pakaiModeTigaSkill();
-  const sisa = Math.max(0, player && player.specialCd ? player.specialCd : 0);
   for (let i = 0; i < _cacheTombolSkill.length; i++) {
     const item = _cacheTombolSkill[i];
     if (!item.el) {
@@ -636,6 +635,9 @@ function perbaruiCdSkillSentuh() {
       ? daftarSkill(karakter.kunci).find(function (s) { return s.slot === item.slot; })
       : null;
     const cd = typeof cdSkill === "function" && karakter ? cdSkill(karakter.kunci, item.slot) : 0;
+    const sisa = typeof sisaCdSkill === "function"
+      ? sisaCdSkill(item.slot)
+      : (player && player.skillCds && player.skillCds[item.slot] !== undefined ? player.skillCds[item.slot] : (item.slot === 2 && player ? player.specialCd : 0));
     const terkunci = typeof apakahSkillTerbuka === "function" && karakter
       ? !apakahSkillTerbuka(karakter.kunci, item.slot)
       : (def && karakter && typeof levelKarakter === "function" && levelKarakter(karakter.kunci) < def.level);

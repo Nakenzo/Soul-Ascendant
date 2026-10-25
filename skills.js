@@ -51,12 +51,7 @@ function cdSkill(kunci, slot) {
   return baseCd;
 }
 
-// ===== MODE 3 SKILL IN-GAME (keybind 1/2/3) =====
-// Skill nomor 1 = skill BAWAAN karakter (slot 2: FROSTBITE/HEATWAVE/UMBRA),
-// lalu 2 dan 3 = skill berikutnya sesuai urutan slot (slot 3 dan slot 4).
-// Semua skill tiap karakter punya CD sendiri-sendiri; begitu satu skill
-// dikeluarkan, SEMUA skill ikut CD sebesar CD skill yang dipakai (model
-// Mobile Legends). Berlaku untuk SEMUA karakter.
+// Tiap skill punya cooldown independen masing-masing (slot 2, 3, dan 4 berjalan sendiri-sendiri).
 const MODE_3SKILL = true;
 
 function pakaiModeTigaSkill() {
@@ -93,28 +88,39 @@ function bidikMusuhTerdekatHp() {
   mouse.sy = tgt.y - kam.y;
 }
 
+function sisaCdSkill(slot) {
+  if (!player) return 0;
+  if (player.skillCds && typeof player.skillCds[slot] === "number") {
+    return Math.max(0, player.skillCds[slot]);
+  }
+  return slot === 2 ? Math.max(0, player.specialCd || 0) : 0;
+}
+
 function castSkillSlot(slot) {
-  if (gameOver || animMati || karakter === null || statusGame !== "main" || player.specialCd > 0) return;
+  if (gameOver || animMati || karakter === null || statusGame !== "main") return;
+  if (!player.skillCds) player.skillCds = { 2: 0, 3: 0, 4: 0 };
+  if ((player.skillCds[slot] || 0) > 0) return;
   const kunci = karakter.kunci;
   const daftar = daftarSkill(kunci);
   const def = daftar.filter(function (s) { return s.slot === slot; })[0];
   if (!def || !def.bisaPakai) return;
   if (typeof apakahSkillTerbuka === "function" ? !apakahSkillTerbuka(kunci, slot) : levelKarakter(kunci) < def.level) return;
   const fn = FUNGSI_SKILL[kunci + "_" + slot];
-  if (typeof fn !== "function") return;
-  player.specialCd = cdSkill(kunci, slot);
+  const cd = cdSkill(kunci, slot);
+  player.skillCds[slot] = cd;
+  if (slot === 2) player.specialCd = cd;
   bidikMusuhTerdekatHp();
-  fn();
+  if (typeof fn === "function") fn();
+  else if (slot === 2) jurusBawaan();
 }
 
 function castSpecial() {
-  if (gameOver || animMati || karakter === null || statusGame !== "main" || player.specialCd > 0) return;
-  player.specialCd = player.specialMax;
-  const slot = skillPakai(karakter.kunci);
-  const fn = FUNGSI_SKILL[karakter.kunci + "_" + slot];
-  bidikMusuhTerdekatHp();
-  if (typeof fn === "function") fn();
-  else jurusBawaan();
+  if (typeof pakaiModeTigaSkill === "function" && pakaiModeTigaSkill()) {
+    castSkillSlot(2);
+    return;
+  }
+  const slot = (typeof skillPakai === "function" ? skillPakai(karakter.kunci) : 2) || 2;
+  castSkillSlot(slot);
 }
 
 function jurusBawaan() {

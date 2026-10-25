@@ -3823,8 +3823,12 @@ function drawHUD() {
         by += step;
         continue;
       }
-      const cd = cdSkill(karakter.kunci, slots[i]);
-      const ratio = cd > 0 ? Math.max(0, Math.min(1, 1 - player.specialCd / cd)) : 0;
+      const slot = slots[i];
+      const cd = cdSkill(karakter.kunci, slot);
+      const sisa = typeof sisaCdSkill === "function"
+        ? sisaCdSkill(slot)
+        : (player && player.skillCds && player.skillCds[slot] !== undefined ? player.skillCds[slot] : (slot === 2 ? player.specialCd : 0));
+      const ratio = cd > 0 ? Math.max(0, Math.min(1, 1 - sisa / cd)) : (sisa > 0 ? 0 : 1);
       ctx.fillStyle = "#000";
       ctx.fillRect(hpX, by, hpBarW, bb);
       ctx.fillStyle = warnaSkill;
@@ -3834,17 +3838,17 @@ function drawHUD() {
       ctx.lineWidth = Math.max(1, Math.round(1.5 * s));
       ctx.strokeRect(hpX + Math.round(0.5 * s), by + Math.round(0.5 * s), hpBarW - Math.round(1 * s), bb - Math.round(1 * s));
       const textY = by + bb / 2;
-      ctx.fillStyle = player.specialCd > 0 ? "rgba(255,255,255,.45)" : "#fff";
+      ctx.fillStyle = sisa > 0 ? "rgba(255,255,255,.45)" : "#fff";
       ctx.fillText(lbls[i], hpX + mm, textY);
-      ctx.fillStyle = player.specialCd > 0 ? "rgba(255,255,255,.7)" : "#dbeafe";
+      ctx.fillStyle = sisa > 0 ? "rgba(255,255,255,.7)" : "#dbeafe";
       ctx.fillText(nm, hpX + Math.max(22, Math.round(24 * s)), textY);
-      if (player.specialCd > 0) {
+      if (sisa > 0) {
         ctx.textAlign = "right";
         ctx.strokeStyle = "#000";
         ctx.lineWidth = Math.max(1, Math.round(2 * s));
-        ctx.strokeText(player.specialCd.toFixed(1), hpX + hpBarW - mm, textY);
+        ctx.strokeText(sisa.toFixed(1), hpX + hpBarW - mm, textY);
         ctx.fillStyle = "#fff";
-        ctx.fillText(player.specialCd.toFixed(1), hpX + hpBarW - mm, textY);
+        ctx.fillText(sisa.toFixed(1), hpX + hpBarW - mm, textY);
         ctx.textAlign = "left";
       }
       by += step;
