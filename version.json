@@ -1,6 +1,6 @@
 {
-  "timestamp": 1792920264686,
-  "build": 102,
+  "timestamp": 1792922144222,
+  "build": 103,
   "pesan": "Perbaikan UI: rapikan teks menu pause dan detail inventaris, serta memperbesar tinggi bar skill.",
   "perlu_instal_ulang": false,
   "min_shell_build": 93,
@@ -42,5 +42,5 @@
     "settings.css",
     "updater.css"
   ],
-  "tanggal": "2026-10-25T09:24:24.686Z"
+  "tanggal": "2026-10-25T09:55:44.222Z"
 }

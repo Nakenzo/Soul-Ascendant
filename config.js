@@ -121,7 +121,7 @@ const KARAKTER = [
 
 function apakahClassElemenBiasa(kelas) {
   const k = String(kelas || "").toLowerCase().trim();
-  return k === "mage" || k === "support" || k === "suport" || k === "catalyst";
+  return k === "mage" || k === "catalize" || k === "catalyst";
 }
 
 function elemenSeranganBiasa(kar) {

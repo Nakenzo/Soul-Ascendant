@@ -1784,10 +1784,7 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
         parrySerigala(e);
         sfxKena();
         if (b.beku) {
-          e.freeze = player.bekuDurasi || karakter.bekuDurasi;
-          sfxBeku();
-          spawnParticles(e.x, e.y, "#7dd3fc", 8);
-          spawnDamage(e.x, e.y - e.r - 56, "BEKU", "#7dd3fc");
+          spawnParticles(e.x, e.y, "#7dd3fc", 6);
         }
         spawnDamage(e.x, e.y - e.r - 16, dmgPasar, warnaElemenDamage(elPeluru));
         serapanDarah(dmg);
@@ -2164,8 +2161,8 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
         serapanDarah(dmgSlash);
         parrySerigala(e);
 
-        if (sl.skill && e.hp > 0) {
-          e.burn = { durasi: player.burnDurasi || 3, tick: 0.25, timer: 0, dmg: sl.apiBesar || sl.burst ? 2 : 1 };
+        if (sl.burst && e.hp > 0) {
+          e.burn = { durasi: player.burnDurasi || 3, tick: 0.25, timer: 0, dmg: 2 };
           spawnDamage(e.x, e.y - e.r - 56, "TERBAKAR", "#ff8c3f");
         }
         if (e.bos) {
@@ -2198,9 +2195,7 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
       const elInferno = (karakter && karakter.element ? karakter.element : "api").toLowerCase();
       const dmg = applyDamageMusuh(e, Math.round(60 * (1 + (player.skill2DmgBonus || 0))), elInferno);
       e.hitFlash = 0.1;
-      e.burn = { durasi: player.burnDurasi || 3, tick: 0.25, timer: 0, dmg: 2 };
       spawnDamage(e.x, e.y - e.r - 16, dmg, warnaElemenDamage(elInferno));
-      spawnDamage(e.x, e.y - e.r - 56, "TERBAKAR", "#ff8c3f");
       serapanDarah(dmg);
       parrySerigala(e);
       if (e.hp <= 0) killEnemy(e);
@@ -2314,13 +2309,11 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
         const elFrozfall = (karakter && karakter.element ? karakter.element : "es").toLowerCase();
         const dmgPasar = applyDamageMusuh(sasaran, dmg, elFrozfall);
         sasaran.hitFlash = 0.1;
-        sasaran.freeze = player.bekuDurasi || karakter.bekuDurasi;
         parrySerigala(sasaran);
         sfxKena();
         sfxBeku();
         spawnParticles(sasaran.x, sasaran.y, "#7dd3fc", 10);
         spawnDamage(sasaran.x, sasaran.y - sasaran.r - 16, dmgPasar, warnaElemenDamage(elFrozfall));
-        spawnDamage(sasaran.x, sasaran.y - sasaran.r - 56, "BEKU", "#7dd3fc");
         serapanDarah(dmgPasar);
         if (sasaran.hp <= 0) killEnemy(sasaran);
         panahEs.splice(i, 1);
