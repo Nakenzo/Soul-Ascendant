@@ -1897,6 +1897,7 @@ function segarkanUISuara() {
 
 function tampilkanPause() {
   if (statusGame !== "main" || animMati) return;
+  if (typeof bersihkanSemuaInput === "function") bersihkanSemuaInput();
   statusGame = "pause";
   sinkronSfxTerjeda();
   segarkanUISuara();
@@ -1906,6 +1907,7 @@ function tampilkanPause() {
 
 function lanjutDariPause() {
   if (statusGame !== "pause") return;
+  if (typeof bersihkanSemuaInput === "function") bersihkanSemuaInput();
   statusGame = "main";
   sinkronSfxTerjeda();
   layarPause.classList.add("hidden");

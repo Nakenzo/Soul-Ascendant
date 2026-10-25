@@ -43,20 +43,61 @@ const IKATAN_POKOK = {
 function tombolAksi(aksi) {
   const k = typeof pengaturanIkatan === "function" ? pengaturanIkatan(aksi)
     : IKATAN_POKOK[aksi] || "";
-  return !!k && !!keys[k];
+  if (!k) return false;
+  const kl = String(k).toLowerCase();
+  return !!keys[kl] || !!keys["key" + kl];
 }
 
+function bersihkanSemuaInput() {
+  for (const k in keys) {
+    keys[k] = false;
+  }
+  mouse.down = false;
+  joy.x = 0;
+  joy.y = 0;
+  _joyId = null;
+  _joyBasis = null;
+  if (joyKnob) joyKnob.style.transform = "translate(-50%, -50%)";
+  _aimId = null;
+  _btnSerang = false;
+  _btnSerangId = null;
+  _serangAktif = false;
+  _serangBasis = null;
+  aimDx = 0;
+  aimDy = 0;
+  const kn = document.getElementById("serangKnob");
+  if (kn) kn.style.transform = "translate(-50%, -50%)";
+}
+window.bersihkanSemuaInput = bersihkanSemuaInput;
+
 function gerakDx() {
+  if (typeof document !== "undefined") {
+    if (document.hidden) return 0;
+    if (typeof document.hasFocus === "function" && !document.hasFocus()) {
+      bersihkanSemuaInput();
+      return 0;
+    }
+  }
   let dx = 0;
   if (tombolAksi("kiri") || keys["arrowleft"]) dx -= 1;
   if (tombolAksi("kanan") || keys["arrowright"]) dx += 1;
-  return Math.max(-1, Math.min(1, dx + joy.x));
+  const joyX = (deviceTerpilih === "mobile" && _joyId !== null) ? joy.x : 0;
+  return Math.max(-1, Math.min(1, dx + joyX));
 }
+
 function gerakDy() {
+  if (typeof document !== "undefined") {
+    if (document.hidden) return 0;
+    if (typeof document.hasFocus === "function" && !document.hasFocus()) {
+      bersihkanSemuaInput();
+      return 0;
+    }
+  }
   let dy = 0;
   if (tombolAksi("maju") || keys["arrowup"]) dy -= 1;
   if (tombolAksi("mundur") || keys["arrowdown"]) dy += 1;
-  return Math.max(-1, Math.min(1, dy + joy.y));
+  const joyY = (deviceTerpilih === "mobile" && _joyId !== null) ? joy.y : 0;
+  return Math.max(-1, Math.min(1, dy + joyY));
 }
 
 function _poinMouse(e) {
@@ -81,8 +122,9 @@ window.addEventListener("keydown", (e) => {
   // Sedang memantai tombol baru di Settings: jangan proses apa pun.
   if (tangkapIkatanAktif()) return;
 
-  const k = e.key.toLowerCase();
+  const k = (e.key || "").toLowerCase();
   keys[k] = true;
+  if (e.code) keys[e.code.toLowerCase()] = true;
 
   if (statusGame === "main") {
     if (typeof pakaiModeTigaSkill === "function" && pakaiModeTigaSkill()) {
@@ -102,6 +144,7 @@ window.addEventListener("keydown", (e) => {
   }
 
   if (e.key === "Escape") {
+    bersihkanSemuaInput();
     const hudTerbuka = typeof layarHudEditor !== "undefined" && layarHudEditor &&
       !layarHudEditor.classList.contains("hidden");
     const akunTerbuka = typeof layarAkun !== "undefined" && layarAkun &&
@@ -170,8 +213,18 @@ window.addEventListener("keydown", (e) => {
 });
 
 window.addEventListener("keyup", (e) => {
-  keys[e.key.toLowerCase()] = false;
+  if (e.key) keys[e.key.toLowerCase()] = false;
+  if (e.code) keys[e.code.toLowerCase()] = false;
 });
+
+window.addEventListener("blur", bersihkanSemuaInput);
+window.addEventListener("focus", bersihkanSemuaInput);
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) bersihkanSemuaInput();
+});
+window.addEventListener("pagehide", bersihkanSemuaInput);
+window.addEventListener("touchend", lepasSentuh);
+window.addEventListener("touchcancel", lepasSentuh);
 
 canvas.addEventListener("pointermove", (e) => {
   if (deviceTerpilih === "mobile") {

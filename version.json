@@ -1,7 +1,7 @@
 {
-  "timestamp": 1792936124359,
-  "build": 110,
-  "pesan": "Perbaikan Render: hapus deklarasi variabel duplikat pada draw.js yang menyebabkan layar hitam saat memuat gameplay.",
+  "timestamp": 1792971108902,
+  "build": 111,
+  "pesan": "Perbaikan Input: atasi bug karakter bergerak sendiri saat lag dengan penanganan blur, visibility, dan pembersihan input otomatis.",
   "perlu_instal_ulang": false,
   "min_shell_build": 93,
   "url_apk": "https://github.com/Nakenzo/Soul-Ascendant/releases/latest/download/Soul-Ascendant.apk",
@@ -42,5 +42,5 @@
     "settings.css",
     "updater.css"
   ],
-  "tanggal": "2026-10-25T13:48:44.359Z"
+  "tanggal": "2026-10-25T23:31:48.902Z"
 }

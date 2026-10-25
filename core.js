@@ -33,7 +33,7 @@ var IS_PC = PLATFORM === "pc";
 var IS_WEB = PLATFORM === "web";
 
 const VERSI_GAME = "0.1.0";
-const BUILD_GAME = 110;
+const BUILD_GAME = 111;
 const EDISI_GAME = IS_APK ? "Android APK" : (IS_PC ? "PC Windows" : "Web Edition");
 
 function saatPlatform(opsi) {
@@ -115,6 +115,7 @@ let hazards = [];
 let dropItems = [];
 
 function resetArena({ koinBaru }) {
+  if (typeof bersihkanSemuaInput === "function") bersihkanSemuaInput();
 
   const bon = karakter && typeof bonusStatKarakter === "function"
     ? bonusStatKarakter(karakter.kunci)

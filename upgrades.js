@@ -198,6 +198,7 @@ function hitungStatKartu() {
 }
 
 function mulaiKartuUpgrade() {
+  if (typeof bersihkanSemuaInput === "function") bersihkanSemuaInput();
   statusGame = "upgrade";
   levelBanner = null;
   pilihanKartu = buatPilihanKartu(3);
