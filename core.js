@@ -339,6 +339,14 @@ function spawnParticles(x, y, color, n) {
   }
 }
 
+function elemenInfusiSenjata() {
+  if (typeof player === "undefined" || !player) return null;
+  if ((player.igniteBuff || 0) > 0) return "api";
+  if ((player.specialBuff || 0) > 0 && typeof karakter !== "undefined" && karakter && karakter.kunci === "kenzro") return "es";
+  if (player.infusiElemen) return String(player.infusiElemen).toLowerCase();
+  return null;
+}
+
 function warnaElemenDamage(elemen) {
   const el = String(elemen || "fisik").toLowerCase().trim();
   switch (el) {

@@ -98,8 +98,8 @@ function shoot() {
     vy: Math.sin(angle) * speed,
     life: 2.0,
 
-    beku: player.specialBuff > 0,
-    element: player.specialBuff > 0 ? (karakter && karakter.element ? karakter.element : "es").toLowerCase() : (typeof elemenSeranganBiasa === "function" ? elemenSeranganBiasa() : "fisik")
+    beku: (typeof elemenInfusiSenjata === "function" && elemenInfusiSenjata() === "es") || player.specialBuff > 0,
+    element: (typeof elemenInfusiSenjata === "function" && elemenInfusiSenjata()) || (typeof elemenSeranganBiasa === "function" ? elemenSeranganBiasa() : "fisik")
   });
   spawnParticles(player.x, player.y, "#ffd23f", 4);
 }
@@ -158,7 +158,7 @@ function slashSwing() {
 
   const ox = player.x + Math.cos(angle) * 70;
   const oy = player.y + Math.sin(angle) * 70;
-  const isIgnite = (player.igniteBuff || 0) > 0;
+  const elInf = typeof elemenInfusiSenjata === "function" ? elemenInfusiSenjata() : null;
   slashes.push({
     x: ox,
     y: oy,
@@ -169,11 +169,13 @@ function slashSwing() {
     t: 0,
     life: player.swingDuration || 0.2,
     hit: new Set(),
-    ignite: isIgnite,
-    element: isIgnite ? "api" : (typeof elemenSeranganBiasa === "function" ? elemenSeranganBiasa() : "fisik")
+    ignite: elInf === "api",
+    element: elInf || (typeof elemenSeranganBiasa === "function" ? elemenSeranganBiasa() : "fisik")
   });
-  spawnParticles(ox, oy, isIgnite ? "#ff8c3f" : "#ffffff", isIgnite ? 10 : 6);
-  if (isIgnite) spawnParticles(ox, oy, "#ffd23f", 6);
+  const warnaSlashPartikel = elInf ? (typeof warnaElemenDamage === "function" ? warnaElemenDamage(elInf) : "#ff8c3f") : "#ffffff";
+  spawnParticles(ox, oy, warnaSlashPartikel, elInf ? 10 : 6);
+  if (elInf === "api") spawnParticles(ox, oy, "#ffd23f", 6);
+  else if (elInf === "es") spawnParticles(ox, oy, "#e0f2fe", 6);
 }
 
 function titikSpawnAman(r) {
@@ -1652,6 +1654,50 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
   player.swing = Math.max(0, (player.swing || 0) - dt);
 
   player.ultCd = Math.max(0, (player.ultCd || 0) - dt);
+
+  const elInfSenjata = typeof elemenInfusiSenjata === "function" ? elemenInfusiSenjata() : null;
+  if (elInfSenjata && Math.random() < 0.65) {
+    const angW = Math.atan2(mouse.y - player.y, mouse.x - player.x);
+    const rJarak = 36 + Math.random() * 26;
+    const rSamping = (Math.random() - 0.5) * 16;
+    const wx = player.x + Math.cos(angW) * rJarak - Math.sin(angW) * rSamping;
+    const wy = player.y + Math.sin(angW) * rJarak + Math.cos(angW) * rSamping;
+    if (elInfSenjata === "api") {
+      particles.push({
+        x: wx,
+        y: wy,
+        vx: (Math.random() - 0.5) * 25 + Math.cos(angW) * 15,
+        vy: -25 - Math.random() * 35,
+        life: 0.22 + Math.random() * 0.2,
+        t: 0,
+        size: 2.5 + Math.random() * 3.5,
+        color: Math.random() < 0.55 ? "#ff8c3f" : "#ffd23f"
+      });
+    } else if (elInfSenjata === "es") {
+      particles.push({
+        x: wx,
+        y: wy,
+        vx: (Math.random() - 0.5) * 18,
+        vy: (Math.random() - 0.5) * 18 - 8,
+        life: 0.25 + Math.random() * 0.2,
+        t: 0,
+        size: 2 + Math.random() * 3,
+        color: Math.random() < 0.6 ? "#7dd3fc" : "#ffffff"
+      });
+    } else {
+      const col = typeof warnaElemenDamage === "function" ? warnaElemenDamage(elInfSenjata) : "#ffffff";
+      particles.push({
+        x: wx,
+        y: wy,
+        vx: (Math.random() - 0.5) * 20,
+        vy: (Math.random() - 0.5) * 20 - 10,
+        life: 0.25,
+        t: 0,
+        size: 2.5,
+        color: col
+      });
+    }
+  }
 
   if (player.regen > 0 && player.hp < player.maxHp) {
     player.hp = Math.min(player.maxHp, player.hp + player.regen * dt);

@@ -84,6 +84,69 @@ function gambarSenjata() {
   }
   ctx.rotate(rotTotal);
   ctx.drawImage(img, -Math.round(w / 2), -Math.round(h / 2), Math.round(w), Math.round(h));
+
+  const inf = typeof elemenInfusiSenjata === "function" ? elemenInfusiSenjata() : null;
+  if (inf) {
+    gambarInfusiSenjata(w, h, inf);
+  }
+  ctx.restore();
+}
+
+function gambarInfusiSenjata(w, h, inf) {
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+  const t = performance.now() / 1000;
+  const flicker = 0.82 + 0.18 * Math.sin(t * 18);
+  const hw = Math.round(w / 2), hh = Math.round(h / 2);
+
+  if (inf === "api") {
+    ctx.strokeStyle = "rgba(255, 60, 0, " + (0.45 * flicker) + ")";
+    ctx.lineWidth = 10;
+    ctx.strokeRect(-hw - 3, -hh - 3, w + 6, h + 6);
+
+    ctx.strokeStyle = "rgba(255, 140, 20, " + (0.85 * flicker) + ")";
+    ctx.lineWidth = 4;
+    ctx.strokeRect(-hw - 1, -hh - 1, w + 2, h + 2);
+
+    ctx.strokeStyle = "rgba(255, 230, 100, " + (0.95 * flicker) + ")";
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(-hw, -hh, w, h);
+
+    for (let i = 0; i < 4; i++) {
+      const px = -hw + ((i * 35 + Math.sin(t * 12 + i) * 8) % w);
+      const py = -hh + Math.sin(t * 16 + i * 2) * (h * 0.4);
+      ctx.fillStyle = i % 2 === 0 ? "#ffd23f" : "#ff5500";
+      ctx.beginPath();
+      ctx.arc(px, py, 2.5 + Math.sin(t * 20 + i) * 1.2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  } else if (inf === "es") {
+    ctx.strokeStyle = "rgba(56, 189, 248, " + (0.45 * flicker) + ")";
+    ctx.lineWidth = 8;
+    ctx.strokeRect(-hw - 2, -hh - 2, w + 4, h + 4);
+
+    ctx.strokeStyle = "rgba(125, 211, 252, " + (0.85 * flicker) + ")";
+    ctx.lineWidth = 3.5;
+    ctx.strokeRect(-hw - 1, -hh - 1, w + 2, h + 2);
+
+    ctx.strokeStyle = "rgba(255, 255, 255, " + (0.95 * flicker) + ")";
+    ctx.lineWidth = 1.2;
+    ctx.strokeRect(-hw, -hh, w, h);
+
+    for (let i = 0; i < 4; i++) {
+      const px = -hw + ((i * 38 + Math.cos(t * 11 + i) * 6) % w);
+      const py = -hh + Math.cos(t * 15 + i * 2) * (h * 0.4);
+      ctx.fillStyle = i % 2 === 0 ? "#ffffff" : "#7dd3fc";
+      ctx.beginPath();
+      ctx.arc(px, py, 2 + Math.sin(t * 18 + i) * 1, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  } else {
+    const col = typeof warnaElemenDamage === "function" ? warnaElemenDamage(inf) : "#ffffff";
+    ctx.strokeStyle = col;
+    ctx.lineWidth = 4 * flicker;
+    ctx.strokeRect(-hw - 1, -hh - 1, w + 2, h + 2);
+  }
   ctx.restore();
 }
 
@@ -1016,9 +1079,11 @@ function draw() {
   ctx.globalAlpha = 1;
 
   for (const ia of iceAges) {
-    const sisa = Math.max(0, 1 - ia.t / ia.life);
-    const fade = sisa < 0.25 ? sisa / 0.25 : 1;
-    const pulsa = 1 + 0.03 * Math.sin(performance.now() / 150);
+    const sisaWaktu = Math.max(0, ia.life - ia.t);
+    const fadeIn = Math.min(1, ia.t / 0.5);
+    const fadeOut = Math.max(0, Math.min(1, sisaWaktu / 3.0));
+    const fade = fadeIn * fadeOut;
+    const pulsa = 1 + 0.02 * Math.sin(performance.now() / 150);
     ctx.save();
     ctx.globalCompositeOperation = "lighter";
     const gIa = ctx.createRadialGradient(ia.x, ia.y, 20, ia.x, ia.y, ia.radius * pulsa);
@@ -1674,27 +1739,6 @@ function draw() {
     gambarSenjata();
 
     const aksenRing = (karakter && karakter.warnaDash) || "#7dd3fc";
-    if (player.specialBuff > 0) {
-      ctx.strokeStyle = warnaRGBA(aksenRing, 0.7);
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(player.x, player.y, 48, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-
-    if ((player.igniteBuff || 0) > 0) {
-      const pu = 0.8 + 0.2 * Math.sin(performance.now() / 90);
-      ctx.strokeStyle = "rgba(255, 120, 20, " + (0.85 * pu) + ")";
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.arc(player.x, player.y, 52, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.strokeStyle = "rgba(255, 210, 40, " + (0.55 * pu) + ")";
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.arc(player.x, player.y, 44, 0, Math.PI * 2);
-      ctx.stroke();
-    }
 
     if (player.ultBuff) {
       const pu = 0.7 + 0.3 * Math.sin(performance.now() / 120);

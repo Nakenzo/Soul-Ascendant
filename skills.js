@@ -442,7 +442,7 @@ function skillKenzroIceAge() {
     y: player.y,
     radius: 420,
     t: 0,
-    life: 6.0,
+    life: 10.0,
     tick: 0.35,
     pulse: 0
   });
