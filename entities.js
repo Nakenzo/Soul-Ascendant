@@ -400,56 +400,9 @@ function applyDamageMusuh(e, dmg, elemenSerangan) {
   const total = e.bos ? dmg * (e.vulnKali || 1) : dmg;
   e.hp -= total;
   if (elemenSerangan !== "dot" && e.hp > 0) {
-    prosesGaugeElemen(e, elemenSerangan, total);
     prosesReaksiElemen(e, elemenSerangan, total);
   }
   return total;
-}
-
-function prosesGaugeElemen(e, elemenSerangan, dmgAwal) {
-  if (!e || e.hp <= 0) return;
-
-  let atkEl = String(elemenSerangan || "").toLowerCase().trim();
-  if (!atkEl || atkEl === "fisik") {
-    if (typeof karakter !== "undefined" && karakter && karakter.element) {
-      atkEl = String(karakter.element).toLowerCase().trim();
-    }
-  }
-
-  let tipe = null;
-  if (atkEl === "api" || atkEl === "fire" || atkEl === "bara") {
-    tipe = "api";
-  } else if (atkEl === "es" || atkEl === "ice" || atkEl === "frost") {
-    tipe = "ice";
-  } else if (atkEl === "petir" || atkEl === "listrik" || atkEl === "lightning" || atkEl === "volt" || atkEl === "gemuruh") {
-    tipe = "listrik";
-  } else if (atkEl === "tanah" || atkEl === "earth" || atkEl === "geo") {
-    tipe = "tanah";
-  } else if (atkEl === "nature" || atkEl === "daun" || atkEl === "dendro") {
-    tipe = "nature";
-  }
-
-  if (!tipe) return;
-
-  if (!e.gaugeElemen) {
-    e.gaugeElemen = { tipe: tipe, nilai: 0, max: 100, decayTimer: 3.5 };
-  }
-
-  if (e.gaugeElemen.tipe !== tipe) {
-    e.gaugeElemen.tipe = tipe;
-    e.gaugeElemen.nilai = 0;
-  }
-
-  e.gaugeElemen.decayTimer = 3.5;
-
-  const emKali = typeof pengaliElement === "function" && typeof karakter !== "undefined" && karakter ? pengaliElement(karakter.kunci) : 1;
-  const tambahGauge = Math.round(35 * emKali);
-  e.gaugeElemen.nilai = Math.min(100, e.gaugeElemen.nilai + tambahGauge);
-
-  if (e.gaugeElemen.nilai >= 100) {
-    e.gaugeElemen.nilai = 0;
-    picuEfekElemen(e, tipe, dmgAwal, emKali);
-  }
 }
 
 function picuEfekElemen(e, tipe, dmgAwal, emKali) {
@@ -497,28 +450,28 @@ function picuEfekElemen(e, tipe, dmgAwal, emKali) {
 function prosesReaksiElemen(e, elemenSerangan, dmgAwal) {
   if (!e || e.hp <= 0) return;
 
-  const atkEl = (elemenSerangan || (typeof elemenSeranganBiasa === "function" ? elemenSeranganBiasa() : "fisik")).toLowerCase();
-  const musuhEl = (e.element || (TIPE_MUSUH[e.tipe] ? TIPE_MUSUH[e.tipe].element : "fisik") || "fisik").toLowerCase();
+  const rawAtk = String(elemenSerangan || (typeof elemenSeranganBiasa === "function" ? elemenSeranganBiasa() : "fisik")).toLowerCase().trim();
+  const emKali = typeof pengaliElement === "function" && typeof karakter !== "undefined" && karakter ? pengaliElement(karakter.kunci) : 1;
 
-  const emKali = typeof pengaliElement === "function" && karakter ? pengaliElement(karakter.kunci) : 1;
-  let reaksi = null;
-
-  if (atkEl === "fisik") {
+  if (rawAtk === "fisik") {
+    let reaksiFisik = null;
     if ((e.freeze || 0) > 0) {
       e.freeze = 0;
+      e.gaugeElemen = null;
       const bonusDmg = Math.round(dmgAwal * 2.5 * emKali);
       e.hp -= bonusDmg;
-      reaksi = { nama: "SHATTERS", warna: "#38bdf8", anim: "shatter" };
+      reaksiFisik = { nama: "SHATTERS", warna: "#38bdf8", anim: "shatter" };
       spawnParticles(e.x, e.y, "#38bdf8", 22);
       spawnParticles(e.x, e.y, "#e0f2fe", 12);
       rings.push({ x: e.x, y: e.y, r: 12, maxR: 85, life: 0.35, t: 0, warna: "#38bdf8" });
       if (typeof sfxBeku === "function") sfxBeku();
     } else if ((e.crystalize || 0) > 0) {
       e.crystalize = 0;
+      e.gaugeElemen = null;
       const bonusDmg = Math.round(dmgAwal * 2.2 * emKali);
       e.hp -= bonusDmg;
       e.hitStun = 0.4;
-      reaksi = { nama: "CRUSH!", warna: "#f59e0b", anim: "crush" };
+      reaksiFisik = { nama: "CRUSH!", warna: "#f59e0b", anim: "crush" };
       spawnParticles(e.x, e.y, "#f59e0b", 22);
       spawnParticles(e.x, e.y, "#b45309", 14);
       rings.push({ x: e.x, y: e.y, r: 14, maxR: 95, life: 0.4, t: 0, warna: "#f59e0b" });
@@ -526,15 +479,17 @@ function prosesReaksiElemen(e, elemenSerangan, dmgAwal) {
     } else if (e.burn) {
       const sisaBurn = (e.burn.dmg || 4) * 3;
       e.burn = null;
+      e.gaugeElemen = null;
       const bonusDmg = Math.round(dmgAwal * 1.8 * emKali + sisaBurn);
       e.hp -= bonusDmg;
-      reaksi = { nama: "ASSAULT!", warna: "#ff5722", anim: "combustion" };
+      reaksiFisik = { nama: "ASSAULT!", warna: "#ff5722", anim: "combustion" };
       spawnParticles(e.x, e.y, "#ff5722", 22);
       spawnParticles(e.x, e.y, "#ff8c3f", 14);
       rings.push({ x: e.x, y: e.y, r: 12, maxR: 90, life: 0.35, t: 0, warna: "#ff5722" });
       if (typeof sfxTebasan === "function") sfxTebasan();
     } else if ((e.paralyze || 0) > 0) {
       e.paralyze = 0;
+      e.gaugeElemen = null;
       const bonusDmg = Math.round(dmgAwal * 1.9 * emKali);
       e.hp -= bonusDmg;
       const chainRadius = 180;
@@ -548,25 +503,88 @@ function prosesReaksiElemen(e, elemenSerangan, dmgAwal) {
           spawnParticles(lain.x, lain.y, "#facc15", 8);
         }
       }
-      reaksi = { nama: "DISCHARGE!", warna: "#facc15", anim: "swirl_petir" };
+      reaksiFisik = { nama: "DISCHARGE!", warna: "#facc15", anim: "swirl_petir" };
       spawnParticles(e.x, e.y, "#facc15", 22);
       spawnParticles(e.x, e.y, "#eab308", 14);
       rings.push({ x: e.x, y: e.y, r: 12, maxR: 110, life: 0.35, t: 0, warna: "#facc15" });
     }
-  }
 
-  if (reaksi) {
-    e.reaksiCooldown = 1.0;
-    spawnDamage(e.x, e.y - e.r - 28, reaksi.nama, reaksi.warna);
-    if (typeof spawnAnimasiReaksi === "function") {
-      spawnAnimasiReaksi(reaksi.anim || "vortex", e.x, e.y);
+    if (reaksiFisik) {
+      e.reaksiCooldown = 1.0;
+      spawnDamage(e.x, e.y - e.r - 28, reaksiFisik.nama, reaksiFisik.warna);
+      if (typeof spawnAnimasiReaksi === "function") {
+        spawnAnimasiReaksi(reaksiFisik.anim || "vortex", e.x, e.y);
+      }
+      if (e.hp <= 0) killEnemy(e);
+      return;
     }
-    if (e.hp <= 0) killEnemy(e);
+
+    if (e.gaugeElemen && e.gaugeElemen.nilai > 0) {
+      e.gaugeElemen = null;
+    }
+
+    const musuhEl = (e.element || (TIPE_MUSUH[e.tipe] ? TIPE_MUSUH[e.tipe].element : "fisik") || "fisik").toLowerCase();
+    if (musuhEl === "angin" && (e.reaksiCooldown || 0) <= 0) {
+      eksekusiKombinasiElemen("fisik", "angin", e, dmgAwal, emKali);
+    }
     return;
   }
 
-  if ((e.reaksiCooldown || 0) > 0) return;
-  if (!atkEl || !musuhEl || atkEl === musuhEl) return;
+  let atkEl = rawAtk;
+  if (atkEl === "ice" || atkEl === "frost") atkEl = "es";
+  else if (atkEl === "petir" || atkEl === "lightning" || atkEl === "volt" || atkEl === "gemuruh") atkEl = "listrik";
+  else if (atkEl === "fire" || atkEl === "bara") atkEl = "api";
+  else if (atkEl === "earth" || atkEl === "geo") atkEl = "tanah";
+  else if (atkEl === "daun" || atkEl === "dendro") atkEl = "nature";
+
+  const gTipe = e.gaugeElemen && e.gaugeElemen.nilai > 0 ? e.gaugeElemen.tipe : null;
+  const gStandard = gTipe === "ice" ? "es" : gTipe;
+
+  if (gStandard) {
+    if (gStandard !== atkEl) {
+      const rk = eksekusiKombinasiElemen(atkEl, gStandard, e, dmgAwal, emKali);
+      e.gaugeElemen = null;
+      if (rk) return;
+    } else {
+      const tambah = Math.round(35 * emKali);
+      e.gaugeElemen.nilai = Math.min(100, e.gaugeElemen.nilai + tambah);
+      if (e.gaugeElemen.nilai >= 100) {
+        e.gaugeElemen.nilai = 0;
+        picuEfekElemen(e, gTipe, dmgAwal, emKali);
+      }
+      return;
+    }
+  }
+
+  const musuhEl = (e.element || (TIPE_MUSUH[e.tipe] ? TIPE_MUSUH[e.tipe].element : "fisik") || "fisik").toLowerCase();
+  if (musuhEl && musuhEl !== "fisik" && musuhEl !== atkEl) {
+    const rk = eksekusiKombinasiElemen(atkEl, musuhEl, e, dmgAwal, emKali);
+    if (rk) return;
+  }
+
+  let tipeBaru = null;
+  if (atkEl === "api") tipeBaru = "api";
+  else if (atkEl === "es") tipeBaru = "ice";
+  else if (atkEl === "listrik") tipeBaru = "listrik";
+  else if (atkEl === "tanah") tipeBaru = "tanah";
+  else if (atkEl === "nature") tipeBaru = "nature";
+
+  if (tipeBaru) {
+    const tambah = Math.round(35 * emKali);
+    e.gaugeElemen = { tipe: tipeBaru, nilai: tambah, max: 100 };
+    if (e.gaugeElemen.nilai >= 100) {
+      e.gaugeElemen.nilai = 0;
+      picuEfekElemen(e, tipeBaru, dmgAwal, emKali);
+    }
+  }
+}
+
+function eksekusiKombinasiElemen(atkEl, musuhEl, e, dmgAwal, emKali) {
+  if (!e || e.hp <= 0) return null;
+  if ((e.reaksiCooldown || 0) > 0) return null;
+  if (!atkEl || !musuhEl || atkEl === musuhEl) return null;
+
+  let reaksi = null;
 
   if ((atkEl === "fisik" && musuhEl === "angin") || (atkEl === "angin" && musuhEl === "fisik")) {
     const bonusDmg = Math.round(dmgAwal * 0.9 * emKali);
@@ -757,6 +775,7 @@ function prosesReaksiElemen(e, elemenSerangan, dmgAwal) {
     }
     if (e.hp <= 0) killEnemy(e);
   }
+  return reaksi;
 }
 
 function summonMinionBos(e, fase) {
@@ -2307,17 +2326,6 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
     e.crystalize = Math.max(0, (e.crystalize || 0) - dt);
     e.contactCd = Math.max(0, (e.contactCd || 0) - dt);
     e.reaksiCooldown = Math.max(0, (e.reaksiCooldown || 0) - dt);
-
-    if (e.gaugeElemen && e.gaugeElemen.nilai > 0) {
-      if (e.gaugeElemen.decayTimer > 0) {
-        e.gaugeElemen.decayTimer -= dt;
-      } else {
-        e.gaugeElemen.nilai = Math.max(0, e.gaugeElemen.nilai - 25 * dt);
-        if (e.gaugeElemen.nilai <= 0) {
-          e.gaugeElemen.tipe = null;
-        }
-      }
-    }
 
     if (e.korosi) {
       e.korosi.timer += dt;
