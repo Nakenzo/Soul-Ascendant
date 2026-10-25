@@ -1033,6 +1033,26 @@ function draw() {
     ctx.fillStyle = e.warna;
     ctx.fillRect(e.x - 16, e.y - 22, 32 * (e.hp / e.maxHp), 3);
 
+    if (e.gaugeElemen && e.gaugeElemen.nilai > 0 && e.gaugeElemen.tipe) {
+      const gX = e.x - 16;
+      const gY = e.y - 26.5;
+      const gW = 32;
+      const gH = 2.5;
+      ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
+      ctx.fillRect(gX, gY, gW, gH);
+
+      let wGauge = "#ffffff";
+      if (e.gaugeElemen.tipe === "api") wGauge = "#ff5722";
+      else if (e.gaugeElemen.tipe === "ice") wGauge = "#38bdf8";
+      else if (e.gaugeElemen.tipe === "listrik") wGauge = "#facc15";
+      else if (e.gaugeElemen.tipe === "tanah") wGauge = "#f59e0b";
+      else if (e.gaugeElemen.tipe === "nature") wGauge = "#22c55e";
+
+      const fillW = Math.max(0, Math.min(gW, gW * (e.gaugeElemen.nilai / (e.gaugeElemen.max || 100))));
+      ctx.fillStyle = wGauge;
+      ctx.fillRect(gX, gY, fillW, gH);
+    }
+
     const elK = (e.element || (typeof TIPE_MUSUH !== "undefined" && TIPE_MUSUH[e.tipe] ? TIPE_MUSUH[e.tipe].element : "fisik") || "fisik").toLowerCase();
     const warnaElemen = elK === "nature" ? "#22c55e" : (elK === "es" ? "#38bdf8" : (elK === "api" ? "#f97316" : (elK === "nihil" ? "#a855f7" : (elK === "angin" ? "#2dd4bf" : (elK === "petir" || elK === "listrik" ? "#eab308" : (elK === "tanah" ? "#d97706" : "#94a3b8"))))));
 
@@ -2276,6 +2296,31 @@ function gambarBossHealth() {
   ctx.fillStyle = "#fff";
   ctx.fillText(Math.round(ratio * 100) + "%", bx + bw / 2, by + bh / 2 + Math.round(1 * s));
   ctx.restore();
+
+  if (bos.gaugeElemen && bos.gaugeElemen.nilai > 0 && bos.gaugeElemen.tipe) {
+    const gBh = Math.max(4, Math.round(5 * s));
+    const gBy = by - gBh - Math.round(3 * s);
+    ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
+    gambarBundar(bx, gBy, bw, gBh, gBh / 2);
+    ctx.fill();
+
+    let wGauge = "#ffffff";
+    if (bos.gaugeElemen.tipe === "api") wGauge = "#ff5722";
+    else if (bos.gaugeElemen.tipe === "ice") wGauge = "#38bdf8";
+    else if (bos.gaugeElemen.tipe === "listrik") wGauge = "#facc15";
+    else if (bos.gaugeElemen.tipe === "tanah") wGauge = "#f59e0b";
+    else if (bos.gaugeElemen.tipe === "nature") wGauge = "#22c55e";
+
+    const fillBw = Math.max(0, Math.min(bw, bw * (bos.gaugeElemen.nilai / (bos.gaugeElemen.max || 100))));
+    if (fillBw > 1) {
+      ctx.save();
+      gambarBundar(bx, gBy, bw, gBh, gBh / 2);
+      ctx.clip();
+      ctx.fillStyle = wGauge;
+      ctx.fillRect(bx, gBy, fillBw, gBh);
+      ctx.restore();
+    }
+  }
 }
 
 function kartuDefById(id) {
