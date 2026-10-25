@@ -283,13 +283,21 @@ function pengaturanSiapkan() {
     if (pengaturanAmbil("layarPenuh") !== nyata) pengaturanUbah("layarPenuh", nyata);
   } catch (err) { }
   try {
-    document.addEventListener("fullscreenchange", function () {
-      // Status fullscreen bisa berubah dari luar (F11, Esc). Samakan preferensi
-      // supaya tombol toggle di Settings tetap sesuai kenyataan.
-      if (sedangTangkap()) return;
-      const nyata = layarPenuhAktif();
-      if (pengaturanAmbil("layarPenuh") !== nyata) pengaturanUbah("layarPenuh", nyata);
-      if (typeof segarkanPengaturanUI === "function") segarkanPengaturanUI();
-    });
+      document.addEventListener("fullscreenchange", function () {
+        // Status fullscreen bisa berubah dari luar (F11, Esc). Samakan preferensi
+        // supaya tombol toggle di Settings tetap sesuai kenyataan.
+        if (sedangTangkap()) return;
+        const nyata = layarPenuhAktif();
+        if (pengaturanAmbil("layarPenuh") !== nyata) pengaturanUbah("layarPenuh", nyata);
+        if (typeof segarkanPengaturanUI === "function") segarkanPengaturanUI();
+        if (typeof updateCanvasVars === "function") updateCanvasVars();
+      });
+      document.addEventListener("webkitfullscreenchange", function () {
+        if (sedangTangkap()) return;
+        const nyata = layarPenuhAktif();
+        if (pengaturanAmbil("layarPenuh") !== nyata) pengaturanUbah("layarPenuh", nyata);
+        if (typeof segarkanPengaturanUI === "function") segarkanPengaturanUI();
+        if (typeof updateCanvasVars === "function") updateCanvasVars();
+      });
   } catch (err) { }
 }

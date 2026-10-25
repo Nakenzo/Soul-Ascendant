@@ -1,7 +1,7 @@
 {
-  "timestamp": 1792906547016,
-  "build": 95,
-  "pesan": "Perbaikan audio: pulihkan volume BGM dan filter frekuensi saat kembali dari menu pause ke menu utama.",
+  "timestamp": 1792909150889,
+  "build": 96,
+  "pesan": "Perbaikan layout layar penuh: kanvas dibuat full 16:9 tanpa celah tepi, dan perbaikan pemotongan layar gameplay.",
   "perlu_instal_ulang": false,
   "min_shell_build": 93,
   "url_apk": "https://github.com/Nakenzo/Soul-Ascendant/releases/latest/download/Soul-Ascendant.apk",
@@ -42,5 +42,5 @@
     "settings.css",
     "updater.css"
   ],
-  "tanggal": "2026-10-25T05:35:47.017Z"
+  "tanggal": "2026-10-25T06:19:10.889Z"
 }

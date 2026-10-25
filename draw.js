@@ -3650,7 +3650,7 @@ function drawHUD() {
     }
   }
 
-  if (deviceTerpilih === "mobile" && statusGame === "main" && player && player.kartu) {
+  if ((statusGame === "main" || statusGame === "pause") && player && player.kartu) {
     try {
     const kartu = player.kartu;
     const ids = Object.keys(kartu);
