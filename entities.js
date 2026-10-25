@@ -149,33 +149,88 @@ function tembakBoltNihil() {
 
 function slashSwing() {
   if (player.attackCd > 0) return;
-  player.attackCd = player.attackRate;
 
-  player.attackAnimT = 0.25;
+  const isCombo = karakter && (karakter.kunci === "rin" || (karakter.tipe === "dekat" && karakter.kelas !== "Mage" && karakter.kelas !== "Ranger"));
+
+  let durasi = player.swingDuration || (karakter ? karakter.swingDuration : 0.28) || 0.28;
+  let cd = player.attackRate || (karakter ? karakter.attackRate : 0.35) || 0.35;
+  let reach = player.reach || (karakter ? karakter.reach : 90) || 90;
+  let halfArc = player.halfArc || (karakter ? karakter.halfArc : 1.05) || 1.05;
+  let step = 1;
+  let dir = 1;
+  let dmgMult = 1.0;
+
+  if (isCombo) {
+    if (!player.comboStep || (player.comboTimer || 0) <= 0) {
+      player.comboStep = 0;
+    }
+    step = player.comboStep + 1;
+    if (step === 1) {
+      durasi = 0.20;
+      cd = 0.24;
+      halfArc = 1.05;
+      dir = 1;
+      dmgMult = 1.0;
+      player.comboStep = 1;
+      player.comboTimer = 0.55;
+    } else if (step === 2) {
+      durasi = 0.22;
+      cd = 0.26;
+      reach = Math.round(reach * 1.08);
+      halfArc = 1.15;
+      dir = -1;
+      dmgMult = 1.15;
+      player.comboStep = 2;
+      player.comboTimer = 0.55;
+    } else {
+      durasi = 0.35;
+      cd = 0.45;
+      reach = Math.round(reach * 1.30);
+      halfArc = 1.60;
+      dir = 1;
+      dmgMult = 1.50;
+      player.comboStep = 0;
+      player.comboTimer = 0;
+      shake = Math.max(shake || 0, 0.25);
+    }
+  }
+
+  player.attackCd = cd;
+  player.attackAnimT = Math.min(0.25, durasi);
+  player.swing = durasi;
+  player.swingMaxDuration = durasi;
+  player.swingDir = dir;
+  player.currentHalfArc = halfArc;
+
   sfxSabet();
   const angle = Math.atan2(mouse.y - player.y, mouse.x - player.x);
-  player.swing = player.swingDuration || karakter.swingDuration || 0.2;
 
   const ox = player.x + Math.cos(angle) * 70;
   const oy = player.y + Math.sin(angle) * 70;
   const elInf = typeof elemenInfusiSenjata === "function" ? elemenInfusiSenjata() : null;
+  const baseDmg = player.damage || (karakter ? karakter.damage : 22);
+
   slashes.push({
     x: ox,
     y: oy,
-
     angle: angle,
-    reach: player.reach || karakter.reach,
-    halfArc: player.halfArc || karakter.halfArc,
+    reach: reach,
+    halfArc: halfArc,
     t: 0,
-    life: player.swingDuration || 0.2,
+    life: durasi,
+    dir: dir,
+    comboStep: step,
     hit: new Set(),
     ignite: elInf === "api",
+    dmg: Math.round(baseDmg * dmgMult),
     element: elInf || (typeof elemenSeranganBiasa === "function" ? elemenSeranganBiasa() : "fisik")
   });
+
   const warnaSlashPartikel = elInf ? (typeof warnaElemenDamage === "function" ? warnaElemenDamage(elInf) : "#ff8c3f") : "#ffffff";
-  spawnParticles(ox, oy, warnaSlashPartikel, elInf ? 10 : 6);
-  if (elInf === "api") spawnParticles(ox, oy, "#ffd23f", 6);
-  else if (elInf === "es") spawnParticles(ox, oy, "#e0f2fe", 6);
+  const jumlahPartikel = step === 3 ? 12 : (elInf ? 10 : 6);
+  spawnParticles(ox, oy, warnaSlashPartikel, jumlahPartikel);
+  if (elInf === "api") spawnParticles(ox, oy, "#ffd23f", step === 3 ? 10 : 6);
+  else if (elInf === "es") spawnParticles(ox, oy, "#e0f2fe", step === 3 ? 10 : 6);
 }
 
 function titikSpawnAman(r) {
@@ -1660,6 +1715,12 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
   player.specialBuff = Math.max(0, (player.specialBuff || 0) - dt);
   player.igniteBuff = Math.max(0, (player.igniteBuff || 0) - dt);
   player.swing = Math.max(0, (player.swing || 0) - dt);
+  if (player.comboTimer > 0) {
+    player.comboTimer = Math.max(0, player.comboTimer - dt);
+    if (player.comboTimer <= 0) {
+      player.comboStep = 0;
+    }
+  }
 
   player.ultCd = Math.max(0, (player.ultCd || 0) - dt);
 

@@ -77,10 +77,12 @@ function gambarSenjata() {
   let rotTotal = angle + (karakter.rot || 0);
 
   if ((player.swing || 0) > 0 && karakter.halfArc > 0) {
-    const dur = karakter.swingDuration || 0.2;
+    const dur = player.swingMaxDuration || karakter.swingDuration || 0.2;
     const p = 1 - Math.min(1, player.swing / dur);
     const k = 1 - (1 - p) * (1 - p);
-    rotTotal += -karakter.halfArc + karakter.halfArc * 2 * k;
+    const dir = player.swingDir || 1;
+    const arc = player.currentHalfArc || karakter.halfArc;
+    rotTotal += (-arc + arc * 2 * k) * dir;
   }
   ctx.rotate(rotTotal);
   const dx = -Math.round(w / 2);
@@ -1311,8 +1313,17 @@ function draw() {
     const half = geserWaktu / 2;
     const u = Math.max(0, Math.min(1, sl.t / geserWaktu));
     let a1, a2;
-    if (sl.tebal) {
-      // tumbuh cepat dari awal lalu BEKU di busur penuh (penuh setengah lingkaran)
+    if (sl.dir === -1) {
+      if (u < 0.5) {
+        const p = u * 2;
+        a2 = sl.angle + sl.halfArc;
+        a1 = a2 - full * p;
+      } else {
+        const q = (u - 0.5) * 2;
+        a2 = sl.angle + sl.halfArc - full * q;
+        a1 = sl.angle - sl.halfArc;
+      }
+    } else if (sl.tebal) {
       a1 = sl.angle - sl.halfArc;
       a2 = a1 + full * Math.min(1, u * 2);
     } else if (u < 0.5) {
@@ -1619,11 +1630,12 @@ function draw() {
       ctx.fill();
     }
 
-    sabit(22, "rgba(255, 70, 20, 0.55)");
+    const multW = sl.comboStep === 3 ? 1.45 : (sl.comboStep === 2 ? 1.15 : 1);
+    sabit(22 * multW, "rgba(255, 70, 20, 0.55)");
 
-    sabit(13, "rgba(255, 150, 40, 0.95)");
+    sabit(13 * multW, "rgba(255, 150, 40, 0.95)");
 
-    sabit(6.5, "#ffd75f");
+    sabit(6.5 * multW, "#ffd75f");
 
     const tipA = sl.t < half ? a2 : a1;
     ctx.fillStyle = "#fff7cc";

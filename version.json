@@ -1,7 +1,7 @@
 {
-  "timestamp": 1792932463120,
-  "build": 108,
-  "pesan": "Gameplay Mekanik: tiap skill kini memiliki cooldown terpisah masing-masing secara independen.",
+  "timestamp": 1792933392249,
+  "build": 109,
+  "pesan": "Combat Vender: sistem 3-tahap kombo basic attack sabit (Tebasan Pembuka, Tebasan Balasan, dan Finisher Berputar).",
   "perlu_instal_ulang": false,
   "min_shell_build": 93,
   "url_apk": "https://github.com/Nakenzo/Soul-Ascendant/releases/latest/download/Soul-Ascendant.apk",
@@ -42,5 +42,5 @@
     "settings.css",
     "updater.css"
   ],
-  "tanggal": "2026-10-25T12:47:43.121Z"
+  "tanggal": "2026-10-25T13:03:12.249Z"
 }

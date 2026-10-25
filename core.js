@@ -33,7 +33,7 @@ var IS_PC = PLATFORM === "pc";
 var IS_WEB = PLATFORM === "web";
 
 const VERSI_GAME = "0.1.0";
-const BUILD_GAME = 108;
+const BUILD_GAME = 109;
 const EDISI_GAME = IS_APK ? "Android APK" : (IS_PC ? "PC Windows" : "Web Edition");
 
 function saatPlatform(opsi) {
@@ -135,6 +135,11 @@ function resetArena({ koinBaru }) {
     specialMax: karakter ? karakter.specialCd : 3,
     specialBuff: 0,
     igniteBuff: 0,
+    comboStep: 0,
+    comboTimer: 0,
+    swingDir: 1,
+    swingMaxDuration: 0.28,
+    currentHalfArc: 1.05,
 
     ultBuff: false,
     ultArrows: 0,
