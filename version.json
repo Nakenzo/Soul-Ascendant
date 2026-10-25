@@ -1,11 +1,11 @@
 {
-  "timestamp": 1792901210293,
-  "build": 94,
-  "pesan": "Perbaikan layar hijau: latar #gameVfx dibuat transparan agar gameplay tidak terhalang.",
+  "timestamp": 1792906547016,
+  "build": 95,
+  "pesan": "Perbaikan audio: pulihkan volume BGM dan filter frekuensi saat kembali dari menu pause ke menu utama.",
   "perlu_instal_ulang": false,
   "min_shell_build": 93,
   "url_apk": "https://github.com/Nakenzo/Soul-Ascendant/releases/latest/download/Soul-Ascendant.apk",
-  "url_pc": "https://github.com/Nakenzo/Soul-Ascendant/releases/latest",
+  "url_pc": "https://github.com/Nakenzo/Soul-Ascendant/releases/latest/download/Soul-Ascendant.exe",
   "pesan_instal_ulang": "Pembaruan ini mencakup pembaruan loading screen & struktur antarmuka baru. Pasang ulang APK / aplikasi terbaru agar tampilan baru aktif maksimal.",
   "patch_files": [
     "core.js",
@@ -42,5 +42,5 @@
     "settings.css",
     "updater.css"
   ],
-  "tanggal": "2026-10-25T04:06:50.294Z"
+  "tanggal": "2026-10-25T05:35:47.017Z"
 }

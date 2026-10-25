@@ -51,7 +51,7 @@
     "admin-akun.js"
   ];
 
-  const BUILD_SEKARANG = 94;
+  const BUILD_SEKARANG = 95;
   let petaPatchAktif = {};
 
   let bootErrorCount = 0;
@@ -450,7 +450,7 @@
 
     const platform = ambilPlatformSaatIni();
     const urlApk = (remote && remote.url_apk) || "https://github.com/Nakenzo/Soul-Ascendant/releases/latest/download/Soul-Ascendant.apk";
-    const urlPc = (remote && remote.url_pc) || "https://github.com/Nakenzo/Soul-Ascendant/releases/latest";
+    const urlPc = (remote && remote.url_pc) || "https://github.com/Nakenzo/Soul-Ascendant/releases/latest/download/Soul-Ascendant.exe";
 
     let btnSekunder = document.getElementById("tombolSekunderUpdate");
     const kaki = modal.querySelector(".modal-update-kaki");

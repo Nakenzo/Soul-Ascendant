@@ -111,17 +111,30 @@ function _bisaRuteWebAudio() {
 function _aturEfekBGM(jeda) {
   if (!_actx || !_musFilter) return;
   const t = _actx.currentTime;
-  if (jeda) {
-    _musFilter.frequency.setTargetAtTime(190, t, 0.7);
-    _musFilter.Q.setTargetAtTime(5, t, 0.7);
+  const jedaBenar = jeda && (typeof statusGame === "undefined" || statusGame === "pause" || statusGame === "upgrade");
+  if (jedaBenar) {
+    try {
+      _musFilter.frequency.cancelScheduledValues(t);
+      _musFilter.frequency.setValueAtTime(_musFilter.frequency.value, t);
+      _musFilter.frequency.setTargetAtTime(190, t, 0.7);
+      _musFilter.Q.cancelScheduledValues(t);
+      _musFilter.Q.setValueAtTime(_musFilter.Q.value, t);
+      _musFilter.Q.setTargetAtTime(5, t, 0.7);
+    } catch (_) {}
   } else {
-    _musFilter.frequency.setTargetAtTime(18000, t, 0.4);
-    _musFilter.Q.setTargetAtTime(0.0001, t, 0.4);
+    try {
+      _musFilter.frequency.cancelScheduledValues(t);
+      _musFilter.frequency.setValueAtTime(_musFilter.frequency.value, t);
+      _musFilter.frequency.setTargetAtTime(18000, t, 0.08);
+      _musFilter.Q.cancelScheduledValues(t);
+      _musFilter.Q.setValueAtTime(_musFilter.Q.value, t);
+      _musFilter.Q.setTargetAtTime(0.0001, t, 0.08);
+    } catch (_) {}
   }
 
   if (_musEl && _musKey && !_bisaRuteWebAudio()) {
     const v = _volFileMusik(_musKey);
-    _fadeEl(_musEl, jeda ? v * 0.18 : v, 0.6);
+    _fadeEl(_musEl, jedaBenar ? v * 0.18 : v, jedaBenar ? 0.6 : 0.2);
   }
 }
 
@@ -526,6 +539,11 @@ function setMusik(kunci) {
   _hentiMusik();
   _musKey = kunci;
   if (!kunci) return;
+
+  if (kunci === "lobby") {
+    _sfxJeda = false;
+    _aturEfekBGM(false);
+  }
 
   if (!_mulaiFileMusik(kunci)) _mulaiMusikProsedural(kunci);
 }

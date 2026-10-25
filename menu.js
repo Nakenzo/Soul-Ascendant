@@ -199,6 +199,9 @@ function sembunyiSemua() {
     zoomKamera = 1;
     aturFilterMati(0);
   }
+  if (statusGame !== "pause" && statusGame !== "upgrade") {
+    if (typeof setSfxTerjeda === "function") setSfxTerjeda(false);
+  }
   const bCanvas = document.getElementById("bantuanCanvas") || document.querySelector(".bantuan-canvas");
   if (bCanvas) {
     bCanvas.style.display = (statusGame === "main" && (typeof deviceTerpilih === "undefined" || deviceTerpilih !== "mobile")) ? "block" : "none";
@@ -239,6 +242,7 @@ function tampilkanJudul() {
   statusGame = "title";
   karakter = null;
   koin = 0;
+  if (typeof setSfxTerjeda === "function") setSfxTerjeda(false);
   try {
     sembunyiSemua();
   } catch (err) {
