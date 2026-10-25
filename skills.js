@@ -428,19 +428,83 @@ function jurusUltimateVoiz() {
   rings.push({ x: player.x + Math.cos(a) * tip, y: player.y + Math.sin(a) * tip, r: 14, maxR: 80, life: 0.35, t: 0 });
 }
 
+function skillKenzroIceAge() {
+  sfxJurus();
+  sfxBeku();
+  addFlash("rgba(125, 211, 252, 0.45)", 0.6, 0.4);
+  shake = 0.45;
+  spawnParticles(player.x, player.y, "#7dd3fc", 32);
+  spawnParticles(player.x, player.y, "#ffffff", 16);
+  rings.push({ x: player.x, y: player.y, r: 24, maxR: 440, life: 0.5, t: 0, warna: "#7dd3fc" });
+
+  iceAges.push({
+    x: player.x,
+    y: player.y,
+    radius: 420,
+    t: 0,
+    life: 6.0,
+    tick: 0.35,
+    pulse: 0
+  });
+}
+
+function skillVenderIgnite() {
+  player.igniteBuff = 15;
+  sfxApiLapis("jurus-vender-api");
+  addFlash("rgba(255, 110, 20, 0.45)", 0.6, 0.4);
+  shake = 0.35;
+  spawnParticles(player.x, player.y, "#ff8c3f", 25);
+  spawnParticles(player.x, player.y, "#ffd23f", 20);
+  rings.push({ x: player.x, y: player.y, r: 24, maxR: 160, life: 0.35, t: 0, warna: "#ff8c3f" });
+}
+
+function skillVoizHex() {
+  sfxLaserVoiz();
+  addFlash("rgba(139, 92, 246, 0.45)", 0.6, 0.4);
+  shake = 0.45;
+  spawnParticles(player.x, player.y, "#a78bfa", 25);
+  rings.push({ x: player.x, y: player.y, r: 20, maxR: 200, life: 0.4, t: 0, warna: "#c084fc" });
+
+  const marked = [];
+  for (let i = 0; i < enemies.length; i++) {
+    const e = enemies[i];
+    if (e.hp <= 0 || e.bosKematian) continue;
+    e.hexMark = 0.8;
+    marked.push(e);
+    spawnParticles(e.x, e.y, "#c084fc", 10);
+    rings.push({ x: e.x, y: e.y, r: 8, maxR: 40, life: 0.35, t: 0, warna: "#a78bfa" });
+  }
+
+  for (let k = 0; k < marked.length; k++) {
+    const tgt = marked[k];
+    hexLasers.push({
+      x: tgt.x,
+      y: tgt.y,
+      target: tgt,
+      delay: 0.22 + (k * 0.05),
+      t: 0,
+      durasi: 0.35,
+      hit: false,
+      lebar: 26
+    });
+  }
+}
+
 for (let i = 0; i < KARAKTER.length; i++) {
   const kar = KARAKTER[i];
   daftarkanSkill(kar.kunci, 2, jurusBawaan);
-  // Slot 3: Skill khusus per karakter
   if (kar.kunci === "rin") {
     daftarkanSkill(kar.kunci, 3, skillVenderInferno);
+    daftarkanSkill(kar.kunci, 4, skillVenderIgnite, 20);
   } else if (kar.kunci === "kenzro") {
     daftarkanSkill(kar.kunci, 3, skillKenzroFrozfall, 10);
+    daftarkanSkill(kar.kunci, 4, skillKenzroIceAge, 14);
   } else if (kar.kunci === "voiz") {
     daftarkanSkill(kar.kunci, 3, skillVoizPrism, 8);
+    daftarkanSkill(kar.kunci, 4, skillVoizHex, 16);
   } else {
     daftarkanSkill(kar.kunci, 3, skillUji3);
+    daftarkanSkill(kar.kunci, 4, skillUji4);
   }
-  daftarkanSkill(kar.kunci, 4, skillUji4, kar.kunci === "kenzro" ? 7 : 0);
   daftarkanSkill(kar.kunci, 5, skillUji5, kar.kunci === "kenzro" ? 12 : 0);
 }

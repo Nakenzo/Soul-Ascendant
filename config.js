@@ -40,7 +40,8 @@ const KARAKTER = [
     skill: [
       {},  // slot 1 - default
       {},  // slot 2 - default
-      { nama: "FROZFALL" }  // slot 3 - Frozfall
+      { nama: "FROZFALL" },  // slot 3 - Frozfall
+      { nama: "ICE AGE" }  // slot 4 - Ice Age
     ]
   },
   {
@@ -76,7 +77,8 @@ const KARAKTER = [
     skill: [
       {},  // slot 1 - default
       {},  // slot 2 - default
-      { nama: "INFERNO" }  // slot 3 - Inferno
+      { nama: "INFERNO" },  // slot 3 - Inferno
+      { nama: "IGNITE" }  // slot 4 - Ignite
     ]
   },
   {
@@ -114,7 +116,8 @@ const KARAKTER = [
     skill: [
       {},  // slot 1 - BASE ATTACK
       { nama: "UMBRA" },  // slot 2 - jurus pertama = laser
-      { nama: "PRISM", level: 10 }  // slot 3 - skill 2 = sihir memantul
+      { nama: "PRISM", level: 10 },  // slot 3 - skill 2 = sihir memantul
+      { nama: "HEX", level: 15 }  // slot 4 - skill 3 = Hex kutukan langit
     ]
   }
 ];

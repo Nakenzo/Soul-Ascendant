@@ -33,7 +33,7 @@ var IS_PC = PLATFORM === "pc";
 var IS_WEB = PLATFORM === "web";
 
 const VERSI_GAME = "0.1.0";
-const BUILD_GAME = 103;
+const BUILD_GAME = 104;
 const EDISI_GAME = IS_APK ? "Android APK" : (IS_PC ? "PC Windows" : "Web Edition");
 
 function saatPlatform(opsi) {
@@ -67,6 +67,8 @@ let nullLasers = [];
 let blackholes = [];
 let voidOrbs = [];
 let prismPulsa = [];
+let iceAges = [];
+let hexLasers = [];
 let flashes, hurtVig;
 let deathPixels = [];
 let animasiReaksi = [];
@@ -131,6 +133,7 @@ function resetArena({ koinBaru }) {
     specialCd: 0,
     specialMax: karakter ? karakter.specialCd : 3,
     specialBuff: 0,
+    igniteBuff: 0,
 
     ultBuff: false,
     ultArrows: 0,
@@ -215,6 +218,8 @@ function resetArena({ koinBaru }) {
   blackholes = [];
   voidOrbs = [];
   prismPulsa = [];
+  iceAges = [];
+  hexLasers = [];
   fires = [];
   freezes = [];
   damages = [];

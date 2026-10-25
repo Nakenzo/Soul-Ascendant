@@ -1015,6 +1015,43 @@ function draw() {
   ctx.restore();
   ctx.globalAlpha = 1;
 
+  for (const ia of iceAges) {
+    const sisa = Math.max(0, 1 - ia.t / ia.life);
+    const fade = sisa < 0.25 ? sisa / 0.25 : 1;
+    const pulsa = 1 + 0.03 * Math.sin(performance.now() / 150);
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    const gIa = ctx.createRadialGradient(ia.x, ia.y, 20, ia.x, ia.y, ia.radius * pulsa);
+    gIa.addColorStop(0, "rgba(224, 242, 254, " + (0.32 * fade) + ")");
+    gIa.addColorStop(0.5, "rgba(56, 189, 248, " + (0.22 * fade) + ")");
+    gIa.addColorStop(0.85, "rgba(2, 132, 199, " + (0.15 * fade) + ")");
+    gIa.addColorStop(1, "rgba(56, 189, 248, 0)");
+    ctx.fillStyle = gIa;
+    ctx.beginPath();
+    ctx.arc(ia.x, ia.y, ia.radius * pulsa, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = "rgba(125, 211, 252, " + (0.65 * fade) + ")";
+    ctx.lineWidth = 3.5;
+    ctx.beginPath();
+    ctx.arc(ia.x, ia.y, ia.radius * pulsa, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.save();
+    ctx.translate(ia.x, ia.y);
+    ctx.rotate(performance.now() / 2500);
+    ctx.strokeStyle = "rgba(191, 233, 255, " + (0.45 * fade) + ")";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([16, 12, 6, 12]);
+    ctx.beginPath();
+    ctx.arc(0, 0, ia.radius * 0.72, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+
+    ctx.restore();
+  }
+
   for (const e of enemies) {
 
     gambarMusuh(e, performance.now() / 1000);
@@ -1129,6 +1166,24 @@ function draw() {
       ctx.fill();
       ctx.strokeStyle = "#ef4444";
       ctx.lineWidth = 1.8;
+      ctx.stroke();
+    }
+
+    if ((e.hexMark || 0) > 0) {
+      const hmY = e.y - e.r - 20;
+      const berkedip = 0.7 + 0.3 * Math.sin(performance.now() / 60);
+      ctx.fillStyle = "rgba(192, 132, 252, " + (0.4 * berkedip) + ")";
+      ctx.beginPath();
+      ctx.arc(e.x, hmY, 11, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(232, 121, 249, " + (0.95 * berkedip) + ")";
+      ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      ctx.arc(e.x, hmY, 11, 0, Math.PI * 2);
+      ctx.moveTo(e.x - 16, hmY);
+      ctx.lineTo(e.x + 16, hmY);
+      ctx.moveTo(e.x, hmY - 16);
+      ctx.lineTo(e.x, hmY + 16);
       ctx.stroke();
     }
   }
@@ -1627,6 +1682,20 @@ function draw() {
       ctx.stroke();
     }
 
+    if ((player.igniteBuff || 0) > 0) {
+      const pu = 0.8 + 0.2 * Math.sin(performance.now() / 90);
+      ctx.strokeStyle = "rgba(255, 120, 20, " + (0.85 * pu) + ")";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(player.x, player.y, 52, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeStyle = "rgba(255, 210, 40, " + (0.55 * pu) + ")";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(player.x, player.y, 44, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
     if (player.ultBuff) {
       const pu = 0.7 + 0.3 * Math.sin(performance.now() / 120);
       ctx.strokeStyle = warnaRGBA(aksenRing, 0.85 * pu);
@@ -1905,6 +1974,54 @@ function draw() {
     ctx.beginPath();
     ctx.arc(p.x2, p.y2, 10 * op + 2, 0, Math.PI * 2);
     ctx.fill();
+    ctx.restore();
+  }
+
+  for (const hl of hexLasers) {
+    if (hl.t < hl.delay) continue;
+    const progress = (hl.t - hl.delay) / hl.durasi;
+    const fade = Math.max(0, 1 - progress);
+    const beamY0 = kam.y - 120;
+    const beamY1 = hl.y;
+    const beamX = hl.x;
+    const lebar = (hl.lebar || 26) * fade;
+
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    ctx.strokeStyle = "rgba(109, 40, 217, " + (0.35 * fade) + ")";
+    ctx.lineWidth = lebar * 2.5;
+    ctx.beginPath();
+    ctx.moveTo(beamX, beamY0);
+    ctx.lineTo(beamX, beamY1);
+    ctx.stroke();
+
+    const gBeam = ctx.createLinearGradient(beamX - lebar, 0, beamX + lebar, 0);
+    gBeam.addColorStop(0, "rgba(147, 51, 234, 0)");
+    gBeam.addColorStop(0.5, "rgba(192, 132, 252, " + (0.85 * fade) + ")");
+    gBeam.addColorStop(1, "rgba(147, 51, 234, 0)");
+    ctx.strokeStyle = gBeam;
+    ctx.lineWidth = lebar;
+    ctx.beginPath();
+    ctx.moveTo(beamX, beamY0);
+    ctx.lineTo(beamX, beamY1);
+    ctx.stroke();
+
+    ctx.strokeStyle = "rgba(255, 255, 255, " + (0.95 * fade) + ")";
+    ctx.lineWidth = lebar * 0.28;
+    ctx.beginPath();
+    ctx.moveTo(beamX, beamY0);
+    ctx.lineTo(beamX, beamY1);
+    ctx.stroke();
+
+    const gHit = ctx.createRadialGradient(beamX, beamY1, 2, beamX, beamY1, lebar * 1.8);
+    gHit.addColorStop(0, "rgba(255, 255, 255, " + (0.95 * fade) + ")");
+    gHit.addColorStop(0.5, "rgba(192, 132, 252, " + (0.8 * fade) + ")");
+    gHit.addColorStop(1, "rgba(109, 40, 217, 0)");
+    ctx.fillStyle = gHit;
+    ctx.beginPath();
+    ctx.arc(beamX, beamY1, lebar * 1.8, 0, Math.PI * 2);
+    ctx.fill();
+
     ctx.restore();
   }
 

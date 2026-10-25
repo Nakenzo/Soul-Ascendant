@@ -158,6 +158,7 @@ function slashSwing() {
 
   const ox = player.x + Math.cos(angle) * 70;
   const oy = player.y + Math.sin(angle) * 70;
+  const isIgnite = (player.igniteBuff || 0) > 0;
   slashes.push({
     x: ox,
     y: oy,
@@ -168,9 +169,11 @@ function slashSwing() {
     t: 0,
     life: player.swingDuration || 0.2,
     hit: new Set(),
-    element: typeof elemenSeranganBiasa === "function" ? elemenSeranganBiasa() : "fisik"
+    ignite: isIgnite,
+    element: isIgnite ? "api" : (typeof elemenSeranganBiasa === "function" ? elemenSeranganBiasa() : "fisik")
   });
-  spawnParticles(ox, oy, "#ffffff", 6);
+  spawnParticles(ox, oy, isIgnite ? "#ff8c3f" : "#ffffff", isIgnite ? 10 : 6);
+  if (isIgnite) spawnParticles(ox, oy, "#ffd23f", 6);
 }
 
 function titikSpawnAman(r) {
@@ -1645,6 +1648,7 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
   player.attackAnimT = Math.max(0, (player.attackAnimT || 0) - dt);
   player.specialCd = Math.max(0, player.specialCd - dt);
   player.specialBuff = Math.max(0, (player.specialBuff || 0) - dt);
+  player.igniteBuff = Math.max(0, (player.igniteBuff || 0) - dt);
   player.swing = Math.max(0, (player.swing || 0) - dt);
 
   player.ultCd = Math.max(0, (player.ultCd || 0) - dt);
@@ -2378,6 +2382,53 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
     if (fz.t >= fz.life) freezes.splice(i, 1);
   }
 
+  for (let i = iceAges.length - 1; i >= 0; i--) {
+    const ia = iceAges[i];
+    ia.t += dt;
+    ia.tick = (ia.tick || 0) - dt;
+    if (ia.tick <= 0) {
+      ia.tick = 0.35;
+      for (const e of enemies) {
+        if (e.hp <= 0) continue;
+        if (dist(ia.x, ia.y, e.x, e.y) <= ia.radius + e.r) {
+          const dmg = Math.round(12 * (typeof pengaliElement === "function" ? pengaliElement(karakter.kunci) : 1) * (1 + (player.skill3DmgBonus || 0)));
+          const dmgPasar = applyDamageMusuh(e, dmg, "es");
+          spawnDamage(e.x, e.y - e.r - 16, dmgPasar, warnaElemenDamage("es"));
+          spawnParticles(e.x, e.y, "#7dd3fc", 3);
+          if (e.hp <= 0) killEnemy(e);
+        }
+      }
+    }
+    if (ia.t >= ia.life) iceAges.splice(i, 1);
+  }
+
+  for (let i = hexLasers.length - 1; i >= 0; i--) {
+    const hl = hexLasers[i];
+    hl.t += dt;
+    if (hl.t >= hl.delay && !hl.hit) {
+      hl.hit = true;
+      const tgt = hl.target;
+      if (tgt && tgt.hp > 0) {
+        tgt.hexMark = 0;
+        const dmg = Math.round(52 * (typeof pengaliElement === "function" ? pengaliElement(karakter.kunci) : 1) * (1 + (player.skill3DmgBonus || 0)));
+        const dmgPasar = applyDamageMusuh(tgt, dmg, "nihil");
+        tgt.hitFlash = 0.15;
+        parrySerigala(tgt);
+        sfxKena();
+        shake = Math.max(shake, 0.35);
+        rings.push({ x: tgt.x, y: tgt.y, r: 12, maxR: 75, life: 0.3, t: 0, warna: "#c084fc" });
+        spawnParticles(tgt.x, tgt.y, "#c084fc", 18);
+        spawnParticles(tgt.x, tgt.y, "#ffffff", 8);
+        spawnDamage(tgt.x, tgt.y - tgt.r - 20, dmgPasar, warnaElemenDamage("nihil"));
+        serapanDarah(dmgPasar);
+        if (tgt.hp <= 0) killEnemy(tgt);
+      }
+    }
+    if (hl.t >= hl.delay + hl.durasi) {
+      hexLasers.splice(i, 1);
+    }
+  }
+
   if (levelSpawn < LEVELS[level].jumlah) {
     spawnTimer -= dt;
     if (bossIntro) {
@@ -2398,6 +2449,7 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
     const e = enemies[i];
     e.hitFlash = Math.max(0, e.hitFlash - dt);
     e.freeze = Math.max(0, (e.freeze || 0) - dt);
+    e.hexMark = Math.max(0, (e.hexMark || 0) - dt);
     e.paralyze = Math.max(0, (e.paralyze || 0) - dt);
     e.crystalize = Math.max(0, (e.crystalize || 0) - dt);
     e.contactCd = Math.max(0, (e.contactCd || 0) - dt);

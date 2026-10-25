@@ -40,8 +40,8 @@ function skillNamaBawaan(kar, slot) {
     return kar && kar.tipe === "dekat" ? "INFERNO" : "FROZFALL";
   }
   if (slot === 4) {
-    if (kar && kar.kunci === "voiz") return "ECLIPSE";
-    return kar && kar.tipe === "dekat" ? "ERUPTION" : "BLIZZARD";
+    if (kar && kar.kunci === "voiz") return "HEX";
+    return kar && kar.tipe === "dekat" ? "IGNITE" : "ICE AGE";
   }
   return "SKILL " + slot;
 }
@@ -128,11 +128,11 @@ const TREE_NODES = [
   },
   {
     id: "skill3",
-    labelSlot: "SKILL 3 (SEGERA)",
+    labelSlot: "SKILL 3",
     nama: function (kar) {
       if (!kar) return "Skill 3";
-      if (kar.kunci === "voiz") return "Eclipse";
-      return kar.tipe === "dekat" ? "Eruption" : "Blizzard";
+      if (kar.kunci === "voiz") return "Hex";
+      return kar.tipe === "dekat" ? "Ignite" : "Ice Age";
     },
     ikon: "🌀",
     max: 2,
@@ -140,11 +140,11 @@ const TREE_NODES = [
     syarat: null,
     syaratPoinTotal: 20,
     singkat: function (kar, r) {
-      const nm = (kar && kar.kunci === "voiz") ? "ECLIPSE" : (kar && kar.tipe === "dekat" ? "ERUPTION" : "BLIZZARD");
-      return r === 0 ? "SKILL 3 (SEGERA - " + nm + ")" : "+20% " + nm;
+      const nm = (kar && kar.kunci === "voiz") ? "HEX" : (kar && kar.tipe === "dekat" ? "IGNITE" : "ICE AGE");
+      return r === 0 ? "BUKA SKILL 3 (" + nm + ")" : "+20% " + nm;
     },
     deskripsi: function (kar, r) {
-      return r === 0 ? "Buka Skill 3 (Butuh 20 Poin Tree - Segera Hadir)" : "+20% Damage & -1s CD Skill 3";
+      return r === 0 ? "Buka Skill 3 (Butuh 20 Poin Tree)" : "+20% Damage & -1s CD Skill 3";
     },
     bonus: function (r) { return { bukaSkill3: r > 0, skill3Dmg: 0.20 * r, skill3Cd: 1.0 * r }; }
   },
@@ -503,10 +503,10 @@ function apakahSkillTerbuka(kunci, slot) {
   if (slot <= 2) return true;
   const tp = treePoinKarakter(kunci);
   if (slot === 3) {
-    return !!(tp.buka_skill2 || (tp.skill2 && tp.skill2 >= 1));
+    return !!(tp.buka_skill2 || (tp.skill2 && tp.skill2 >= 1)) || (typeof levelKarakter === "function" && levelKarakter(kunci) >= 10);
   }
   if (slot === 4) {
-    return !!(tp.buka_skill3 || (tp.skill3 && tp.skill3 >= 1));
+    return !!(tp.buka_skill3 || (tp.skill3 && tp.skill3 >= 1)) || (typeof levelKarakter === "function" && levelKarakter(kunci) >= 15);
   }
   return false;
 }
