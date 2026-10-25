@@ -553,11 +553,18 @@ function gabungProgres(a, b) {
       if (!isi || typeof isi !== "object") continue;
       if (!treePoin[kar]) treePoin[kar] = {};
       for (const nid of Object.keys(isi)) {
-        const val = akunNomorAngka(isi[nid]);
-        if (val > 0) treePoin[kar][nid] = Math.max(treePoin[kar][nid] || 0, val);
+        const val = isi[nid];
+        if (typeof val === "boolean" && val) {
+          treePoin[kar][nid] = true;
+        } else {
+          const num = akunNomorAngka(val);
+          if (num > 0) treePoin[kar][nid] = Math.max(treePoin[kar][nid] || 0, num);
+        }
       }
     }
   }
+
+  const inventaris = gabungTinggiPerKunci(kiri.inventaris, kanan.inventaris);
 
   const skillPakai =
     (kiri.skillPakai && typeof kiri.skillPakai === "object" && kiri.skillPakai.kunci)
@@ -577,7 +584,8 @@ function gabungProgres(a, b) {
     artefakMilik: artefakMilik,
     artefakBintang: artefakBintang,
     artefakSubstat: artefakSubstat,
-    artefakPakai: artefakPakai
+    artefakPakai: artefakPakai,
+    inventaris: inventaris
   };
 
   return typeof bersihkanProgres === "function" ? bersihkanProgres(hasil) : hasil;
@@ -653,7 +661,20 @@ function akunUnggahSekarang() {
     })
     .then((hasil) => {
       if (hasil && hasil.baris && hasil.alasan === "server-lebih-baru") {
-        return akunTarik({ sejarah: false }).then(() => ({ ok: false, alasan: "server-lebih-baru" }));
+        return akunTarik({ sejarah: false }).then((tarikHasil) => {
+          if (tarikHasil && tarikHasil.ok) {
+            const kodeGabung = typeof saveKode === "function" ? saveKode() : null;
+            if (kodeGabung) {
+              return akunTulisServer(kodeGabung, 3).then(() => {
+                akunStatus = "sinkron";
+                akunPesan = "";
+                if (typeof akunPerbaruiUI === "function") akunPerbaruiUI();
+                return { ok: true, aksi: "gabung-unggah" };
+              }).catch(() => ({ ok: true, aksi: "gabung-lokal" }));
+            }
+          }
+          return { ok: false, alasan: "server-lebih-baru" };
+        });
       }
       akunStatus = "sinkron";
       akunPesan = "";
@@ -669,7 +690,7 @@ function akunUnggahSekarang() {
 }
 
 // Tarik baris server ke lokal (dipakai saat login & saat server lebih baru).
-// Versi server lama disimpan ke riwayat otomatis sebelum ditimpa.
+// Selalu gabungkan dengan progres lokal agar data upgrade/koin/level tidak pernah hilang.
 function akunTarik(opsi) {
   const denganSejarah = !opsi || opsi.sejarah !== false;
   if (!akunUid || !akunAktifDipakai()) return Promise.resolve({ ok: false });
@@ -686,14 +707,21 @@ function akunTarik(opsi) {
         saveRotasiOtomatis(saveKode());
       } catch (err) {}
     }
+    const lokal = (typeof progres === "object" && progres) || (typeof bacaProgres === "function" ? bacaProgres() : null);
+    const gabung = (lokal && typeof gabungProgres === "function") ? gabungProgres(lokal, serverProgres) : serverProgres;
     if (typeof saveGantiProgres === "function") {
-      saveGantiProgres(serverProgres);
+      akunTahanJadwal = true;
+      try {
+        saveGantiProgres(gabung);
+      } finally {
+        akunTahanJadwal = false;
+      }
     } else if (typeof progres !== "undefined") {
-      progres = bersihkanProgres(serverProgres);
+      progres = bersihkanProgres(gabung);
     }
     akunStatus = "sinkron";
     if (typeof akunPerbaruiUI === "function") akunPerbaruiUI();
-    return { ok: true, progres: serverProgres };
+    return { ok: true, progres: gabung };
   });
 }
 

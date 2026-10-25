@@ -124,6 +124,7 @@ function bersihkanProgres(terbaik) {
   if (!terbaik || typeof terbaik !== "object") terbaik = {};
 
   const n = progresBaru();
+  n.t = Number.isFinite(terbaik.t) && terbaik.t > 0 ? Math.floor(terbaik.t) : Date.now();
   n.selesai = Array.isArray(terbaik.selesai)
     ? terbaik.selesai.filter((x) => Number.isInteger(x) && x >= 0 && x <= 200)
     : [];
@@ -273,6 +274,7 @@ function bersihkanProgres(terbaik) {
 }
 
 function saveSnapshot() {
+  if (progres) progres.t = Date.now();
   const d = {
     v: SAVE_VERSI,
     selesai: progres.selesai,
@@ -287,12 +289,13 @@ function saveSnapshot() {
     artefakPakai: progres.artefakPakai,
     artefakSubstat: progres.artefakSubstat,
     inventaris: progres.inventaris || {},
-    t: Date.now()
+    t: (progres && progres.t) || Date.now()
   };
   return { d: d, sig: saveChecksum(d) };
 }
 
 function saveTulis() {
+  if (progres) progres.t = Date.now();
   const teks = saveEnkode(saveSnapshot());
   if (!teks) return;
   try {
@@ -675,12 +678,17 @@ function bonusStatKarakter(kunci) {
 }
 
 function naikkanLevelKarakter(kunci) {
+  if (!progres) return false;
+  if (!progres.levelKarakter || typeof progres.levelKarakter !== "object") {
+    progres.levelKarakter = {};
+  }
   const lv = levelKarakter(kunci);
   if (lv >= KARAKTER_LEVEL_MAX) return false;
   const biaya = biayaNaikLevelKarakter(lv);
   if (progres.koinSaldo < biaya) return false;
   progres.koinSaldo -= biaya;
   progres.levelKarakter[kunci] = lv + 1;
+  progres.t = Date.now();
   saveTulis();
   return true;
 }

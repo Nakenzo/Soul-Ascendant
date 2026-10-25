@@ -1,7 +1,7 @@
 {
-  "timestamp": 1792928799381,
-  "build": 105,
-  "pesan": "Fitur Akun Admin: seluruh level dan karakter langsung otomatis terbuka penuh khusus akun admin.",
+  "timestamp": 1792930288088,
+  "build": 106,
+  "pesan": "Perbaikan Sinkronisasi Akun: cegah reset level karakter saat sinkronisasi awan, perbaiki penggabungan progres dan penanganan timestamp.",
   "perlu_instal_ulang": false,
   "min_shell_build": 93,
   "url_apk": "https://github.com/Nakenzo/Soul-Ascendant/releases/latest/download/Soul-Ascendant.apk",
@@ -42,5 +42,5 @@
     "settings.css",
     "updater.css"
   ],
-  "tanggal": "2026-10-25T11:46:39.381Z"
+  "tanggal": "2026-10-25T12:11:28.088Z"
 }
