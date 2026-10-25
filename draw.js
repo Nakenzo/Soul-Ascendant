@@ -83,70 +83,77 @@ function gambarSenjata() {
     rotTotal += -karakter.halfArc + karakter.halfArc * 2 * k;
   }
   ctx.rotate(rotTotal);
-  ctx.drawImage(img, -Math.round(w / 2), -Math.round(h / 2), Math.round(w), Math.round(h));
+  const dx = -Math.round(w / 2);
+  const dy = -Math.round(h / 2);
+  const dw = Math.round(w);
+  const dh = Math.round(h);
 
   const inf = typeof elemenInfusiSenjata === "function" ? elemenInfusiSenjata() : null;
   if (inf) {
-    gambarInfusiSenjata(w, h, inf);
+    gambarAuraSenjata(img, dx, dy, dw, dh, inf);
+  } else {
+    ctx.drawImage(img, dx, dy, dw, dh);
   }
   ctx.restore();
 }
 
-function gambarInfusiSenjata(w, h, inf) {
+function gambarAuraSenjata(img, dx, dy, dw, dh, inf) {
+  const t = performance.now() / 1000;
+  const pulse = Math.sin(t * 10);
+  const pulse2 = Math.cos(t * 14);
+
+  let warnaLuar = "rgba(255, 60, 0, 0.85)";
+  let warnaDalam = "rgba(255, 180, 40, 0.95)";
+  let warnaInti = "#fff3a8";
+
+  if (inf === "es") {
+    warnaLuar = "rgba(14, 165, 233, 0.85)";
+    warnaDalam = "rgba(125, 211, 252, 0.95)";
+    warnaInti = "#ffffff";
+  } else if (inf === "api") {
+    warnaLuar = "rgba(255, 50, 10, 0.85)";
+    warnaDalam = "rgba(255, 170, 30, 0.95)";
+    warnaInti = "#fff3a8";
+  } else {
+    const c = typeof warnaElemenDamage === "function" ? warnaElemenDamage(inf) : "#ffffff";
+    warnaLuar = c;
+    warnaDalam = "#ffffff";
+    warnaInti = "#ffffff";
+  }
+
+  // Lapisan 1: Aura pendar luar (lembut, lebar, mengikuti siluet PNG senjata)
+  ctx.save();
+  ctx.shadowColor = warnaLuar;
+  ctx.shadowBlur = Math.round(18 + 5 * pulse);
+  ctx.globalAlpha = 0.85;
+  ctx.drawImage(img, dx, dy, dw, dh);
+  ctx.restore();
+
+  // Lapisan 2: Aura pendar tengah (terang, intensif pada kontur PNG)
+  ctx.save();
+  ctx.shadowColor = warnaDalam;
+  ctx.shadowBlur = Math.round(8 + 3 * pulse2);
+  ctx.globalAlpha = 0.95;
+  ctx.drawImage(img, dx, dy, dw, dh);
+  ctx.restore();
+
+  // Lapisan 3: Aura pendar inti (garis batas kontur berkilau)
+  ctx.save();
+  ctx.shadowColor = warnaInti;
+  ctx.shadowBlur = Math.round(3 + 2 * pulse);
+  ctx.drawImage(img, dx, dy, dw, dh);
+  ctx.restore();
+
+  // Lapisan 4: Gambar sprite senjata asli
+  ctx.drawImage(img, dx, dy, dw, dh);
+
+  // Lapisan 5: Kilau elemen pada permukaan senjata (additive sheen)
   ctx.save();
   ctx.globalCompositeOperation = "lighter";
-  const t = performance.now() / 1000;
-  const flicker = 0.82 + 0.18 * Math.sin(t * 18);
-  const hw = Math.round(w / 2), hh = Math.round(h / 2);
-
-  if (inf === "api") {
-    ctx.strokeStyle = "rgba(255, 60, 0, " + (0.45 * flicker) + ")";
-    ctx.lineWidth = 10;
-    ctx.strokeRect(-hw - 3, -hh - 3, w + 6, h + 6);
-
-    ctx.strokeStyle = "rgba(255, 140, 20, " + (0.85 * flicker) + ")";
-    ctx.lineWidth = 4;
-    ctx.strokeRect(-hw - 1, -hh - 1, w + 2, h + 2);
-
-    ctx.strokeStyle = "rgba(255, 230, 100, " + (0.95 * flicker) + ")";
-    ctx.lineWidth = 1.5;
-    ctx.strokeRect(-hw, -hh, w, h);
-
-    for (let i = 0; i < 4; i++) {
-      const px = -hw + ((i * 35 + Math.sin(t * 12 + i) * 8) % w);
-      const py = -hh + Math.sin(t * 16 + i * 2) * (h * 0.4);
-      ctx.fillStyle = i % 2 === 0 ? "#ffd23f" : "#ff5500";
-      ctx.beginPath();
-      ctx.arc(px, py, 2.5 + Math.sin(t * 20 + i) * 1.2, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  } else if (inf === "es") {
-    ctx.strokeStyle = "rgba(56, 189, 248, " + (0.45 * flicker) + ")";
-    ctx.lineWidth = 8;
-    ctx.strokeRect(-hw - 2, -hh - 2, w + 4, h + 4);
-
-    ctx.strokeStyle = "rgba(125, 211, 252, " + (0.85 * flicker) + ")";
-    ctx.lineWidth = 3.5;
-    ctx.strokeRect(-hw - 1, -hh - 1, w + 2, h + 2);
-
-    ctx.strokeStyle = "rgba(255, 255, 255, " + (0.95 * flicker) + ")";
-    ctx.lineWidth = 1.2;
-    ctx.strokeRect(-hw, -hh, w, h);
-
-    for (let i = 0; i < 4; i++) {
-      const px = -hw + ((i * 38 + Math.cos(t * 11 + i) * 6) % w);
-      const py = -hh + Math.cos(t * 15 + i * 2) * (h * 0.4);
-      ctx.fillStyle = i % 2 === 0 ? "#ffffff" : "#7dd3fc";
-      ctx.beginPath();
-      ctx.arc(px, py, 2 + Math.sin(t * 18 + i) * 1, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  } else {
-    const col = typeof warnaElemenDamage === "function" ? warnaElemenDamage(inf) : "#ffffff";
-    ctx.strokeStyle = col;
-    ctx.lineWidth = 4 * flicker;
-    ctx.strokeRect(-hw - 1, -hh - 1, w + 2, h + 2);
-  }
+  ctx.globalAlpha = 0.3 + 0.15 * pulse;
+  ctx.shadowColor = warnaDalam;
+  ctx.shadowBlur = 4;
+  ctx.drawImage(img, dx, dy, dw, dh);
   ctx.restore();
 }
 
