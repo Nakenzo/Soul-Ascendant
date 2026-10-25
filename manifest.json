@@ -2,7 +2,7 @@
   "name": "Soul Ascendant",
   "short_name": "SoulAscendant",
   "description": "2D Top-Down Action Roguelike Game",
-  "build": 109,
+  "build": 110,
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

@@ -1,7 +1,7 @@
 {
-  "timestamp": 1792933392249,
-  "build": 109,
-  "pesan": "Combat Vender: sistem 3-tahap kombo basic attack sabit (Tebasan Pembuka, Tebasan Balasan, dan Finisher Berputar).",
+  "timestamp": 1792936124359,
+  "build": 110,
+  "pesan": "Perbaikan Render: hapus deklarasi variabel duplikat pada draw.js yang menyebabkan layar hitam saat memuat gameplay.",
   "perlu_instal_ulang": false,
   "min_shell_build": 93,
   "url_apk": "https://github.com/Nakenzo/Soul-Ascendant/releases/latest/download/Soul-Ascendant.apk",
@@ -42,5 +42,5 @@
     "settings.css",
     "updater.css"
   ],
-  "tanggal": "2026-10-25T13:03:12.249Z"
+  "tanggal": "2026-10-25T13:48:44.359Z"
 }

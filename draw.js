@@ -3835,7 +3835,6 @@ function drawHUD() {
         by += step;
         continue;
       }
-      const slot = slots[i];
       const cd = cdSkill(karakter.kunci, slot);
       const sisa = typeof sisaCdSkill === "function"
         ? sisaCdSkill(slot)
