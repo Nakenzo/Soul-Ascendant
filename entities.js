@@ -444,9 +444,23 @@ function triggerReaksiVfx(anim, x, y) {
     window.vfx.es(x, y, 35);
   } else if (k === "crystallize") {
     window.vfx.spawn("crys_geo", x, y, { warna: "#f59e0b", jumlah: 30, speed: 220, size: 16, drag: 0.92 });
-  } else if (k === "vortex" || k === "swirl_api" || k === "swirl_es" || k === "swirl_petir" || k === "swirl_corrosion") {
-    const col = k === "swirl_api" ? "#f97316" : k === "swirl_es" ? "#7dd3fc" : k === "swirl_petir" ? "#facc15" : k === "swirl_corrosion" ? "#c084fc" : "#2dd4bf";
-    window.vfx.spawn("swirl", x, y, { warna: col, jumlah: 32, speed: 230, size: 15, drag: 0.92 });
+  } else if (k === "vortex") {
+    window.vfx.spawn("swirl", x, y, { warna: "#2dd4bf", jumlah: 38, speed: 250, size: 16, drag: 0.92 });
+  } else if (k === "swirl_nature") {
+    window.vfx.spawn("swirl", x, y, { warna: "#22c55e", jumlah: 32, speed: 210, size: 15, drag: 0.91 });
+    window.vfx.spawn("leaf", x, y, { warna: "#a3e635", jumlah: 24, speed: 200, size: 14 });
+  } else if (k === "swirl_petir") {
+    window.vfx.spawn("swirl", x, y, { warna: "#facc15", jumlah: 30, speed: 240, size: 14, drag: 0.90 });
+    window.vfx.spawn("discharge_arc", x, y, { warna: "#fef08a", jumlah: 22, speed: 290, size: 15 });
+  } else if (k === "swirl_api") {
+    window.vfx.spawn("swirl", x, y, { warna: "#f97316", jumlah: 32, speed: 230, size: 15, drag: 0.91 });
+    window.vfx.spawn("burn_sparks", x, y, { warna: "#fde047", jumlah: 22, speed: 240, size: 14 });
+  } else if (k === "swirl_es") {
+    window.vfx.spawn("swirl", x, y, { warna: "#7dd3fc", jumlah: 30, speed: 220, size: 14, drag: 0.91 });
+    window.vfx.es(x, y, 25);
+  } else if (k === "swirl_corrosion") {
+    window.vfx.spawn("swirl", x, y, { warna: "#c084fc", jumlah: 32, speed: 230, size: 15, drag: 0.91 });
+    window.vfx.voidSparks(x, y, 22);
   } else if (k === "sandstorm") {
     window.vfx.spawn("sandstorm", x, y, { warna: "#f59e0b", jumlah: 35, speed: 240, size: 15, drag: 0.92 });
   } else if (k === "bleeding") {
@@ -766,7 +780,7 @@ function eksekusiKombinasiElemen(atkEl, musuhEl, e, dmgAwal, emKali) {
   } else if ((atkEl === "angin" && musuhEl === "nature") || (atkEl === "nature" && musuhEl === "angin")) {
     const bonusDmg = Math.round(dmgAwal * 0.8 * emKali);
     e.hp -= bonusDmg;
-    reaksi = { nama: "NATURE SWIRL", warna: "#22c55e", anim: "vortex" };
+    reaksi = { nama: "NATURE SWIRL", warna: "#22c55e", anim: "swirl_nature" };
     spawnParticles(e.x, e.y, "#22c55e", 16);
     spawnParticles(e.x, e.y, "#2dd4bf", 10);
   } else if ((atkEl === "tanah" && (musuhEl === "api" || musuhEl === "es" || musuhEl === "petir" || musuhEl === "listrik" || musuhEl === "nature")) ||
