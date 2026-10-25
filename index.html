@@ -71,9 +71,16 @@
                         </div>
                         <p id="modalUpdatePesan" class="modal-update-pesan">Versi baru Soul Ascendant telah dirilis dengan perbaikan bug dan peningkatan performa.</p>
                         <div id="modalUpdateCatatan" class="modal-update-catatan" hidden></div>
+                        <div id="modalUpdateProgressArea" class="modal-update-progress-area" style="display:none">
+                            <div class="modal-update-bar-rel">
+                                <div id="modalUpdateBarFill" class="modal-update-bar-fill"></div>
+                            </div>
+                            <span id="modalUpdateProgressTeks" class="modal-update-progress-teks">Mengunduh... 0%</span>
+                        </div>
                     </div>
                     <div class="modal-update-kaki">
                         <button id="tombolBatalUpdate" type="button" class="tombol-update-batal">Nanti Saja</button>
+                        <button id="tombolSekunderUpdate" type="button" class="tombol-update-sekunder" style="display:none">&#9889; Lanjut Sementara</button>
                         <button id="tombolAksiUpdate" type="button" class="tombol-update-unduh">&#128229; Perbarui Sekarang</button>
                     </div>
                 </div>

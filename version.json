@@ -1,10 +1,17 @@
 {
-  "timestamp": 1792898218434,
+  "timestamp": 1792899981858,
   "build": 93,
-  "pesan": "Pembaruan visual logo judul: pendaran aura nebula lembut zamrud yang bersih dan tajam tanpa bayangan teks ganda.",
+  "pesan": "Fitur auto-update cerdas: opsi otomatis unduh & instal ulang APK / PC jika pembaruan mempengaruhi struktur aplikasi.",
+  "perlu_instal_ulang": true,
+  "min_shell_build": 93,
+  "url_apk": "https://github.com/Nakenzo/Soul-Ascendant/releases/latest/download/Soul-Ascendant.apk",
+  "url_pc": "https://github.com/Nakenzo/Soul-Ascendant/releases/latest",
+  "pesan_instal_ulang": "Pembaruan ini mencakup pembaruan loading screen & struktur antarmuka baru. Pasang ulang APK / aplikasi terbaru agar tampilan baru aktif maksimal.",
   "patch_files": [
     "core.js",
     "save.js",
+    "settings.js",
+    "akun-konfig.js",
     "akun.js",
     "akun-ui.js",
     "audio.js",
@@ -32,7 +39,8 @@
     "admin-konfig.js",
     "admin-akun.js",
     "style.css",
-    "settings.css"
+    "settings.css",
+    "updater.css"
   ],
-  "tanggal": "2026-10-25T03:16:58.434Z"
+  "tanggal": "2026-10-25T03:46:21.858Z"
 }

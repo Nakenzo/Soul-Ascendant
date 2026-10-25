@@ -65,21 +65,32 @@
 
     layar.classList.add("siap-tekan");
     siapDitekan = true;
+
+    setTimeout(function () {
+      if (!sedangMenutup) aktifkanTransisiLogo();
+    }, 6000);
   }
 
   function pasangInteraksiLayar() {
     const layar = document.getElementById("layarLoadingUpdate");
     if (!layar) return;
     function tanganiSentuhan(e) {
-      if (!siapDitekan || sedangMenutup) return;
+      if (sedangMenutup) return;
       aktifkanTransisiLogo();
     }
     layar.addEventListener("click", tanganiSentuhan);
     layar.addEventListener("touchstart", function (e) {
-      if (!siapDitekan || sedangMenutup) return;
+      if (sedangMenutup) return;
       try { e.preventDefault(); } catch (err) {}
       aktifkanTransisiLogo();
     }, { passive: false });
+
+    setTimeout(function () {
+      const adaBar = document.getElementById("updateProgressBar");
+      if (!adaBar && !sedangMenutup) {
+        aktifkanTransisiLogo();
+      }
+    }, 500);
   }
 
   if (document.readyState === "loading") {
