@@ -457,7 +457,9 @@ function bossSlam(e, fase) {
 }
 
 function applyDamageMusuh(e, dmg, elemenSerangan) {
-  const total = e.bos ? dmg * (e.vulnKali || 1) : dmg;
+  let kali = e.bos ? (e.vulnKali || 1) : 1;
+  if ((e.armorBreak || 0) > 0) kali *= 1.35;
+  const total = Math.round(dmg * kali);
   e.hp -= total;
   if (elemenSerangan !== "dot" && e.hp > 0) {
     prosesReaksiElemen(e, elemenSerangan, total);
@@ -490,7 +492,7 @@ function triggerReaksiVfx(anim, x, y) {
   } else if (k === "overload") {
     window.vfx.ledakan(x, y, "#ff5722", 35);
     window.vfx.spawn("overload_zap", x, y, { warna: "#facc15", jumlah: 25, speed: 300, size: 14 });
-  } else if (k === "melt") {
+  } else if (k === "melt" || k === "termoshock") {
     window.vfx.spawn("melt_fire", x, y, { warna: "#f43f5e", jumlah: 25, speed: 220, size: 15 });
     window.vfx.es(x, y, 22);
   } else if (k === "superconduct") {
@@ -525,11 +527,11 @@ function triggerReaksiVfx(anim, x, y) {
     window.vfx.spawn("sandstorm", x, y, { warna: "#f59e0b", jumlah: 35, speed: 240, size: 15, drag: 0.92 });
   } else if (k === "bleeding") {
     window.vfx.sabetan(x, y, Math.PI / 4, "#ef4444", 28);
-  } else if (k === "void_corrosion" || k === "volt_corrosion" || k === "frost_corrosion" || k === "plague_corrosion") {
+  } else if (k === "void_corrosion" || k === "volt_corrosion" || k === "frost_corrosion" || k === "plague_corrosion" || k === "poisoned") {
     window.vfx.voidSparks(x, y, 28);
     if (k === "volt_corrosion") window.vfx.spawn("volt", x, y, { warna: "#facc15", jumlah: 20, speed: 250, size: 13 });
     if (k === "frost_corrosion") window.vfx.es(x, y, 20);
-    if (k === "plague_corrosion") window.vfx.spawn("plague", x, y, { warna: "#22c55e", jumlah: 22, speed: 200, size: 14 });
+    if (k === "plague_corrosion" || k === "poisoned") window.vfx.spawn("plague", x, y, { warna: "#22c55e", jumlah: 22, speed: 200, size: 14 });
   } else if (k === "catalyze") {
     window.vfx.spawn("cat_nature", x, y, { warna: "#a3e635", jumlah: 25, speed: 240, size: 15 });
     window.vfx.spawn("cat_volt", x, y, { warna: "#facc15", jumlah: 20, speed: 280, size: 13 });
@@ -576,15 +578,13 @@ function picuEfekElemen(e, tipe, dmgAwal, emKali) {
     triggerReaksiVfx("crystallize", e.x, e.y);
     if (e.hp <= 0) killEnemy(e);
   } else if (tipe === "nature") {
-    const thornDmg = Math.max(5, Math.round(dmg * 0.75 * em));
-    e.hp -= thornDmg;
-    e.freeze = Math.max(e.freeze || 0, 1.5);
-    spawnDamage(e.x, e.y - e.r - 28, "THORN", "#22c55e");
+    const thornDmg = Math.max(4, Math.round(8 * em));
+    e.thorny = { timer: 0, tick: 1.0, durasi: 4.0, dmg: thornDmg };
+    spawnDamage(e.x, e.y - e.r - 28, "THORNY!", "#22c55e");
     spawnParticles(e.x, e.y, "#22c55e", 16);
     rings.push({ x: e.x, y: e.y, r: 8, maxR: 55, life: 0.3, t: 0, warna: "#22c55e" });
     if (typeof spawnAnimasiReaksi === "function") spawnAnimasiReaksi("thorn", e.x, e.y);
     triggerReaksiVfx("thorn", e.x, e.y);
-    if (e.hp <= 0) killEnemy(e);
   }
 }
 
@@ -648,6 +648,14 @@ function prosesReaksiElemen(e, elemenSerangan, dmgAwal) {
       spawnParticles(e.x, e.y, "#facc15", 22);
       spawnParticles(e.x, e.y, "#eab308", 14);
       rings.push({ x: e.x, y: e.y, r: 12, maxR: 110, life: 0.35, t: 0, warna: "#facc15" });
+    } else if (e.thorny) {
+      e.thorny = null;
+      e.gaugeElemen = null;
+      const bleedDmg = Math.max(4, Math.round((dmgAwal * 0.35 + 6) * emKali));
+      e.bleeding = { timer: 0, tick: 0.35, durasi: 4.0, dmg: bleedDmg };
+      reaksiFisik = { nama: "BLEEDING!", warna: "#ef4444", anim: "bleeding" };
+      spawnParticles(e.x, e.y, "#ef4444", 20);
+      rings.push({ x: e.x, y: e.y, r: 10, maxR: 80, life: 0.35, t: 0, warna: "#ef4444" });
     }
 
     if (reaksiFisik) {
@@ -666,8 +674,8 @@ function prosesReaksiElemen(e, elemenSerangan, dmgAwal) {
     }
 
     const musuhEl = (e.element || (TIPE_MUSUH[e.tipe] ? TIPE_MUSUH[e.tipe].element : "fisik") || "fisik").toLowerCase();
-    if (musuhEl === "angin" && (e.reaksiCooldown || 0) <= 0) {
-      eksekusiKombinasiElemen("fisik", "angin", e, dmgAwal, emKali);
+    if ((musuhEl === "angin" || musuhEl === "nihil") && (e.reaksiCooldown || 0) <= 0) {
+      eksekusiKombinasiElemen("fisik", musuhEl, e, dmgAwal, emKali);
     }
     return;
   }
@@ -678,6 +686,40 @@ function prosesReaksiElemen(e, elemenSerangan, dmgAwal) {
   else if (atkEl === "fire" || atkEl === "bara") atkEl = "api";
   else if (atkEl === "earth" || atkEl === "geo") atkEl = "tanah";
   else if (atkEl === "daun" || atkEl === "dendro") atkEl = "nature";
+  else if (atkEl === "void" || atkEl === "hampa") atkEl = "nihil";
+
+  if (atkEl === "api" && (e.freeze || 0) > 0) {
+    e.freeze = 0;
+    e.gaugeElemen = null;
+    const bonusDmg = Math.round(dmgAwal * 2.0 * emKali);
+    e.hp -= bonusDmg;
+    e.reaksiCooldown = 0.5;
+    spawnDamage(e.x, e.y - e.r - 28, "MELT x2.0", "#f43f5e");
+    spawnParticles(e.x, e.y, "#f43f5e", 22);
+    rings.push({ x: e.x, y: e.y, r: 12, maxR: 90, life: 0.35, t: 0, warna: "#f43f5e" });
+    if (typeof spawnAnimasiReaksi === "function") spawnAnimasiReaksi("melt", e.x, e.y);
+    triggerReaksiVfx("melt", e.x, e.y);
+    if (typeof sfxBurn === "function") sfxBurn();
+    if (e.hp <= 0) killEnemy(e);
+    return;
+  }
+
+  if (atkEl === "nihil" && e.thorny) {
+    e.thorny = null;
+    e.gaugeElemen = null;
+    e.armorBreak = 4.0;
+    const pDmg = Math.max(4, Math.round(dmgAwal * 0.7 * emKali));
+    e.korosi = { timer: 0, tick: 0.4, durasi: 4.0, dmg: pDmg };
+    e.reaksiCooldown = 0.5;
+    spawnDamage(e.x, e.y - e.r - 28, "POISONED!", "#22c55e");
+    spawnParticles(e.x, e.y, "#22c55e", 18);
+    spawnParticles(e.x, e.y, "#a855f7", 12);
+    rings.push({ x: e.x, y: e.y, r: 12, maxR: 90, life: 0.35, t: 0, warna: "#22c55e" });
+    if (typeof spawnAnimasiReaksi === "function") spawnAnimasiReaksi("plague_corrosion", e.x, e.y);
+    triggerReaksiVfx("plague_corrosion", e.x, e.y);
+    if (e.hp <= 0) killEnemy(e);
+    return;
+  }
 
   const gTipe = e.gaugeElemen && e.gaugeElemen.nilai > 0 ? e.gaugeElemen.tipe : null;
   const gStandard = gTipe === "ice" ? "es" : gTipe;
@@ -784,8 +826,8 @@ function eksekusiKombinasiElemen(atkEl, musuhEl, e, dmgAwal, emKali) {
   } else if ((atkEl === "api" && musuhEl === "es") || (atkEl === "es" && musuhEl === "api")) {
     const bonusDmg = Math.round(dmgAwal * 1.0 * emKali);
     e.hp -= bonusDmg;
-    reaksi = { nama: "MELT x2.0", warna: "#f43f5e", anim: "melt" };
-    spawnParticles(e.x, e.y, "#f43f5e", 18);
+    reaksi = { nama: "TERMO SHOCK", warna: "#f97316", anim: "melt" };
+    spawnParticles(e.x, e.y, "#f97316", 18);
   } else if (
     (atkEl === "api" && (musuhEl === "petir" || musuhEl === "listrik")) ||
     ((atkEl === "petir" || atkEl === "listrik") && musuhEl === "api")
@@ -2572,6 +2614,7 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
     e.crystalize = Math.max(0, (e.crystalize || 0) - dt);
     e.contactCd = Math.max(0, (e.contactCd || 0) - dt);
     e.reaksiCooldown = Math.max(0, (e.reaksiCooldown || 0) - dt);
+    e.armorBreak = Math.max(0, (e.armorBreak || 0) - dt);
 
     if (e.korosi) {
       e.korosi.timer += dt;
@@ -2623,12 +2666,29 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
       }
     }
 
+    if (e.thorny) {
+      e.thorny.timer += dt;
+      while (e.thorny.timer >= e.thorny.tick) {
+        e.thorny.timer -= e.thorny.tick;
+        const dmgThorn = applyDamageMusuh(e, e.thorny.dmg, "dot");
+        e.hitFlash = 0.1;
+        spawnDamage(e.x, e.y - e.r - 18, dmgThorn, "#22c55e");
+        spawnParticles(e.x, e.y, "#22c55e", 4);
+      }
+      e.thorny.durasi -= dt;
+      if (e.thorny.durasi <= 0) e.thorny = null;
+      if (e.hp <= 0) {
+        killEnemy(e);
+        continue;
+      }
+    }
+
     if (e.bosKematian) {
       updateBosKematian(e, dt);
       continue;
     }
 
-    if (e.freeze <= 0 && (e.paralyze || 0) <= 0) {
+    if (e.freeze <= 0 && (e.paralyze || 0) <= 0 && !e.thorny) {
       const angle = Math.atan2(player.y - e.y, player.x - e.x);
       let spd = e.speed;
 

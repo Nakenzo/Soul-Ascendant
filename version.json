@@ -1,7 +1,7 @@
 {
-  "timestamp": 1792974212834,
-  "build": 114,
-  "pesan": "Visual Efek: perbarui VFX skill 3 Ice Age Kenzro ke gaya pixel-art terperinci (keping salju bercabang, kilauan kristal es, dan debu blizzard).",
+  "timestamp": 1792975200000,
+  "build": 115,
+  "pesan": "Reaksi Elemen: Reaksi baru Termoshock (Api+Es), Poisoned (Nihil+Thorny), Melt bersyarat Freeze, dan Condition Thorny DoT akar.",
   "perlu_instal_ulang": false,
   "min_shell_build": 93,
   "url_apk": "https://github.com/Nakenzo/Soul-Ascendant/releases/latest/download/Soul-Ascendant.apk",

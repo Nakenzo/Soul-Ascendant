@@ -1364,6 +1364,16 @@ function draw() {
       ctx.stroke();
     }
 
+    if (e.thorny) {
+      ctx.fillStyle = "rgba(34, 197, 94, 0.28)";
+      ctx.beginPath();
+      ctx.arc(e.x, e.y, e.r + 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#22c55e";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
     if ((e.hexMark || 0) > 0) {
       const hmY = e.y - e.r - 20;
       const berkedip = 0.7 + 0.3 * Math.sin(performance.now() / 60);
@@ -5588,6 +5598,8 @@ function getReactionSpriteFrames(jenis) {
   let k = String(jenis || "vortex").toLowerCase();
   if (k === "flame_corrosion") k = "ignis";
   if (k === "shatter") k = "shatters";
+  if (k === "termoshock" || k === "termo_shock") k = "melt";
+  if (k === "poisoned" || k === "poison") k = "plague_corrosion";
   if (!CACHE_REAKSI_SPRITES[k]) {
     CACHE_REAKSI_SPRITES[k] = bakeReactionSpriteFrames(k, 128, 128);
   }
