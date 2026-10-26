@@ -391,11 +391,16 @@ function sfxSoul() {
 }
 
 function sfxJurus() {
-
   if (sfxFileCrop("jurus-kenzro", 0.15)) return;
   sfxTone({ freq: 480, endFreq: 920, dur: 0.2, type: "sawtooth", vol: 0.17 });
   sfxTone({ freq: 240, endFreq: 640, dur: 0.26, type: "square", vol: 0.12, delay: 0.06 });
   sfxNoise({ dur: 0.28, vol: 0.16, fType: "bandpass", fFreq: 700, fEnd: 2400 });
+}
+
+function sfxSkill3Kenzro() {
+  if (sfxFile("skill-3-kenzro")) return;
+  sfxJurus();
+  sfxBeku();
 }
 
 function sfxPanahRaksasa() {

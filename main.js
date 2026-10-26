@@ -157,6 +157,7 @@ function mulai() {
     { kunci: "jurus-vender", src: "assets/sfx/vender/jurus-vender.mp3", vol: 0.55 },
     { kunci: "jurus-vender-api", src: "assets/sfx/vender/jurus-vender-api.mp3", vol: 1.0 },
     { kunci: "jurus-kenzro", src: "assets/sfx/kenzro/jurus-kenzro.mp3" },
+    { kunci: "skill-3-kenzro", src: "assets/sfx/kenzro/skill-3-kenzro.mp3", vol: 0.95 },
     { kunci: "panah-beku", src: "assets/sfx/kenzro/panah-beku.mp3" },
     { kunci: "ultimate-vender", src: "assets/sfx/vender/ultimate-vender.mp3", vol: 0.55 },
     { kunci: "ultimate-vender-api", src: "assets/sfx/vender/ultimate-vender-api.mp3", vol: 1.0 },

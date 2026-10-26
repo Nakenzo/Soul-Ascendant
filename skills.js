@@ -435,8 +435,11 @@ function jurusUltimateVoiz() {
 }
 
 function skillKenzroIceAge() {
-  sfxJurus();
-  sfxBeku();
+  if (typeof sfxSkill3Kenzro === "function") sfxSkill3Kenzro();
+  else {
+    sfxJurus();
+    sfxBeku();
+  }
   addFlash("rgba(125, 211, 252, 0.45)", 0.6, 0.4);
   shake = 0.45;
   spawnParticles(player.x, player.y, "#7dd3fc", 32);
