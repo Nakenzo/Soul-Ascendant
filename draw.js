@@ -1087,41 +1087,162 @@ function draw() {
   ctx.restore();
   ctx.globalAlpha = 1;
 
+  function gambarPixelSnowflake(c, px, py, ukuran, rot, alpha) {
+    c.save();
+    c.translate(Math.round(px), Math.round(py));
+    c.rotate(rot);
+    c.fillStyle = "rgba(224, 242, 254, " + alpha + ")";
+    c.fillRect(-1, -1, 3, 3);
+    const step = Math.max(2, Math.round(ukuran));
+    for (let a = 0; a < 6; a++) {
+      const ang = a * (Math.PI / 3);
+      const cos = Math.cos(ang), sin = Math.sin(ang);
+      for (let d = 2; d <= step * 4; d += 2) {
+        c.fillRect(Math.round(cos * d) - 1, Math.round(sin * d) - 1, 2, 2);
+      }
+      const branchD = Math.round(step * 2.2);
+      const perpCos = -sin, perpSin = cos;
+      c.fillStyle = "rgba(125, 211, 252, " + (alpha * 0.9) + ")";
+      c.fillRect(Math.round(cos * branchD + perpCos * 3) - 1, Math.round(sin * branchD + perpSin * 3) - 1, 2, 2);
+      c.fillRect(Math.round(cos * branchD - perpCos * 3) - 1, Math.round(sin * branchD - perpSin * 3) - 1, 2, 2);
+      c.fillStyle = "rgba(224, 242, 254, " + alpha + ")";
+    }
+    c.fillStyle = "rgba(255, 255, 255, " + Math.min(1, alpha * 1.25) + ")";
+    c.fillRect(0, 0, 1, 1);
+    c.restore();
+  }
+
+  function gambarPixelGlint(c, px, py, radius, alpha) {
+    c.save();
+    c.translate(Math.round(px), Math.round(py));
+    const r = Math.max(2, Math.round(radius));
+    c.fillStyle = "rgba(56, 189, 248, " + (alpha * 0.45) + ")";
+    c.fillRect(-r - 1, 0, (r * 2) + 3, 1);
+    c.fillRect(0, -r - 1, 1, (r * 2) + 3);
+    c.fillStyle = "rgba(186, 230, 253, " + (alpha * 0.85) + ")";
+    c.fillRect(-r, 0, (r * 2) + 1, 1);
+    c.fillRect(0, -r, 1, (r * 2) + 1);
+    c.fillStyle = "rgba(255, 255, 255, " + alpha + ")";
+    c.fillRect(-1, -1, 3, 3);
+    c.restore();
+  }
+
+  function gambarPixelKristal(c, px, py, size, rot, alpha) {
+    c.save();
+    c.translate(Math.round(px), Math.round(py));
+    c.rotate(rot);
+    const s = Math.max(2, Math.round(size));
+    c.fillStyle = "rgba(56, 189, 248, " + (alpha * 0.6) + ")";
+    c.fillRect(-s, -s, s * 2, s * 2);
+    c.fillStyle = "rgba(186, 230, 253, " + (alpha * 0.85) + ")";
+    c.fillRect(-s + 1, -s + 1, (s - 1) * 2, (s - 1) * 2);
+    c.fillStyle = "rgba(255, 255, 255, " + alpha + ")";
+    c.fillRect(-s + 1, -s + 1, s, s);
+    c.restore();
+  }
+
   for (const ia of iceAges) {
     const sisaWaktu = Math.max(0, ia.life - ia.t);
     const fadeIn = Math.min(1, ia.t / 0.5);
     const fadeOut = Math.max(0, Math.min(1, sisaWaktu / 3.0));
     const fade = fadeIn * fadeOut;
     const pulsa = 1 + 0.02 * Math.sin(performance.now() / 150);
+    const nowS = performance.now() / 1000;
+
     ctx.save();
     ctx.globalCompositeOperation = "lighter";
-    const gIa = ctx.createRadialGradient(ia.x, ia.y, 20, ia.x, ia.y, ia.radius * pulsa);
-    gIa.addColorStop(0, "rgba(224, 242, 254, " + (0.32 * fade) + ")");
-    gIa.addColorStop(0.5, "rgba(56, 189, 248, " + (0.22 * fade) + ")");
-    gIa.addColorStop(0.85, "rgba(2, 132, 199, " + (0.15 * fade) + ")");
+
+    const gIa = ctx.createRadialGradient(ia.x, ia.y, 10, ia.x, ia.y, ia.radius * pulsa);
+    gIa.addColorStop(0, "rgba(224, 242, 254, " + (0.35 * fade) + ")");
+    gIa.addColorStop(0.35, "rgba(56, 189, 248, " + (0.22 * fade) + ")");
+    gIa.addColorStop(0.75, "rgba(2, 132, 199, " + (0.12 * fade) + ")");
     gIa.addColorStop(1, "rgba(56, 189, 248, 0)");
     ctx.fillStyle = gIa;
     ctx.beginPath();
     ctx.arc(ia.x, ia.y, ia.radius * pulsa, 0, Math.PI * 2);
     ctx.fill();
 
-    ctx.strokeStyle = "rgba(125, 211, 252, " + (0.65 * fade) + ")";
-    ctx.lineWidth = 3.5;
+    const coreFlare = ctx.createRadialGradient(ia.x, ia.y, 0, ia.x, ia.y, 90);
+    coreFlare.addColorStop(0, "rgba(255, 255, 255, " + (0.45 * fade) + ")");
+    coreFlare.addColorStop(0.4, "rgba(125, 211, 252, " + (0.30 * fade) + ")");
+    coreFlare.addColorStop(1, "rgba(14, 165, 233, 0)");
+    ctx.fillStyle = coreFlare;
     ctx.beginPath();
-    ctx.arc(ia.x, ia.y, ia.radius * pulsa, 0, Math.PI * 2);
-    ctx.stroke();
+    ctx.arc(ia.x, ia.y, 90, 0, Math.PI * 2);
+    ctx.fill();
 
-    ctx.save();
-    ctx.translate(ia.x, ia.y);
-    ctx.rotate(performance.now() / 2500);
-    ctx.strokeStyle = "rgba(191, 233, 255, " + (0.45 * fade) + ")";
-    ctx.lineWidth = 2;
-    ctx.setLineDash([16, 12, 6, 12]);
-    ctx.beginPath();
-    ctx.arc(0, 0, ia.radius * 0.72, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.restore();
+    const segmen = 48;
+    const radLuar = ia.radius * pulsa;
+    ctx.fillStyle = "rgba(125, 211, 252, " + (0.75 * fade) + ")";
+    for (let s = 0; s < segmen; s++) {
+      const aSeg = (s / segmen) * Math.PI * 2 + (nowS * 0.08);
+      const notch = (s % 4 === 0) ? 6 : 0;
+      const px = ia.x + Math.cos(aSeg) * (radLuar + notch);
+      const py = ia.y + Math.sin(aSeg) * (radLuar + notch);
+      ctx.fillRect(Math.round(px) - 2, Math.round(py) - 2, 4, 4);
+    }
+
+    const radDalam = ia.radius * 0.70;
+    ctx.fillStyle = "rgba(186, 230, 253, " + (0.55 * fade) + ")";
+    const segmenDalam = 36;
+    for (let s = 0; s < segmenDalam; s++) {
+      const aSeg = (s / segmenDalam) * Math.PI * 2 - (nowS * 0.12);
+      if (s % 2 === 0) {
+        const px = ia.x + Math.cos(aSeg) * radDalam;
+        const py = ia.y + Math.sin(aSeg) * radDalam;
+        ctx.fillRect(Math.round(px) - 1.5, Math.round(py) - 1.5, 3, 3);
+      }
+    }
+
+    if (ia.frostDots) {
+      for (let i = 0; i < ia.frostDots.length; i++) {
+        const d = ia.frostDots[i];
+        const aKini = d.a + nowS * d.spd;
+        const rKini = d.r + Math.sin(nowS * 2 + i) * 6;
+        const px = ia.x + Math.cos(aKini) * rKini;
+        const py = ia.y + Math.sin(aKini) * rKini;
+        ctx.fillStyle = (i % 2 === 0 ? "rgba(224, 242, 254, " : "rgba(125, 211, 252, ") + (d.alpha * fade) + ")";
+        ctx.fillRect(Math.round(px), Math.round(py), d.size, d.size);
+      }
+    }
+
+    if (ia.crystals) {
+      for (let i = 0; i < ia.crystals.length; i++) {
+        const cr = ia.crystals[i];
+        const aKini = cr.a + nowS * cr.spd;
+        const rKini = cr.r + Math.cos(nowS * 1.5 + i) * 8;
+        const px = ia.x + Math.cos(aKini) * rKini;
+        const py = ia.y + Math.sin(aKini) * rKini;
+        const rot = cr.rot + nowS * cr.rotSpd;
+        gambarPixelKristal(ctx, px, py, cr.size, rot, 0.85 * fade);
+      }
+    }
+
+    if (ia.snowflakes) {
+      for (let i = 0; i < ia.snowflakes.length; i++) {
+        const sf = ia.snowflakes[i];
+        const aKini = sf.a + nowS * sf.spd;
+        const rKini = sf.r + Math.sin(nowS * 1.2 + sf.wobble) * 10;
+        const px = ia.x + Math.cos(aKini) * rKini;
+        const py = ia.y + Math.sin(aKini) * rKini;
+        const rot = sf.rot + nowS * sf.rotSpd;
+        gambarPixelSnowflake(ctx, px, py, sf.ukuran, rot, 0.9 * fade);
+      }
+    }
+
+    if (ia.sparkles) {
+      for (let i = 0; i < ia.sparkles.length; i++) {
+        const sp = ia.sparkles[i];
+        const blink = Math.sin(nowS * sp.freq + sp.fase);
+        if (blink > 0.1) {
+          const spAlpha = blink * fade;
+          const spR = sp.maxR * blink;
+          const px = ia.x + Math.cos(sp.a) * sp.r;
+          const py = ia.y + Math.sin(sp.a) * sp.r;
+          gambarPixelGlint(ctx, px, py, spR, spAlpha);
+        }
+      }
+    }
 
     ctx.restore();
   }

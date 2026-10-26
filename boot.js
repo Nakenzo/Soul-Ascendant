@@ -51,7 +51,7 @@
     "admin-akun.js"
   ];
 
-  const BUILD_SEKARANG = 113;
+  const BUILD_SEKARANG = 114;
   let petaPatchAktif = {};
 
   let bootErrorCount = 0;

@@ -446,6 +446,53 @@ function skillKenzroIceAge() {
   spawnParticles(player.x, player.y, "#ffffff", 16);
   rings.push({ x: player.x, y: player.y, r: 24, maxR: 440, life: 0.5, t: 0, warna: "#7dd3fc" });
 
+  const snowflakes = [];
+  for (let i = 0; i < 16; i++) {
+    snowflakes.push({
+      r: 30 + Math.random() * 370,
+      a: Math.random() * Math.PI * 2,
+      spd: (0.12 + Math.random() * 0.28) * (Math.random() < 0.5 ? 1 : -1),
+      ukuran: 3 + Math.random() * 3,
+      rot: Math.random() * Math.PI * 2,
+      rotSpd: (0.3 + Math.random() * 0.7) * (Math.random() < 0.5 ? 1 : -1),
+      wobble: Math.random() * Math.PI * 2
+    });
+  }
+
+  const crystals = [];
+  for (let i = 0; i < 24; i++) {
+    crystals.push({
+      r: 40 + Math.random() * 360,
+      a: Math.random() * Math.PI * 2,
+      spd: (0.18 + Math.random() * 0.35) * (Math.random() < 0.5 ? 1 : -1),
+      size: 2 + Math.random() * 2.5,
+      rot: Math.random() * Math.PI * 2,
+      rotSpd: 0.4 + Math.random() * 0.8
+    });
+  }
+
+  const sparkles = [];
+  for (let i = 0; i < 22; i++) {
+    sparkles.push({
+      r: 20 + Math.random() * 380,
+      a: Math.random() * Math.PI * 2,
+      freq: 3 + Math.random() * 4,
+      fase: Math.random() * Math.PI * 2,
+      maxR: 4 + Math.random() * 5
+    });
+  }
+
+  const frostDots = [];
+  for (let i = 0; i < 36; i++) {
+    frostDots.push({
+      r: 10 + Math.random() * 400,
+      a: Math.random() * Math.PI * 2,
+      spd: (0.25 + Math.random() * 0.45) * (Math.random() < 0.5 ? 1 : -1),
+      size: Math.random() < 0.6 ? 2 : 3,
+      alpha: 0.4 + Math.random() * 0.5
+    });
+  }
+
   iceAges.push({
     x: player.x,
     y: player.y,
@@ -453,7 +500,11 @@ function skillKenzroIceAge() {
     t: 0,
     life: 10.0,
     tick: 0.35,
-    pulse: 0
+    pulse: 0,
+    snowflakes: snowflakes,
+    crystals: crystals,
+    sparkles: sparkles,
+    frostDots: frostDots
   });
 }
 

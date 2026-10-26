@@ -1,7 +1,7 @@
 {
-  "timestamp": 1792973768175,
-  "build": 113,
-  "pesan": "Audio Kenzro: pasang sfx aset audio skill-3-kenzro.mp3 untuk skill 3 Ice Age.",
+  "timestamp": 1792974212834,
+  "build": 114,
+  "pesan": "Visual Efek: perbarui VFX skill 3 Ice Age Kenzro ke gaya pixel-art terperinci (keping salju bercabang, kilauan kristal es, dan debu blizzard).",
   "perlu_instal_ulang": false,
   "min_shell_build": 93,
   "url_apk": "https://github.com/Nakenzo/Soul-Ascendant/releases/latest/download/Soul-Ascendant.apk",
@@ -42,5 +42,5 @@
     "settings.css",
     "updater.css"
   ],
-  "tanggal": "2026-10-26T00:16:08.176Z"
+  "tanggal": "2026-10-26T00:23:32.834Z"
 }
