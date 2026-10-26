@@ -1,7 +1,7 @@
 {
-  "timestamp": 1792971108902,
-  "build": 111,
-  "pesan": "Perbaikan Input: atasi bug karakter bergerak sendiri saat lag dengan penanganan blur, visibility, dan pembersihan input otomatis.",
+  "timestamp": 1792973129218,
+  "build": 112,
+  "pesan": "Audio: samakan sfx efek burn / TERBAKAR dengan sfx elemen api ultimate Vender.",
   "perlu_instal_ulang": false,
   "min_shell_build": 93,
   "url_apk": "https://github.com/Nakenzo/Soul-Ascendant/releases/latest/download/Soul-Ascendant.apk",
@@ -42,5 +42,5 @@
     "settings.css",
     "updater.css"
   ],
-  "tanggal": "2026-10-25T23:31:48.902Z"
+  "tanggal": "2026-10-26T00:05:29.218Z"
 }

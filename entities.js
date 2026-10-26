@@ -549,7 +549,7 @@ function picuEfekElemen(e, tipe, dmgAwal, emKali) {
     rings.push({ x: e.x, y: e.y, r: 10, maxR: 60, life: 0.3, t: 0, warna: "#ff5722" });
     if (typeof spawnAnimasiReaksi === "function") spawnAnimasiReaksi("combustion", e.x, e.y);
     triggerReaksiVfx("combustion", e.x, e.y);
-    if (typeof sfxTebasan === "function") sfxTebasan();
+    if (typeof sfxBurn === "function") sfxBurn();
   } else if (tipe === "ice") {
     e.freeze = Math.max(e.freeze || 0, 2.5);
     spawnDamage(e.x, e.y - e.r - 28, "FREEZE!", "#38bdf8");
@@ -769,6 +769,7 @@ function eksekusiKombinasiElemen(atkEl, musuhEl, e, dmgAwal, emKali) {
     reaksi = { nama: "COMBUSTION!", warna: "#ff5722", anim: "combustion" };
     spawnParticles(e.x, e.y, "#ff4500", 18);
     rings.push({ x: e.x, y: e.y, r: 12, maxR: 100, life: 0.4, t: 0 });
+    if (typeof sfxBurn === "function") sfxBurn();
   } else if ((atkEl === "nature" && musuhEl === "es") || (atkEl === "es" && musuhEl === "nature")) {
     e.freeze = Math.max(e.freeze || 0, 1.5);
     const bonusDmg = Math.round(dmgAwal * 0.8 * emKali);
@@ -2283,6 +2284,7 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
         if (sl.burst && e.hp > 0) {
           e.burn = { durasi: player.burnDurasi || 3, tick: 0.25, timer: 0, dmg: 2 };
           spawnDamage(e.x, e.y - e.r - 56, "TERBAKAR", "#ff8c3f");
+          if (typeof sfxBurn === "function") sfxBurn();
         }
         if (e.bos) {
           // Bos berat: tidak terpental, tapi tetap bisa terbakar / knockback kecil.
@@ -2469,6 +2471,7 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
         e.burn = { durasi: player.burnDurasi || 3, tick: 0.25, timer: 0, dmg: 1 };
         spawnDamage(e.x, e.y - e.r - 56, "TERBAKAR", "#ff8c3f");
         spawnParticles(e.x, e.y, "#ff8c3f", 6);
+        if (typeof sfxBurn === "function") sfxBurn();
       }
     }
     if (fl.t >= fl.life) fires.splice(i, 1);

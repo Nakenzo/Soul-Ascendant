@@ -350,10 +350,19 @@ function sfxKena() {
 }
 
 function sfxBeku() {
-
   if (sfxFile("beku")) return;
   sfxNoise({ dur: 0.14, vol: 0.12, fType: "highpass", fFreq: 4000 });
   sfxTone({ freq: 1400, endFreq: 2200, dur: 0.12, type: "sine", vol: 0.15 });
+}
+
+let _terakhirSfxBurn = 0;
+function sfxBurn() {
+  const t = performance.now();
+  if (t - _terakhirSfxBurn < 90) return;
+  _terakhirSfxBurn = t;
+  if (!sfxFile("ultimate-vender-api")) {
+    sfxApiLapis("jurus-vender-api");
+  }
 }
 
 function sfxMatMusuh() {
