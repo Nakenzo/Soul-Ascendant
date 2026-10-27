@@ -1762,17 +1762,29 @@ function draw() {
     }
 
     const multW = sl.comboStep === 3 ? 1.45 : (sl.comboStep === 2 ? 1.15 : 1);
-    sabit(22 * multW, "rgba(255, 70, 20, 0.55)");
+    const isIgnite = sl.ignite || (player.igniteBuff || 0) > 0 || sl.element === "api";
 
-    sabit(13 * multW, "rgba(255, 150, 40, 0.95)");
+    if (isIgnite) {
+      sabit(22 * multW, "rgba(255, 70, 20, 0.55)");
+      sabit(13 * multW, "rgba(255, 150, 40, 0.95)");
+      sabit(6.5 * multW, "#ffd75f");
 
-    sabit(6.5 * multW, "#ffd75f");
+      const tipA = sl.t < half ? a2 : a1;
+      ctx.fillStyle = "#fff7cc";
+      ctx.beginPath();
+      ctx.arc(sl.x + Math.cos(tipA) * r, sl.y + Math.sin(tipA) * r, 4, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      sabit(22 * multW, "rgba(148, 163, 184, 0.45)");
+      sabit(13 * multW, "rgba(203, 213, 225, 0.85)");
+      sabit(6.5 * multW, "#f8fafc");
 
-    const tipA = sl.t < half ? a2 : a1;
-    ctx.fillStyle = "#fff7cc";
-    ctx.beginPath();
-    ctx.arc(sl.x + Math.cos(tipA) * r, sl.y + Math.sin(tipA) * r, 4, 0, Math.PI * 2);
-    ctx.fill();
+      const tipA = sl.t < half ? a2 : a1;
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.arc(sl.x + Math.cos(tipA) * r, sl.y + Math.sin(tipA) * r, 4, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
 
   for (const b of bullets) {

@@ -226,11 +226,17 @@ function slashSwing() {
     element: elInf || (typeof elemenSeranganBiasa === "function" ? elemenSeranganBiasa() : "fisik")
   });
 
-  const warnaSlashPartikel = elInf ? (typeof warnaElemenDamage === "function" ? warnaElemenDamage(elInf) : "#ff8c3f") : "#ffffff";
-  const jumlahPartikel = step === 3 ? 12 : (elInf ? 10 : 6);
+  const isIgnite = (elInf === "api") || ((player.igniteBuff || 0) > 0);
+  const warnaSlashPartikel = isIgnite ? "#ff8c3f" : (elInf ? (typeof warnaElemenDamage === "function" ? warnaElemenDamage(elInf) : "#94a3b8") : "#94a3b8");
+  const jumlahPartikel = step === 3 ? 12 : (isIgnite ? 10 : 6);
   spawnParticles(ox, oy, warnaSlashPartikel, jumlahPartikel);
-  if (elInf === "api") spawnParticles(ox, oy, "#ffd23f", step === 3 ? 10 : 6);
-  else if (elInf === "es") spawnParticles(ox, oy, "#e0f2fe", step === 3 ? 10 : 6);
+  if (isIgnite) {
+    spawnParticles(ox, oy, "#ffd23f", step === 3 ? 10 : 6);
+  } else if (elInf === "es") {
+    spawnParticles(ox, oy, "#e0f2fe", step === 3 ? 10 : 6);
+  } else {
+    spawnParticles(ox, oy, "#e2e8f0", step === 3 ? 8 : 4);
+  }
 }
 
 function titikSpawnAman(r) {
@@ -459,6 +465,11 @@ function bossSlam(e, fase) {
 function applyDamageMusuh(e, dmg, elemenSerangan) {
   let kali = e.bos ? (e.vulnKali || 1) : 1;
   if ((e.armorBreak || 0) > 0) kali *= 1.35;
+  if (typeof player !== "undefined" && player && player.executionerDmg && player.executionerDmg > 0 && e.maxHp > 0) {
+    if (e.hp / e.maxHp <= 0.30) {
+      kali *= (1 + player.executionerDmg);
+    }
+  }
   const total = Math.round(dmg * kali);
   e.hp -= total;
   if (elemenSerangan !== "dot" && e.hp > 0) {
@@ -592,7 +603,8 @@ function prosesReaksiElemen(e, elemenSerangan, dmgAwal) {
   if (!e || e.hp <= 0) return;
 
   const rawAtk = String(elemenSerangan || (typeof elemenSeranganBiasa === "function" ? elemenSeranganBiasa() : "fisik")).toLowerCase().trim();
-  const emKali = typeof pengaliElement === "function" && typeof karakter !== "undefined" && karakter ? pengaliElement(karakter.kunci) : 1;
+  const emSurgeKali = 1 + (typeof player !== "undefined" && player && player.elementSurge ? player.elementSurge : 0);
+  const emKali = (typeof pengaliElement === "function" && typeof karakter !== "undefined" && karakter ? pengaliElement(karakter.kunci) : 1) * emSurgeKali;
 
   if (rawAtk === "fisik") {
     let reaksiFisik = null;
@@ -1465,6 +1477,7 @@ function prosesDropLootMonster(e) {
   const tipe = e.tipe || "biasa";
   const rCons = Math.random();
   const rMat = Math.random();
+  const rAsc = Math.random();
 
   let itemIdCons = null;
   let itemIdMat = null;
@@ -1472,21 +1485,31 @@ function prosesDropLootMonster(e) {
   if (tipe === "biasa") {
     if (rCons < 0.035) itemIdCons = "embun_vital";
     if (rMat < 0.35) itemIdMat = "gel_merah";
+    if (rAsc < 0.16) spawnItemDropFisik("bara_magma", 1, e.x, e.y);
   } else if (tipe === "cepet") {
     if (rCons < 0.035) itemIdCons = "tetesan_kelincahan";
     if (rMat < 0.35) itemIdMat = "gel_pendingin";
+    if (rAsc < 0.16) spawnItemDropFisik("kristal_es_abadi", 1, e.x, e.y);
+    else if (rAsc < 0.30) spawnItemDropFisik("esensi_badai", 1, e.x, e.y);
   } else if (tipe === "tank") {
     if (rCons < 0.030) itemIdCons = "elixir_ketahanan";
     if (rMat < 0.30) itemIdMat = "lendir_besi";
+    if (rAsc < 0.16) spawnItemDropFisik("batu_petir", 1, e.x, e.y);
   } else if (tipe === "jamur") {
     if (rCons < 0.035) itemIdCons = "ramuan_spora";
     if (rMat < 0.35) itemIdMat = "spora_hijau";
   } else if (tipe === "serigala") {
     if (rCons < 0.025) itemIdCons = "darah_serigala";
-    if (rMat < 0.30) itemIdMat = "taring_bayangan";
+    if (rMat < 0.30) itemIdMat = "taring_serigala_bayangan";
+    if (rAsc < 0.14) spawnItemDropFisik("taring_serigala_bayangan", 1, e.x, e.y);
   } else if (tipe === "semak") {
     if (rCons < 0.030) itemIdCons = "nektar_kuno";
     if (rMat < 0.30) itemIdMat = "serat_kayu_purba";
+    if (rAsc < 0.16) spawnItemDropFisik("serat_kuno", 1, e.x, e.y);
+  }
+
+  if (Math.random() < 0.28) {
+    spawnItemDropFisik("pecahan_jiwa", Math.random() < 0.3 ? 2 : 1, e.x, e.y);
   }
 
   if (itemIdCons) {
@@ -2336,7 +2359,8 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
           e.x += Math.cos(sl.angle) * 60;
           e.y += Math.sin(sl.angle) * 60;
         }
-        spawnParticles(e.x, e.y, "#ff8c3f", 8);
+        const isIgniteHit = sl.ignite || (player.igniteBuff || 0) > 0 || sl.element === "api";
+        spawnParticles(e.x, e.y, isIgniteHit ? "#ff8c3f" : "#cbd5e1", 8);
         if (e.hp <= 0) killEnemy(e);
       }
     }
@@ -2791,6 +2815,16 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
     }
 
     if (dist(e.x, e.y, player.x, player.y) < e.r + 32 && player.invuln <= 0 && (e.bos ? e.contactCd <= 0 : true)) {
+      if (player.aegisCd && player.aegisCd > 0 && (player.aegisT || 0) <= 0) {
+        player.aegisT = player.aegisCd;
+        player.invuln = 0.45;
+        spawnDamage(player.x, player.y - 52, "AEGIS BLOCKED", "#38bdf8");
+        spawnParticles(player.x, player.y, "#38bdf8", 18);
+        rings.push({ x: player.x, y: player.y, r: 14, maxR: 75, life: 0.35, t: 0, warna: "#38bdf8" });
+        if (typeof sfxBeku === "function") sfxBeku();
+        if (e.bos) e.contactCd = 0.8;
+        continue;
+      }
       const faseBos = e.bos ? e.bosDef.fase[e.fase] : null;
       const dmgMasuk = e.bos
         ? Math.round(faseBos.dmgKontak * (1 - (player.armor || 0)))
@@ -2912,7 +2946,12 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
     if (dp.t >= dp.life) deathPixels.splice(i, 1);
   }
 
-  if (player) player.hitFlash = Math.max(0, (player.hitFlash || 0) - dt);
+  if (player) {
+    player.hitFlash = Math.max(0, (player.hitFlash || 0) - dt);
+    if (player.aegisCd && player.aegisT > 0) {
+      player.aegisT = Math.max(0, player.aegisT - dt);
+    }
+  }
 
   for (let i = flashes.length - 1; i >= 0; i--) {
     flashes[i].t += dt;
@@ -2962,6 +3001,13 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
         soul = Math.min(SOUL_MAX, soul + tambah);
         sfxSoul();
         spawnParticles(s.x, s.y, "#7cff5e", 4);
+      }
+      if (player && player.vampiricChance && player.vampiricChance > 0 && player.hp < player.maxHp) {
+        if (Math.random() < player.vampiricChance) {
+          player.hp = Math.min(player.maxHp, player.hp + (player.vampiricHeal || 1));
+          spawnDamage(player.x, player.y - player.r - 12, "+1 HP", "#4ade80");
+          spawnParticles(player.x, player.y, "#4ade80", 6);
+        }
       }
       souls.splice(i, 1);
       continue;

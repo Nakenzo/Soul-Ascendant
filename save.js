@@ -13,7 +13,7 @@ const SAVE_SALT = 0x9e3779b9;
 const SAVE_SALT2 = 0x85ebca6b;
 const SAVE_VERSI = 3;
 
-const KARAKTER_LEVEL_MAX = 20;
+const KARAKTER_LEVEL_MAX = 40;
 const KOIN_MAKS = 999999999;
 
 const maksIdArtefak = typeof ARTEFAK_ID_PANJANG_MAX === "number"
@@ -79,6 +79,7 @@ function progresBaru() {
     koinTertinggi: 0,
     koinSaldo: 0,
     levelKarakter: {},
+    ascensionKarakter: {},
     treePoin: {},
     skillPakai: {},
     artefakMilik: {},
@@ -153,12 +154,24 @@ function bersihkanProgres(terbaik) {
     ? Math.min(KOIN_MAKS, Math.max(0, Math.floor(terbaik.koinSaldo)))
     : 0;
 
+  n.ascensionKarakter = {};
+  if (terbaik.ascensionKarakter && typeof terbaik.ascensionKarakter === "object") {
+    for (const k in terbaik.ascensionKarakter) {
+      if (!kunciAman(k)) continue;
+      const asc = terbaik.ascensionKarakter[k];
+      if (Number.isInteger(asc) && asc > 0) {
+        n.ascensionKarakter[k] = Math.min(asc, 5);
+      }
+    }
+  }
+
   n.levelKarakter = {};
   if (terbaik.levelKarakter && typeof terbaik.levelKarakter === "object") {
     for (const k in terbaik.levelKarakter) {
       const lv = terbaik.levelKarakter[k];
       if (Number.isInteger(lv) && lv >= 0) {
-        n.levelKarakter[k] = Math.min(lv, KARAKTER_LEVEL_MAX);
+        const batasMax = (n.ascensionKarakter[k] || 0) >= 1 ? 40 : 20;
+        n.levelKarakter[k] = Math.min(lv, batasMax);
       }
     }
   }
@@ -282,6 +295,7 @@ function saveSnapshot() {
     koinTertinggi: progres.koinTertinggi,
     koinSaldo: progres.koinSaldo,
     levelKarakter: progres.levelKarakter,
+    ascensionKarakter: progres.ascensionKarakter || {},
     treePoin: progres.treePoin,
     skillPakai: progres.skillPakai,
     artefakMilik: progres.artefakMilik,
@@ -579,14 +593,27 @@ function tambahKoinSaldo(koin) {
   }
 }
 
-function biayaNaikLevelKarakter(levelSekarang) {
-  if (levelSekarang >= KARAKTER_LEVEL_MAX) return Infinity;
+function ascensionKarakter(kunci) {
+  if (!progres || !progres.ascensionKarakter || typeof progres.ascensionKarakter !== "object") return 0;
+  const a = progres.ascensionKarakter[kunci];
+  return Number.isInteger(a) && a > 0 ? a : 0;
+}
+
+function maxLevelKarakter(kunci) {
+  return ascensionKarakter(kunci) >= 1 ? 40 : 20;
+}
+
+function biayaNaikLevelKarakter(levelSekarang, kunci) {
+  const max = kunci ? maxLevelKarakter(kunci) : 40;
+  if (levelSekarang >= max) return Infinity;
   return 1000 * (levelSekarang + 1);
 }
 
 function levelKarakter(kunci) {
+  if (!progres || !progres.levelKarakter) return 0;
   const lv = progres.levelKarakter[kunci];
-  return Number.isInteger(lv) ? Math.min(Math.max(lv, 0), KARAKTER_LEVEL_MAX) : 0;
+  const max = maxLevelKarakter(kunci);
+  return Number.isInteger(lv) ? Math.min(Math.max(lv, 0), max) : 0;
 }
 
 function bonusStatKarakter(kunci) {
@@ -633,6 +660,14 @@ function bonusStatKarakter(kunci) {
       if (Number.isFinite(tb.skill3Cd)) b.skill3Cd += tb.skill3Cd;
       if (tb.bukaSkill2) b.bukaSkill2 = true;
       if (tb.bukaSkill3) b.bukaSkill3 = true;
+      if (Number.isFinite(tb.elementSurge)) b.elementSurge = (b.elementSurge || 0) + tb.elementSurge;
+      if (Number.isFinite(tb.elementGaugeBonus)) b.elementGaugeBonus = (b.elementGaugeBonus || 0) + tb.elementGaugeBonus;
+      if (Number.isFinite(tb.vampiricChance)) b.vampiricChance = (b.vampiricChance || 0) + tb.vampiricChance;
+      if (Number.isFinite(tb.vampiricHeal)) b.vampiricHeal = (b.vampiricHeal || 0) + tb.vampiricHeal;
+      if (Number.isFinite(tb.ultimateCd)) b.ultimateCd = (b.ultimateCd || 0) + tb.ultimateCd;
+      if (Number.isFinite(tb.ultimateDmg)) b.ultimateDmg = (b.ultimateDmg || 0) + tb.ultimateDmg;
+      if (Number.isFinite(tb.executionerDmg)) b.executionerDmg = (b.executionerDmg || 0) + tb.executionerDmg;
+      if (Number.isFinite(tb.aegisCd)) b.aegisCd = (b.aegisCd || 0) + tb.aegisCd;
     }
   }
 
@@ -672,6 +707,14 @@ function bonusStatKarakter(kunci) {
     skill3Dmg: b.skill3Dmg,
     skill3Cd: b.skill3Cd,
     bukaSkill3: !!b.bukaSkill3,
+    elementSurge: b.elementSurge || 0,
+    elementGaugeBonus: b.elementGaugeBonus || 0,
+    vampiricChance: b.vampiricChance || 0,
+    vampiricHeal: b.vampiricHeal || 0,
+    ultimateCd: b.ultimateCd || 0,
+    ultimateDmg: b.ultimateDmg || 0,
+    executionerDmg: b.executionerDmg || 0,
+    aegisCd: b.aegisCd || 0,
     atributElement: em,
     lv: lv
   };
@@ -683,8 +726,9 @@ function naikkanLevelKarakter(kunci) {
     progres.levelKarakter = {};
   }
   const lv = levelKarakter(kunci);
-  if (lv >= KARAKTER_LEVEL_MAX) return false;
-  const biaya = biayaNaikLevelKarakter(lv);
+  const max = maxLevelKarakter(kunci);
+  if (lv >= max) return false;
+  const biaya = biayaNaikLevelKarakter(lv, kunci);
   if (progres.koinSaldo < biaya) return false;
   progres.koinSaldo -= biaya;
   progres.levelKarakter[kunci] = lv + 1;

@@ -1352,18 +1352,23 @@ function pasangTabKarakter() {
   }
 }
 const PETA_TREE_NODE = {
-  skill2: { x: 20, y: 15, tipe: "major" },
-  skill1: { x: 50, y: 15, tipe: "major" },
-  skill3: { x: 80, y: 15, tipe: "major" },
-  hp: { x: 20, y: 46, tipe: "socket" },
-  atk: { x: 50, y: 46, tipe: "socket" },
-  spd: { x: 80, y: 46, tipe: "socket" },
-  sm: { x: 10, y: 78, tipe: "socket" },
-  def: { x: 30, y: 78, tipe: "socket" },
-  crit: { x: 40, y: 78, tipe: "socket" },
-  aoe: { x: 60, y: 78, tipe: "socket" },
-  atkspd: { x: 70, y: 78, tipe: "socket" },
-  mvn: { x: 90, y: 78, tipe: "socket" }
+  skill2: { x: 18, y: 12, tipe: "major" },
+  skill1: { x: 50, y: 12, tipe: "major" },
+  skill3: { x: 82, y: 12, tipe: "major" },
+  hp: { x: 22, y: 34, tipe: "socket" },
+  atk: { x: 50, y: 34, tipe: "socket" },
+  spd: { x: 78, y: 34, tipe: "socket" },
+  sm: { x: 12, y: 56, tipe: "socket" },
+  def: { x: 28, y: 56, tipe: "socket" },
+  crit: { x: 42, y: 56, tipe: "socket" },
+  aoe: { x: 58, y: 56, tipe: "socket" },
+  atkspd: { x: 72, y: 56, tipe: "socket" },
+  mvn: { x: 88, y: 56, tipe: "socket" },
+  vampiric: { x: 12, y: 82, tipe: "major" },
+  aegis: { x: 28, y: 82, tipe: "major" },
+  element_surge: { x: 50, y: 80, tipe: "major" },
+  executioner: { x: 72, y: 82, tipe: "major" },
+  ultimate_cd: { x: 88, y: 82, tipe: "major" }
 };
 
 const KONEKSI_TREE_GARIS = [
@@ -1377,7 +1382,12 @@ const KONEKSI_TREE_GARIS = [
   { dari: "atk", ke: "crit" },
   { dari: "atk", ke: "aoe" },
   { dari: "spd", ke: "atkspd" },
-  { dari: "spd", ke: "mvn" }
+  { dari: "spd", ke: "mvn" },
+  { dari: "sm", ke: "vampiric" },
+  { dari: "def", ke: "aegis" },
+  { dari: "atk", ke: "element_surge" },
+  { dari: "atkspd", ke: "executioner" },
+  { dari: "mvn", ke: "ultimate_cd" }
 ];
 
 let nodeTreeDisorot = null;
@@ -1694,6 +1704,107 @@ function gambarTreePoint(kar) {
   }, 16);
 }
 
+function gambarPanelAscension(kar) {
+  const wadah = document.getElementById("ascensionWadah");
+  if (!wadah || !kar) return;
+  wadah.innerHTML = "";
+
+  const asc = typeof ascensionKarakter === "function" ? ascensionKarakter(kar.kunci) : 0;
+  const lv = typeof levelKarakter === "function" ? levelKarakter(kar.kunci) : 0;
+
+  if (asc >= 1) {
+    const banner = document.createElement("div");
+    banner.className = "asc-banner-sudah";
+    banner.innerHTML =
+      '<div class="asc-lencana-box">' +
+        '<svg viewBox="0 0 36 36" class="asc-svg-mahkota"><defs><linearGradient id="gAscGold" x1="0" y1="0" x2="36" y2="36"><stop offset="0%" stop-color="#fbbf24"/><stop offset="50%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#b45309"/></linearGradient></defs><path d="M4 27 L32 27 L30 13 L23 19 L18 8 L13 19 L6 13 Z" fill="url(#gAscGold)" stroke="#fef08a" stroke-width="1.6"/><circle cx="18" cy="8" r="2.2" fill="#ffffff"/><circle cx="6" cy="13" r="1.8" fill="#fde047"/><circle cx="30" cy="13" r="1.8" fill="#fde047"/></svg>' +
+      '</div>' +
+      '<div class="asc-info-teks">' +
+        '<div class="asc-judul-selesai">✨ ASCENSION I TERCAPAI ✨</div>' +
+        '<div class="asc-sub-selesai">Batas Level Maksimal 40 Terbuka • Kapasitas Tree 40 Poin</div>' +
+      '</div>';
+    wadah.appendChild(banner);
+    return;
+  }
+
+  const req = typeof dataSyaratAscension === "function" ? dataSyaratAscension(kar.kunci) : null;
+  if (!req) return;
+  const cek = typeof cekBisaAscensionKarakter === "function" ? cekBisaAscensionKarakter(kar.kunci) : { bisa: false, status: "level_kurang" };
+
+  const kepala = document.createElement("div");
+  kepala.className = "asc-header";
+  kepala.innerHTML = '<span class="asc-header-ikon">🌟</span><span class="asc-header-judul">SYARAT ASCENSION I (BATAS LV 40)</span>';
+  wadah.appendChild(kepala);
+
+  const gridBahan = document.createElement("div");
+  gridBahan.className = "asc-bahan-grid";
+
+  req.bahan.forEach(function (b) {
+    const dbItem = (typeof DATABASE_ITEM !== "undefined" && DATABASE_ITEM[b.id]) ? DATABASE_ITEM[b.id] : null;
+    const rarityInfo = (dbItem && typeof ITEM_RARITY !== "undefined" && ITEM_RARITY[dbItem.rarity]) ? ITEM_RARITY[dbItem.rarity] : { warna: "#94a3b8", border: "rgba(148, 163, 184, 0.4)" };
+    const namaItem = dbItem ? dbItem.nama : b.id;
+    const punya = typeof hitungJumlahItemInventaris === "function" ? hitungJumlahItemInventaris(b.id) : 0;
+    const cukup = punya >= b.jumlah;
+
+    const kartu = document.createElement("div");
+    kartu.className = "asc-bahan-kartu" + (cukup ? " bahan-cukup" : " bahan-kurang");
+
+    let svgIkon = "";
+    if (dbItem && typeof dbItem.ikon === "function") {
+      svgIkon = dbItem.ikon(rarityInfo.warna);
+    } else {
+      svgIkon = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="' + rarityInfo.warna + '"/></svg>';
+    }
+
+    kartu.innerHTML =
+      '<div class="asc-ikon-wadah" style="border-color:' + rarityInfo.border + '; background:rgba(15, 23, 42, 0.65);">' +
+        svgIkon +
+      '</div>' +
+      '<div class="asc-item-nama">' + namaItem + '</div>' +
+      '<div class="asc-item-qty ' + (cukup ? "qty-cukup" : "qty-kurang") + '">' + punya + '/' + b.jumlah + '</div>';
+
+    gridBahan.appendChild(kartu);
+  });
+
+  const koinPunya = (progres && progres.koinSaldo) || 0;
+  const koinCukup = koinPunya >= req.koin;
+  const kartuKoin = document.createElement("div");
+  kartuKoin.className = "asc-bahan-kartu" + (koinCukup ? " bahan-cukup" : " bahan-kurang");
+  const svgKoin = '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" fill="#f59e0b" stroke="#fef08a" stroke-width="1.6"/><circle cx="12" cy="12" r="6" stroke="#fde047" stroke-width="1.2"/><text x="12" y="15" text-anchor="middle" font-size="8" font-weight="900" fill="#78350f">S</text></svg>';
+  kartuKoin.innerHTML =
+    '<div class="asc-ikon-wadah asc-koin-ikon">' +
+      svgKoin +
+    '</div>' +
+    '<div class="asc-item-nama">Koin Saldo</div>' +
+    '<div class="asc-item-qty ' + (koinCukup ? "qty-cukup" : "qty-kurang") + '">' + koinPunya.toLocaleString("id-ID") + '/' + req.koin.toLocaleString("id-ID") + '</div>';
+  gridBahan.appendChild(kartuKoin);
+
+  wadah.appendChild(gridBahan);
+
+  const btnAsc = document.createElement("button");
+  btnAsc.type = "button";
+  if (lv < req.levelButuh) {
+    btnAsc.className = "asc-btn asc-btn-kunci";
+    btnAsc.textContent = "🔒 BUTUH KARAKTER LEVEL " + req.levelButuh + " (LV " + lv + "/" + req.levelButuh + ")";
+    btnAsc.disabled = true;
+  } else if (!cek.bisa) {
+    btnAsc.className = "asc-btn asc-btn-kurang";
+    btnAsc.textContent = "BAHAN BELUM LENGKAP";
+    btnAsc.disabled = true;
+  } else {
+    btnAsc.className = "asc-btn asc-btn-siap";
+    btnAsc.textContent = "✨ LAKUKAN ASCENSION I ✨";
+    btnAsc.onclick = function () {
+      if (typeof lakukanAscensionKarakter === "function" && lakukanAscensionKarakter(kar.kunci)) {
+        if (typeof sfxLevelUp === "function") sfxLevelUp();
+        else if (typeof sfxKlik === "function") sfxKlik();
+        buatPilihanUpgrade();
+      }
+    };
+  }
+  wadah.appendChild(btnAsc);
+}
+
 function buatPilihanUpgrade() {
   const daftar = document.getElementById("daftarUpgrade");
   if (!daftar) return;
@@ -1745,8 +1856,8 @@ function buatPilihanUpgrade() {
   const baseSpdStat = kar.speedStat !== undefined ? kar.speedStat : Math.round(kar.kecepatan / 20);
   const spd = Math.round(baseSpdStat * bon.kecepatan);
   const em = typeof atributElement === "function" ? Math.round(atributElement(kar.kunci)) : 0;
-  const max = KARAKTER_LEVEL_MAX;
-  const biaya = typeof biayaNaikLevelKarakter === "function" ? biayaNaikLevelKarakter(lv) : Infinity;
+  const max = typeof maxLevelKarakter === "function" ? maxLevelKarakter(kar.kunci) : KARAKTER_LEVEL_MAX;
+  const biaya = typeof biayaNaikLevelKarakter === "function" ? biayaNaikLevelKarakter(lv, kar.kunci) : Infinity;
   const cukup = typeof progres === "object" && progres && progres.koinSaldo >= biaya;
   const penuh = lv >= max;
 
@@ -1785,14 +1896,15 @@ function buatPilihanUpgrade() {
     });
   }
 
+  gambarPanelAscension(kar);
+
   gambarTreePoint(kar);
 
   gambarArtefakKarakter(kar);
   gambarInfoSetArtefak(kar);
 
-
-const btn = document.getElementById("tombolNaikLevel");
-if (btn) {
+  const btn = document.getElementById("tombolNaikLevel");
+  if (btn) {
     if (penuh) {
       btn.textContent = "LEVEL MAKS";
       btn.disabled = true;

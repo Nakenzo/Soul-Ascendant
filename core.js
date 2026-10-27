@@ -208,6 +208,15 @@ function resetArena({ koinBaru }) {
   player.basicDmgBonus = bon.basicDmg || 0;
   player.soulMagnet = bon.soulMagnet || 0;
   player.jiwaKali = bon.jiwa || 1;
+  player.elementSurge = bon.elementSurge || 0;
+  player.elementGaugeBonus = bon.elementGaugeBonus || 0;
+  player.vampiricChance = bon.vampiricChance || 0;
+  player.vampiricHeal = bon.vampiricHeal || 0;
+  player.ultimateCdBonus = bon.ultimateCd || 0;
+  player.ultimateDmgBonus = bon.ultimateDmg || 0;
+  player.executionerDmg = bon.executionerDmg || 0;
+  player.aegisCd = bon.aegisCd || 0;
+  player.aegisT = 0;
   if (typeof hitungStatKartu === "function") hitungStatKartu();
   try { if (typeof perbaruiIkonSkillSentuh === "function") perbaruiIkonSkillSentuh(karakter); } catch (err) {}
   pilihanKartu = null;

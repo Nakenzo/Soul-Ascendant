@@ -246,6 +246,66 @@ const TREE_NODES = [
     singkat: "+5% MOVE SPD",
     deskripsi: function () { return "+5% Kecepatan Gerak"; },
     bonus: function (r) { return { kecepatan: 0.05 * r }; }
+  },
+  {
+    id: "element_surge",
+    nama: "Element Surge",
+    ikon: "🔮",
+    max: 2,
+    tier: 3,
+    syarat: "skill1",
+    syaratPoinTotal: 15,
+    singkat: "+12% REAKSI ELEMEN",
+    deskripsi: function () { return "+12% Damage Reaksi Elemen & +10% Pengisian Gauge Elemen"; },
+    bonus: function (r) { return { elementSurge: 0.12 * r, elementGaugeBonus: 0.10 * r }; }
+  },
+  {
+    id: "vampiric",
+    nama: "Vampiric Soul",
+    ikon: "🩸",
+    max: 3,
+    tier: 4,
+    syarat: "hp",
+    syaratPoinTotal: 22,
+    singkat: "HP SOUL REGEN",
+    deskripsi: function (kar, r) { return (r === 1 ? "30%" : (r === 2 ? "60%" : "100%")) + " Peluang Menyerap Soul Pulihkan 1 HP"; },
+    bonus: function (r) { return { vampiricChance: [0, 0.30, 0.60, 1.00][r], vampiricHeal: r > 0 ? 1 : 0 }; }
+  },
+  {
+    id: "ultimate_cd",
+    nama: "Ultimate Overdrive",
+    ikon: "⚡",
+    max: 3,
+    tier: 4,
+    syarat: "atk",
+    syaratPoinTotal: 24,
+    singkat: "-1s CD / +10% ULT",
+    deskripsi: function (kar, r) { return "-" + r + "s Cooldown & +" + (10 * r) + "% Damage Jurus Ultimate"; },
+    bonus: function (r) { return { ultimateCd: 1.0 * r, ultimateDmg: 0.10 * r }; }
+  },
+  {
+    id: "executioner",
+    nama: "Algojo",
+    ikon: "🪓",
+    max: 2,
+    tier: 4,
+    syarat: "atk",
+    syaratPoinTotal: 26,
+    singkat: "+8% DMG HP <30%",
+    deskripsi: function (kar, r) { return "+" + (8 * r) + "% Damage ke musuh yang HP-nya di bawah 30%"; },
+    bonus: function (r) { return { executionerDmg: 0.08 * r }; }
+  },
+  {
+    id: "aegis",
+    nama: "Aegis Jiwa",
+    ikon: "🛡️",
+    max: 2,
+    tier: 4,
+    syarat: "def",
+    syaratPoinTotal: 28,
+    singkat: "PERISAI KEBAL",
+    deskripsi: function (kar, r) { return "Perisai penangkal 1 pukulan musuh tiap " + (r === 1 ? "30 detik" : "20 detik"); },
+    bonus: function (r) { return { aegisCd: r === 1 ? 30 : (r === 2 ? 20 : 0) }; }
   }
 ];
 
@@ -312,6 +372,21 @@ function ambilIkonTreeNodeSvg(id, kar) {
   }
   if (id === "mvn") {
     return '<svg viewBox="0 0 44 44" class="tree-svg-ikon"><defs><linearGradient id="gMvn" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#38bdf8"/><stop offset="100%" stop-color="#2563eb"/></linearGradient></defs><path d="M8 20 C14 16 26 15 34 11 C30 18 24 23 16 26 Z" fill="#7dd3fc"/><path d="M12 24 L22 24 C27 24 33 26 36 29 L38 33 L10 33 L10 26 Z" fill="url(#gMvn)" stroke="#93c5fd" stroke-width="1.4"/><circle cx="16" cy="27" r="1.5" fill="#ffffff"/><line x1="6" y1="37" x2="38" y2="37" stroke="#facc15" stroke-width="2.5" stroke-linecap="round"/><line x1="12" y1="41" x2="32" y2="41" stroke="#fde047" stroke-width="1.5" stroke-linecap="round"/></svg>';
+  }
+  if (id === "element_surge") {
+    return '<svg viewBox="0 0 44 44" class="tree-svg-ikon"><defs><radialGradient id="gElmSrg" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ffffff"/><stop offset="35%" stop-color="#f59e0b"/><stop offset="70%" stop-color="#ec4899"/><stop offset="100%" stop-color="#6366f1"/></radialGradient></defs><circle cx="22" cy="22" r="16" fill="url(#gElmSrg)" stroke="#fbbf24" stroke-width="1.8"/><path d="M22 6 L25 18 L37 22 L25 26 L22 38 L19 26 L7 22 L19 18 Z" fill="#ffffff" opacity="0.9"/><circle cx="22" cy="22" r="4" fill="#fbbf24"/></svg>';
+  }
+  if (id === "vampiric") {
+    return '<svg viewBox="0 0 44 44" class="tree-svg-ikon"><defs><linearGradient id="gVamp" x1="0" y1="0" x2="44" y2="44"><stop offset="0%" stop-color="#dc2626"/><stop offset="50%" stop-color="#991b1b"/><stop offset="100%" stop-color="#450a0a"/></linearGradient></defs><path d="M8 14 C14 10 20 16 22 24 C24 16 30 10 36 14 C38 24 32 32 22 38 C12 32 6 24 8 14 Z" fill="url(#gVamp)" stroke="#f87171" stroke-width="1.5"/><path d="M18 20 L20 27 L22 20 L24 27 L26 20" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" fill="none"/><circle cx="22" cy="14" r="2.5" fill="#fca5a5"/></svg>';
+  }
+  if (id === "ultimate_cd") {
+    return '<svg viewBox="0 0 44 44" class="tree-svg-ikon"><defs><linearGradient id="gUltCd" x1="0" y1="44" x2="44" y2="0"><stop offset="0%" stop-color="#f59e0b"/><stop offset="50%" stop-color="#eab308"/><stop offset="100%" stop-color="#ffffff"/></linearGradient></defs><circle cx="22" cy="22" r="15" fill="none" stroke="#eab308" stroke-width="2.2" stroke-dasharray="5 3"/><polygon points="22,8 26,18 36,22 26,26 22,36 18,26 8,22 18,18" fill="url(#gUltCd)" stroke="#fde047" stroke-width="1.2"/><circle cx="22" cy="22" r="3" fill="#ffffff"/></svg>';
+  }
+  if (id === "executioner") {
+    return '<svg viewBox="0 0 44 44" class="tree-svg-ikon"><defs><linearGradient id="gExec" x1="6" y1="6" x2="38" y2="38"><stop offset="0%" stop-color="#f43f5e"/><stop offset="60%" stop-color="#881337"/><stop offset="100%" stop-color="#1e1b4b"/></linearGradient></defs><line x1="10" y1="10" x2="34" y2="34" stroke="#e2e8f0" stroke-width="3" stroke-linecap="round"/><line x1="34" y1="10" x2="10" y2="34" stroke="#e2e8f0" stroke-width="3" stroke-linecap="round"/><path d="M14 6 L30 6 L34 16 L22 22 L10 16 Z" fill="url(#gExec)" stroke="#fda4af" stroke-width="1.5"/><circle cx="22" cy="26" r="3.5" fill="#e11d48"/></svg>';
+  }
+  if (id === "aegis") {
+    return '<svg viewBox="0 0 44 44" class="tree-svg-ikon"><defs><linearGradient id="gAegis" x1="22" y1="4" x2="22" y2="40"><stop offset="0%" stop-color="#60a5fa"/><stop offset="50%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#1d4ed8"/></linearGradient></defs><polygon points="22,5 37,12 37,27 22,39 7,27 7,12" fill="url(#gAegis)" stroke="#93c5fd" stroke-width="2"/><polygon points="22,11 31,16 31,25 22,32 13,25 13,16" fill="#ffffff" opacity="0.45"/><circle cx="22" cy="21" r="3.5" fill="#ffffff"/></svg>';
   }
   return "";
 }
@@ -481,7 +556,15 @@ function hitungBonusTree(kunci) {
     bukaSkill2: !!tp.buka_skill2,
     skill3Dmg: 0,
     skill3Cd: 0,
-    bukaSkill3: !!tp.buka_skill3
+    bukaSkill3: !!tp.buka_skill3,
+    elementSurge: 0,
+    elementGaugeBonus: 0,
+    vampiricChance: 0,
+    vampiricHeal: 0,
+    ultimateCd: 0,
+    ultimateDmg: 0,
+    executionerDmg: 0,
+    aegisCd: 0
   };
   nodes.forEach(function (n) {
     const r = tp[n.id] || 0;
@@ -509,6 +592,111 @@ function apakahSkillTerbuka(kunci, slot) {
     return !!(tp.buka_skill3 || (tp.skill3 && tp.skill3 >= 1)) || (typeof levelKarakter === "function" && levelKarakter(kunci) >= 15);
   }
   return false;
+}
+
+const SYARAT_ASCENSION_1 = {
+  rin: {
+    levelButuh: 20,
+    koin: 15000,
+    bahan: [
+      { id: "bara_magma", jumlah: 5 },
+      { id: "taring_serigala_bayangan", jumlah: 8 },
+      { id: "pecahan_jiwa", jumlah: 15 }
+    ]
+  },
+  kenzro: {
+    levelButuh: 20,
+    koin: 15000,
+    bahan: [
+      { id: "kristal_es_abadi", jumlah: 5 },
+      { id: "esensi_badai", jumlah: 8 },
+      { id: "pecahan_jiwa", jumlah: 15 }
+    ]
+  },
+  voiz: {
+    levelButuh: 20,
+    koin: 15000,
+    bahan: [
+      { id: "serat_kuno", jumlah: 5 },
+      { id: "batu_petir", jumlah: 8 },
+      { id: "pecahan_jiwa", jumlah: 15 }
+    ]
+  }
+};
+
+function dataSyaratAscension(kunci) {
+  return SYARAT_ASCENSION_1[kunci] || SYARAT_ASCENSION_1.rin;
+}
+
+function cekBisaAscensionKarakter(kunci) {
+  const req = dataSyaratAscension(kunci);
+  const lv = typeof levelKarakter === "function" ? levelKarakter(kunci) : 0;
+  const asc = typeof ascensionKarakter === "function" ? ascensionKarakter(kunci) : 0;
+  const koin = (progres && progres.koinSaldo) || 0;
+
+  if (asc >= 1) {
+    return { bisa: false, status: "maks", pesan: "Sudah Ascension I" };
+  }
+  if (lv < req.levelButuh) {
+    return { bisa: false, status: "level_kurang", pesan: "Butuh Level " + req.levelButuh };
+  }
+
+  const statusBahan = req.bahan.map(function (b) {
+    const punya = typeof hitungJumlahItemInventaris === "function" ? hitungJumlahItemInventaris(b.id) : 0;
+    return {
+      id: b.id,
+      butuh: b.jumlah,
+      punya: punya,
+      cukup: punya >= b.jumlah
+    };
+  });
+
+  const bahanSemuaCukup = statusBahan.every(function (b) { return b.cukup; });
+  const koinCukup = koin >= req.koin;
+
+  if (!koinCukup || !bahanSemuaCukup) {
+    return {
+      bisa: false,
+      status: "bahan_kurang",
+      pesan: !koinCukup ? "Koin Kurang" : "Bahan Belum Cukup",
+      koin: { butuh: req.koin, punya: koin, cukup: koinCukup },
+      bahan: statusBahan
+    };
+  }
+
+  return {
+    bisa: true,
+    status: "siap",
+    pesan: "Siap Ascension I",
+    koin: { butuh: req.koin, punya: koin, cukup: true },
+    bahan: statusBahan
+  };
+}
+
+function lakukanAscensionKarakter(kunci) {
+  const cek = cekBisaAscensionKarakter(kunci);
+  if (!cek.bisa) return false;
+  const req = dataSyaratAscension(kunci);
+
+  if (typeof kurangiItemInventaris === "function") {
+    req.bahan.forEach(function (b) {
+      kurangiItemInventaris(b.id, b.jumlah);
+    });
+  }
+
+  if (progres) {
+    progres.koinSaldo = Math.max(0, (progres.koinSaldo || 0) - req.koin);
+    if (!progres.ascensionKarakter || typeof progres.ascensionKarakter !== "object") {
+      progres.ascensionKarakter = {};
+    }
+    progres.ascensionKarakter[kunci] = 1;
+    progres.t = Date.now();
+  }
+
+  if (typeof saveTulis === "function") {
+    saveTulis();
+  }
+  return true;
 }
 
 

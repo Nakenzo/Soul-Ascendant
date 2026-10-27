@@ -459,13 +459,10 @@ function ambilHtmlIkonItem(item, warna) {
     return '<img src="' + imgSrc + '" class="pixel-item-img pixel-artefak-img" alt="' + (item.nama || "") + '" onerror="this.style.display=\'none\';if(this.nextElementSibling)this.nextElementSibling.style.display=\'flex\';">'
       + '<span class="pixel-item-fallback" style="display:none;width:100%;height:100%;">' + fallbackSvg + '</span>';
   }
-  if (!item.id) {
-    return typeof item.ikon === "function" ? item.ikon(warna) : "";
+  if (typeof item.ikon === "function") {
+    return item.ikon(warna);
   }
-  const imgSrc = "assets/items/" + item.id + ".png";
-  const fallbackSvg = typeof item.ikon === "function" ? item.ikon(warna) : "";
-  return '<img src="' + imgSrc + '" class="pixel-item-img" alt="' + (item.nama || "") + '" onerror="this.style.display=\'none\';if(this.nextElementSibling)this.nextElementSibling.style.display=\'flex\';">'
-    + '<span class="pixel-item-fallback" style="display:none;width:100%;height:100%;">' + fallbackSvg + '</span>';
+  return "";
 }
 
 function segarkanTampilanInventory() {
@@ -932,8 +929,12 @@ const CACHE_SPRITE_ITEM = {};
 
 function ambilSpriteItemCanvas(itemId) {
   if (CACHE_SPRITE_ITEM[itemId]) return CACHE_SPRITE_ITEM[itemId];
+  const def = (typeof DATABASE_ITEM !== "undefined" && DATABASE_ITEM) ? DATABASE_ITEM[itemId] : null;
+  if (!def || typeof def.ikon !== "function") return null;
+  const rarity = (typeof ITEM_RARITY !== "undefined" && ITEM_RARITY[def.rarity]) ? ITEM_RARITY[def.rarity] : { warna: "#ffd23f" };
+  const svgTeks = def.ikon(rarity.warna);
   const img = new Image();
-  img.src = "assets/items/" + itemId + ".png";
+  img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgTeks);
   CACHE_SPRITE_ITEM[itemId] = img;
   return img;
 }

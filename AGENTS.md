@@ -49,5 +49,14 @@ Aturan ini wajib dipatuhi di setiap sesi pengerjaan proyek Soul Ascendant (folde
     - Dilarang langsung memasang, mengaitkan, atau mengimplementasikan berkas suara (SFX), musik latar (BGM), maupun tekstur visual senjata ke dalam kode permainan sebelum desain atau suaranya diperiksa dan disetujui secara eksplisit oleh pengguna.
     - Agen wajib menunjukkan contoh/rancangan terlebih dahulu dan menunggu konfirmasi, karena pengguna berhak dan mungkin ingin membuat serta menyediakan aset versi rancangannya sendiri.
 
+12. **Standar Pembuatan Tekstur & VFX (Wajib Sprite Pixel Art & Persetujuan Eksplisit)**
+    - Jika ingin membuat aset tekstur maupun efek visual (VFX) baru untuk game ini, **wajib menggunakan sprite (sprite sheet / frame-by-frame sprite canvas)** agar hasil visualnya berkarakter **pixel art murni** yang tajam, konsisten, dan sesuai dengan estetika retro/pixel game Soul Ascendant (bukan sekadar bentuk vektor atau lingkaran geometris polos yang blur/halus).
+    - **Persetujuan Wajib Sebelum Diaplikasikan**: Desain tekstur atau VFX berbasis sprite yang dirancang wajib diperlihatkan terlebih dahulu (pratinjau / demonstrasi visual) dan **hanya boleh diaplikasikan/diintegrasikan ke dalam kode permainan setelah disetujui secara eksplisit oleh pengguna**.
+
+13. **Keunikan Desain Tekstur (Dilarang Sama/Mendaur Ulang Materi Lain, Kecuali VFX Skill)**
+    - Setiap kali membuat aset tekstur baru (baik untuk karakter, musuh/monster, item drop, material, artefak, maupun elemen visual lainnya, **kecuali VFX skill**), desainnya **wajib unik dan dilarang dibuat sama, meniru persis, atau mendaur ulang materi/aset lain yang sudah ada**.
+    - Setiap materi harus memiliki identitas visual tersendiri (bentuk siluet, detail bentuk, dan palet warna yang berbeda secara tegas) agar setiap item dan entitas di dalam game terasa otentik serta mudah dibedakan oleh pemain.
+
+
 
 
