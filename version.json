@@ -1,5 +1,5 @@
 {
-  "timestamp": 1793061600000,
+  "timestamp": 1793065104631,
   "build": 116,
   "pesan": "Ascension Karakter I: Cap level naik ke Level 40, 5 Node Tree Baru (40 Poin), tampilan visual bahan ascension, dan audit tekstur item unik.",
   "perlu_instal_ulang": false,
@@ -42,5 +42,5 @@
     "settings.css",
     "updater.css"
   ],
-  "tanggal": "2026-10-26T00:23:32.834Z"
+  "tanggal": "2026-10-27T01:38:24.631Z"
 }
