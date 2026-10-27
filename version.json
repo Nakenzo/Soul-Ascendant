@@ -1,7 +1,7 @@
 {
-  "timestamp": 1793065104631,
-  "build": 116,
-  "pesan": "Ascension Karakter I: Cap level naik ke Level 40, 5 Node Tree Baru (40 Poin), tampilan visual bahan ascension, dan audit tekstur item unik.",
+  "timestamp": 1793071349201,
+  "build": 117,
+  "pesan": "Pemulihan tekstur pixel art murni inventaris & integrasi panel/tombol Ascension I di menu STAT.",
   "perlu_instal_ulang": false,
   "min_shell_build": 93,
   "url_apk": "https://github.com/Nakenzo/Soul-Ascendant/releases/latest/download/Soul-Ascendant.apk",
@@ -42,5 +42,5 @@
     "settings.css",
     "updater.css"
   ],
-  "tanggal": "2026-10-27T01:38:24.631Z"
+  "tanggal": "2026-10-27T03:22:29.201Z"
 }

@@ -1338,6 +1338,12 @@ function gantiTabKarakter(tab) {
       setTimeout(() => alirCekUlang(grid), 30);
     }
   }
+  if (tab === "stat") {
+    const kar = KARAKTER.find((k) => k.kunci === karakterUpgrade) || KARAKTER[0];
+    if (kar && typeof gambarPanelAscension === "function") {
+      gambarPanelAscension(kar);
+    }
+  }
 }
 
 function pasangTabKarakter() {
@@ -1749,16 +1755,14 @@ function gambarPanelAscension(kar) {
     const kartu = document.createElement("div");
     kartu.className = "asc-bahan-kartu" + (cukup ? " bahan-cukup" : " bahan-kurang");
 
-    let svgIkon = "";
-    if (dbItem && typeof dbItem.ikon === "function") {
-      svgIkon = dbItem.ikon(rarityInfo.warna);
-    } else {
-      svgIkon = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="' + rarityInfo.warna + '"/></svg>';
-    }
+    const imgSrc = "assets/items/" + b.id + ".png";
+    const fallbackSvg = (dbItem && typeof dbItem.ikon === "function") ? dbItem.ikon(rarityInfo.warna) : '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="' + rarityInfo.warna + '"/></svg>';
+    const htmlIkon = '<img src="' + imgSrc + '" class="pixel-item-img" alt="' + namaItem + '" onerror="this.style.display=\'none\';if(this.nextElementSibling)this.nextElementSibling.style.display=\'flex\';">'
+      + '<span class="pixel-item-fallback" style="display:none;width:100%;height:100%;align-items:center;justify-content:center;">' + fallbackSvg + '</span>';
 
     kartu.innerHTML =
       '<div class="asc-ikon-wadah" style="border-color:' + rarityInfo.border + '; background:rgba(15, 23, 42, 0.65);">' +
-        svgIkon +
+        htmlIkon +
       '</div>' +
       '<div class="asc-item-nama">' + namaItem + '</div>' +
       '<div class="asc-item-qty ' + (cukup ? "qty-cukup" : "qty-kurang") + '">' + punya + '/' + b.jumlah + '</div>';
@@ -1905,23 +1909,38 @@ function buatPilihanUpgrade() {
 
   const btn = document.getElementById("tombolNaikLevel");
   if (btn) {
+    const asc = typeof ascensionKarakter === "function" ? ascensionKarakter(kar.kunci) : 0;
     if (penuh) {
-      btn.textContent = "LEVEL MAKS";
-      btn.disabled = true;
+      if (asc < 1) {
+        btn.textContent = "✨ ASCENSION I TERSEDIA (MENU STAT)";
+        btn.disabled = false;
+        btn.classList.remove("tombol-abu", "terkunci", "tombol-hijau");
+        btn.classList.add("tombol-kuning");
+        btn.onclick = () => {
+          if (typeof sfxKlik === "function") sfxKlik();
+          gantiTabKarakter("stat");
+        };
+      } else {
+        btn.textContent = "LEVEL MAKS";
+        btn.disabled = true;
+        btn.classList.remove("tombol-hijau", "tombol-kuning", "terkunci");
+        btn.classList.add("tombol-abu");
+        btn.onclick = null;
+      }
     } else {
       btn.textContent = "NAIK LEVEL - " + biaya + " KOIN";
       btn.disabled = !cukup;
+      btn.classList.remove("tombol-kuning");
+      btn.classList.toggle("tombol-hijau", cukup);
+      btn.classList.toggle("tombol-abu", !cukup);
+      btn.classList.toggle("terkunci", !cukup);
+      btn.onclick = () => {
+        if (typeof naikkanLevelKarakter === "function" && naikkanLevelKarakter(kar.kunci)) {
+          if (typeof sfxKlik === "function") sfxKlik();
+          buatPilihanUpgrade();
+        } else if (typeof sfxKlik === "function") sfxKlik();
+      };
     }
-
-    btn.classList.toggle("tombol-hijau", cukup && !penuh);
-    btn.classList.toggle("tombol-abu", !cukup || penuh);
-    btn.classList.toggle("terkunci", !cukup && !penuh);
-    btn.onclick = () => {
-      if (typeof naikkanLevelKarakter === "function" && naikkanLevelKarakter(kar.kunci)) {
-        if (typeof sfxKlik === "function") sfxKlik();
-        buatPilihanUpgrade();
-      } else if (typeof sfxKlik === "function") sfxKlik();
-    };
   }
   const lvlTampil = document.getElementById("levelKarakterTampil");
   if (lvlTampil) lvlTampil.textContent = "LV " + lv + "/" + max;
