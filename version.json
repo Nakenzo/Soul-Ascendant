@@ -1,7 +1,7 @@
 {
   "timestamp": 1793071349201,
-  "build": 117,
-  "pesan": "Pemulihan tekstur pixel art murni inventaris & integrasi panel/tombol Ascension I di menu STAT.",
+  "build": 118,
+  "pesan": "Integrasi tombol modal interaktif Ascension I & perbaikan tooltip syarat talent tree Ascension.",
   "perlu_instal_ulang": false,
   "min_shell_build": 93,
   "url_apk": "https://github.com/Nakenzo/Soul-Ascendant/releases/latest/download/Soul-Ascendant.apk",

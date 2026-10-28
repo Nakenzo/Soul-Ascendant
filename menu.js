@@ -1507,12 +1507,27 @@ function tampilkanTooltipNode(e, node, kar, tp, sisaPoin, wadah) {
   if (siapBuka) {
     teks = "✨ TEKAN UNTUK BUKA " + (node.labelSlot || "SKILL") + "!";
   } else if (!syaratOk || !sudahBuka) {
+    const terpakai = typeof poinTerpakaiKarakter === "function" ? poinTerpakaiKarakter(kar.kunci) : 0;
     if (node.id === "skill2") {
       teks = "🔒 BUTUH 10 TALENT (SKILL 2)";
     } else if (node.id === "skill3") {
       teks = "🔒 BUTUH 20 TALENT (SKILL 3 - SEGERA)";
+    } else if (node.syaratPoinTotal && terpakai < node.syaratPoinTotal) {
+      teks = "🔒 BUTUH " + node.syaratPoinTotal + " TALENT (ASCENSION I)";
     } else if (node.syarat) {
-      teks = "🔒 BUTUH " + String(node.syarat).toUpperCase();
+      const namaSyarat = {
+        hp: "HP",
+        atk: "ATTACK",
+        spd: "SPEED",
+        def: "DEF",
+        sm: "SOUL MAGNET",
+        crit: "CRIT",
+        aoe: "AOE",
+        atkspd: "ATK SPEED",
+        mvn: "MOVE SPEED",
+        skill1: "SKILL 1"
+      }[node.syarat] || String(node.syarat).toUpperCase();
+      teks = "🔒 BUTUH TALENT " + namaSyarat;
     } else {
       teks = "🔒 TERKUNCI";
     }
@@ -1609,8 +1624,10 @@ function buatOrbNodeTree(node, kar, tp, sisaPoin, wadah) {
   if (siapBuka) {
     badge.textContent = "✨ BUKA ✨";
   } else if (!syaratOk || !sudahBuka) {
+    const terpakai = typeof poinTerpakaiKarakter === "function" ? poinTerpakaiKarakter(kar.kunci) : 0;
     if (node.id === "skill2") badge.textContent = "🔒 10 TALENT";
     else if (node.id === "skill3") badge.textContent = "🔒 20 TALENT";
+    else if (node.syaratPoinTotal && terpakai < node.syaratPoinTotal) badge.textContent = "🔒 " + node.syaratPoinTotal + " TALENT";
     else badge.textContent = "🔒 KUNCI";
   } else {
     badge.textContent = maks ? "MAX" : rank + "/" + node.max;
@@ -1710,8 +1727,7 @@ function gambarTreePoint(kar) {
   }, 16);
 }
 
-function gambarPanelAscension(kar) {
-  const wadah = document.getElementById("ascensionWadah");
+function bangunKontenAscension(wadah, kar, onSelesai) {
   if (!wadah || !kar) return;
   wadah.innerHTML = "";
 
@@ -1733,14 +1749,23 @@ function gambarPanelAscension(kar) {
     return;
   }
 
-  const req = typeof dataSyaratAscension === "function" ? dataSyaratAscension(kar.kunci) : null;
+  const req = typeof dataSyaratAscension === "function"
+    ? dataSyaratAscension(kar.kunci)
+    : ((typeof SYARAT_ASCENSION_1 !== "undefined" && SYARAT_ASCENSION_1) ? (SYARAT_ASCENSION_1[kar.kunci] || SYARAT_ASCENSION_1.rin) : null);
   if (!req) return;
-  const cek = typeof cekBisaAscensionKarakter === "function" ? cekBisaAscensionKarakter(kar.kunci) : { bisa: false, status: "level_kurang" };
+  const cek = typeof cekBisaAscensionKarakter === "function"
+    ? cekBisaAscensionKarakter(kar.kunci)
+    : { bisa: false, status: lv < req.levelButuh ? "level_kurang" : "bahan_kurang" };
 
   const kepala = document.createElement("div");
   kepala.className = "asc-header";
   kepala.innerHTML = '<span class="asc-header-ikon">🌟</span><span class="asc-header-judul">SYARAT ASCENSION I (BATAS LV 40)</span>';
   wadah.appendChild(kepala);
+
+  const perks = document.createElement("div");
+  perks.className = "asc-perks-info";
+  perks.textContent = "Batas Level: 20 → 40 • Kapasitas Talent: 20 → 40 Poin";
+  wadah.appendChild(perks);
 
   const gridBahan = document.createElement("div");
   gridBahan.className = "asc-bahan-grid";
@@ -1770,7 +1795,7 @@ function gambarPanelAscension(kar) {
     gridBahan.appendChild(kartu);
   });
 
-  const koinPunya = (progres && progres.koinSaldo) || 0;
+  const koinPunya = (typeof progres === "object" && progres && progres.koinSaldo) || 0;
   const koinCukup = koinPunya >= req.koin;
   const kartuKoin = document.createElement("div");
   kartuKoin.className = "asc-bahan-kartu" + (koinCukup ? " bahan-cukup" : " bahan-kurang");
@@ -1803,10 +1828,63 @@ function gambarPanelAscension(kar) {
         if (typeof sfxLevelUp === "function") sfxLevelUp();
         else if (typeof sfxKlik === "function") sfxKlik();
         buatPilihanUpgrade();
+        if (typeof onSelesai === "function") onSelesai();
       }
     };
   }
   wadah.appendChild(btnAsc);
+}
+
+function bukaModalAscension(kar) {
+  if (!kar) kar = KARAKTER.find((k) => k.kunci === karakterUpgrade) || KARAKTER[0];
+  if (!kar) return;
+  const modal = document.getElementById("kotakModalAscension");
+  const isi = document.getElementById("isiModalAscension");
+  if (!modal || !isi) return;
+  isi.innerHTML = "";
+  bangunKontenAscension(isi, kar, function () {
+    tutupModalAscension();
+  });
+  modal.classList.remove("hidden");
+}
+
+function tutupModalAscension() {
+  const modal = document.getElementById("kotakModalAscension");
+  if (modal) modal.classList.add("hidden");
+}
+
+function pasangModalAscension() {
+  const btnTutup = document.getElementById("tutupModalAscension");
+  if (btnTutup) {
+    btnTutup.onclick = () => {
+      if (typeof sfxKlik === "function") sfxKlik();
+      tutupModalAscension();
+    };
+  }
+  const modal = document.getElementById("kotakModalAscension");
+  if (modal) {
+    modal.onclick = (e) => {
+      if (e.target === modal) {
+        if (typeof sfxKlik === "function") sfxKlik();
+        tutupModalAscension();
+      }
+    };
+  }
+}
+
+function gambarPanelAscension(kar) {
+  let wadah = document.getElementById("ascensionWadah");
+  if (!wadah) {
+    const pStat = document.getElementById("panelStat");
+    if (pStat) {
+      wadah = document.createElement("div");
+      wadah.id = "ascensionWadah";
+      wadah.className = "ascension-wadah";
+      pStat.appendChild(wadah);
+    }
+  }
+  if (!wadah || !kar) return;
+  bangunKontenAscension(wadah, kar, null);
 }
 
 function buatPilihanUpgrade() {
@@ -1912,18 +1990,26 @@ function buatPilihanUpgrade() {
     const asc = typeof ascensionKarakter === "function" ? ascensionKarakter(kar.kunci) : 0;
     if (penuh) {
       if (asc < 1) {
-        btn.textContent = "✨ ASCENSION I TERSEDIA (MENU STAT)";
-        btn.disabled = false;
-        btn.classList.remove("tombol-abu", "terkunci", "tombol-hijau");
-        btn.classList.add("tombol-kuning");
+        const cek = typeof cekBisaAscensionKarakter === "function" ? cekBisaAscensionKarakter(kar.kunci) : { bisa: false };
+        if (cek.bisa) {
+          btn.textContent = "✨ LAKUKAN ASCENSION I ✨";
+          btn.disabled = false;
+          btn.classList.remove("tombol-abu", "terkunci", "tombol-hijau", "tombol-asc-syarat");
+          btn.classList.add("tombol-kuning", "tombol-asc-siap");
+        } else {
+          btn.textContent = "🌟 ASCENSION I (LIHAT BAHAN)";
+          btn.disabled = false;
+          btn.classList.remove("tombol-abu", "terkunci", "tombol-hijau", "tombol-asc-siap");
+          btn.classList.add("tombol-kuning", "tombol-asc-syarat");
+        }
         btn.onclick = () => {
           if (typeof sfxKlik === "function") sfxKlik();
-          gantiTabKarakter("stat");
+          bukaModalAscension(kar);
         };
       } else {
         btn.textContent = "LEVEL MAKS";
         btn.disabled = true;
-        btn.classList.remove("tombol-hijau", "tombol-kuning", "terkunci");
+        btn.classList.remove("tombol-hijau", "tombol-kuning", "terkunci", "tombol-asc-siap", "tombol-asc-syarat");
         btn.classList.add("tombol-abu");
         btn.onclick = null;
       }
@@ -2115,6 +2201,7 @@ function pasangTombol() {
   pasangAkun();
   document.getElementById("tombolKembaliKarakter").addEventListener("click", tampilkanJudul);
   pasangTabKarakter();
+  if (typeof pasangModalAscension === "function") pasangModalAscension();
   document.getElementById("tombolKembaliJudul").addEventListener("click", tampilkanJudul);
   document.getElementById("tombolUlang").addEventListener("click", ulangDenganKarakter);
 
