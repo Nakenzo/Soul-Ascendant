@@ -113,15 +113,52 @@ function adminMuatSkrip() {
   adminSkripDebug.forEach(function (src) {
     if (document.querySelector('script[data-admin-src="' + src + '"]')) return;
     var s = document.createElement("script");
+    s.setAttribute("data-admin-src", src);
+    var kodePatch = (typeof window !== "undefined" && window.SA_PATCHER && typeof window.SA_PATCHER.ambilPatch === "function")
+      ? window.SA_PATCHER.ambilPatch(src)
+      : null;
+    if (kodePatch) {
+      s.textContent = kodePatch + "\n//# sourceURL=" + src;
+      document.body.appendChild(s);
+      return;
+    }
     s.src = src;
     s.async = false;
-    s.setAttribute("data-admin-src", src);
     s.onerror = function () {
       if (window.console) console.warn("[admin] gagal memuat " + src);
     };
     document.body.appendChild(s);
   });
 }
+
+function adminBeriSemuaItem(jumlahTarget) {
+  if (!apakahAkunAdmin()) return 0;
+  if (typeof DATABASE_ITEM !== "object" || !DATABASE_ITEM) return 0;
+  if (typeof progres !== "object" || !progres) return 0;
+  if (!progres.inventaris || typeof progres.inventaris !== "object") {
+    progres.inventaris = {};
+  }
+  var target = Number.isInteger(jumlahTarget) && jumlahTarget > 0 ? Math.min(999999, jumlahTarget) : 1000;
+  var totalJenis = 0;
+  for (var id in DATABASE_ITEM) {
+    if (!Object.prototype.hasOwnProperty.call(DATABASE_ITEM, id)) continue;
+    var def = DATABASE_ITEM[id];
+    if (!def || def.kategori === "artefak") continue;
+    progres.inventaris[id] = target;
+    totalJenis++;
+  }
+  if (typeof saveTulis === "function") {
+    saveTulis();
+  }
+  if (typeof segarkanTampilanInventory === "function") {
+    var modalInv = document.getElementById("layarInventory");
+    if (modalInv && !modalInv.classList.contains("hidden")) {
+      segarkanTampilanInventory();
+    }
+  }
+  return totalJenis;
+}
+if (typeof window !== "undefined") window.adminBeriSemuaItem = adminBeriSemuaItem;
 
 function adminDock() {
   var el = document.getElementById("adminDock");
@@ -170,10 +207,16 @@ function adminNyalakan(catatan) {
   window.ADMIN_BUKA = true;
   adminDock().style.display = "flex";
   adminMuatSkrip();
+  adminBeriSemuaItem(1000);
+  if (typeof akunSinkronBerjalan !== "undefined" && akunSinkronBerjalan && typeof akunSinkronBerjalan.then === "function") {
+    akunSinkronBerjalan.then(function () {
+      if (adminMenyala) adminBeriSemuaItem(1000);
+    }).catch(function () {});
+  }
   adminPesan(catatan || "aktif");
   if (typeof buatPilihanKarakter === "function") buatPilihanKarakter();
   if (typeof buatPilihanLevel === "function") buatPilihanLevel();
-  if (window.console) console.log("[admin] mode admin aktif: semua level dan karakter terbuka");
+  if (window.console) console.log("[admin] mode admin aktif: semua level, karakter, dan item non-artefak (1000x) terbuka");
 }
 
 function adminMatikan() {

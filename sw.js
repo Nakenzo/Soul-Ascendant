@@ -1,4 +1,4 @@
-const BUILD = 120;
+const BUILD = 122;
 const CACHE_FALLBACK = "soul-ascendant-v" + BUILD;
 const ASSETS_TO_CACHE = [
   "./",
@@ -38,6 +38,9 @@ const ASSETS_TO_CACHE = [
   "./main.js",
   "./admin-konfig.js",
   "./admin-akun.js",
+  "./test-wave-select.js",
+  "./admin-artefak.js",
+  "./admin-debug.js",
   "./assets/fonts/ZenDots.woff2",
   "./assets/characters/kenzro.png",
   "./assets/characters/rin.png",

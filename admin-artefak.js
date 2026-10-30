@@ -105,6 +105,12 @@
       segarkanTampilan();
     }));
 
+    adminSisip(tombol("ITEM 1000x", () => {
+      const jml = typeof adminBeriSemuaItem === "function" ? adminBeriSemuaItem(1000) : 0;
+      catat(`BERI ${jml} jenis item @ 1000x (non-artefak)`);
+      if (typeof adminPesan === "function") adminPesan(jml + " item x1000");
+      segarkanTampilan();
+    }));
     adminSisip(tombol("ARTEFAK LV1", () => beriSemua(1)));
     adminSisip(tombol("ARTEFAK LV5", () => beriSemua(5)));
     adminSisip(tombol("ARTEFAK MAX", () => beriSemua(ARTEFAK_LEVEL_MAX)));

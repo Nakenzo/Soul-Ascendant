@@ -2,7 +2,7 @@
   "name": "Soul Ascendant",
   "short_name": "SoulAscendant",
   "description": "2D Top-Down Action Roguelike Game",
-  "build": 120,
+  "build": 122,
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -40,6 +40,9 @@
     "main.js",
     "admin-konfig.js",
     "admin-akun.js",
+    "test-wave-select.js",
+    "admin-artefak.js",
+    "admin-debug.js",
     "style.css",
     "settings.css",
     "updater.css"

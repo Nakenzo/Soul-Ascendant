@@ -193,6 +193,7 @@ function sembunyiSemua() {
   if (layarHud) layarHud.classList.add("hidden");
   const layarInv = document.getElementById("layarInventory");
   if (layarInv) layarInv.classList.add("hidden");
+  if (typeof hapusAnimasiAscension === "function") hapusAnimasiAscension();
   if (typeof hentikanKonfeti === "function") hentikanKonfeti();
 
   if (!animMati && statusGame !== "main") {
@@ -1829,14 +1830,161 @@ function bangunKontenAscension(wadah, kar, onSelesai) {
     btnAsc.textContent = "✨ LAKUKAN ASCENSION I ✨";
     btnAsc.onclick = function () {
       if (typeof lakukanAscensionKarakter === "function" && lakukanAscensionKarakter(kar.kunci)) {
-        if (typeof sfxLevelUp === "function") sfxLevelUp();
+        if (typeof sfxLevel === "function") sfxLevel();
         else if (typeof sfxKlik === "function") sfxKlik();
-        buatPilihanUpgrade();
         if (typeof onSelesai === "function") onSelesai();
+        buatPilihanUpgrade();
+        putarAnimasiSuksesAscension(kar);
       }
     };
   }
   wadah.appendChild(btnAsc);
+}
+
+var timerAnimasiAscension = null;
+var timerHapusAscension = null;
+
+function hapusAnimasiAscension() {
+  if (timerAnimasiAscension) {
+    clearTimeout(timerAnimasiAscension);
+    timerAnimasiAscension = null;
+  }
+  if (timerHapusAscension) {
+    clearTimeout(timerHapusAscension);
+    timerHapusAscension = null;
+  }
+  const lama = document.getElementById("ascFxOverlay");
+  if (lama && lama.parentNode) {
+    lama.parentNode.removeChild(lama);
+  }
+}
+
+function putarAnimasiSuksesAscension(kar) {
+  if (!kar || typeof document === "undefined") return;
+  hapusAnimasiAscension();
+
+  const targetPulse = [
+    document.querySelector("#daftarUpgrade .kartu-up.terpilih"),
+    document.getElementById("levelKarakterTampil"),
+    document.getElementById("tombolNaikLevel"),
+    document.querySelector("#ascensionWadah .asc-banner-sudah")
+  ];
+  for (let i = 0; i < targetPulse.length; i++) {
+    const el = targetPulse[i];
+    if (!el) continue;
+    el.classList.remove("asc-fx-pulse");
+    void el.offsetWidth;
+    el.classList.add("asc-fx-pulse");
+    setTimeout(function () {
+      el.classList.remove("asc-fx-pulse");
+    }, 680);
+  }
+
+  const induk = document.getElementById("layarKarakter") || document.body;
+  if (!induk) return;
+
+  const warnaKar = kar.warnaDash || "#fbbf24";
+  const overlay = document.createElement("div");
+  overlay.id = "ascFxOverlay";
+  overlay.className = "asc-fx-overlay";
+  overlay.style.setProperty("--warna-asc-kar", warnaKar);
+
+  const flash = document.createElement("div");
+  flash.className = "asc-fx-flash";
+  overlay.appendChild(flash);
+
+  const kartu = document.createElement("div");
+  kartu.className = "asc-fx-kartu";
+
+  const potretWadah = document.createElement("div");
+  potretWadah.className = "asc-fx-potret-wadah";
+
+  const cincin = document.createElement("div");
+  cincin.className = "asc-fx-cincin";
+  potretWadah.appendChild(cincin);
+
+  const mahkota = document.createElement("div");
+  mahkota.className = "asc-fx-mahkota";
+  mahkota.innerHTML = '<svg viewBox="0 0 36 24"><path d="M3 21 L33 21 L30 7 L23 14 L18 3 L13 14 L6 7 Z" fill="#fbbf24" stroke="#fef08a" stroke-width="1.8"/><circle cx="18" cy="3" r="2.2" fill="#ffffff"/></svg>';
+  potretWadah.appendChild(mahkota);
+
+  const cv = document.createElement("canvas");
+  cv.width = 64;
+  cv.height = 64;
+  cv.className = "asc-fx-kanvas";
+  const cx = cv.getContext("2d");
+  const img = typeof tekstur !== "undefined" ? tekstur[kar.kunci] : null;
+  if (cx) {
+    if (img && img.width) {
+      const s = 56 / Math.max(img.width, img.height);
+      cx.imageSmoothingEnabled = false;
+      cx.drawImage(img, (64 - img.width * s) / 2, (64 - img.height * s) / 2, img.width * s, img.height * s);
+    } else {
+      cx.fillStyle = warnaKar;
+      cx.fillRect(14, 14, 36, 36);
+    }
+  }
+  potretWadah.appendChild(cv);
+
+  const totalPartikel = 14;
+  for (let p = 0; p < totalPartikel; p++) {
+    const sudut = (p / totalPartikel) * Math.PI * 2 + (p % 2 ? 0.18 : -0.12);
+    const jarak = 54 + (p % 3) * 20;
+    const tx = Math.round(Math.cos(sudut) * jarak);
+    const ty = Math.round(Math.sin(sudut) * jarak);
+    const butir = document.createElement("span");
+    butir.className = "asc-fx-partikel" + (p % 2 === 0 ? " emas" : " elemen");
+    butir.style.setProperty("--tx", tx + "px");
+    butir.style.setProperty("--ty", ty + "px");
+    butir.style.setProperty("--delay", ((p % 4) * 0.04).toFixed(2) + "s");
+    potretWadah.appendChild(butir);
+  }
+
+  kartu.appendChild(potretWadah);
+
+  const badge = document.createElement("div");
+  badge.className = "asc-fx-badge";
+  badge.textContent = "✨ ASCENSION I BERHASIL ✨";
+  kartu.appendChild(badge);
+
+  const namaEl = document.createElement("div");
+  namaEl.className = "asc-fx-nama";
+  namaEl.textContent = (kar.nama || kar.kunci).toUpperCase();
+  kartu.appendChild(namaEl);
+
+  const barisStat = document.createElement("div");
+  barisStat.className = "asc-fx-stat-grup";
+  barisStat.innerHTML =
+    '<div class="asc-fx-stat-baris">' +
+      '<span class="asc-fx-stat-lbl">BATAS LEVEL</span>' +
+      '<span class="asc-fx-stat-lama">LV 20</span>' +
+      '<span class="asc-fx-stat-panah">&#10142;</span>' +
+      '<span class="asc-fx-stat-baru">LV 40</span>' +
+    '</div>' +
+    '<div class="asc-fx-stat-baris">' +
+      '<span class="asc-fx-stat-lbl">POIN TALENT</span>' +
+      '<span class="asc-fx-stat-lama">20</span>' +
+      '<span class="asc-fx-stat-panah">&#10142;</span>' +
+      '<span class="asc-fx-stat-baru">40 POIN</span>' +
+    '</div>';
+  kartu.appendChild(barisStat);
+
+  overlay.appendChild(kartu);
+  induk.appendChild(overlay);
+
+  const tutupCepat = function () {
+    if (overlay.classList.contains("keluar")) return;
+    overlay.classList.add("keluar");
+    if (timerAnimasiAscension) {
+      clearTimeout(timerAnimasiAscension);
+      timerAnimasiAscension = null;
+    }
+    if (timerHapusAscension) clearTimeout(timerHapusAscension);
+    timerHapusAscension = setTimeout(hapusAnimasiAscension, 240);
+  };
+
+  overlay.onclick = tutupCepat;
+  timerAnimasiAscension = setTimeout(tutupCepat, 1500);
 }
 
 function bukaModalAscension(kar) {

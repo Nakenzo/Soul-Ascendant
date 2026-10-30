@@ -6077,3 +6077,316 @@ body[data-device="mobile"] .tombol-sentuh {
     border-color: #fbbf24 !important;
     color: #fde047 !important;
 }
+
+
+.asc-fx-pulse {
+    animation: ascFxDenyutUpgrade 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.asc-fx-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 80;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: calc(var(--cs, 0.56) * 14px);
+    background: rgba(6, 10, 22, 0.54);
+    backdrop-filter: blur(2.5px);
+    -webkit-backdrop-filter: blur(2.5px);
+    cursor: pointer;
+    overflow: hidden;
+    animation: ascFxMasukOverlay 0.2s ease-out forwards;
+}
+
+.asc-fx-overlay.keluar {
+    pointer-events: none;
+    animation: ascFxKeluarOverlay 0.22s ease-in forwards;
+}
+
+.asc-fx-flash {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(circle at 50% 45%, rgba(254, 240, 138, 0.45) 0%, rgba(251, 191, 36, 0.16) 35%, transparent 68%);
+    animation: ascFxKilatLatar 0.7s ease-out forwards;
+}
+
+.asc-fx-kartu {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(var(--cs, 0.56) * 7px);
+    padding: calc(var(--cs, 0.56) * 18px) calc(var(--cs, 0.56) * 28px);
+    min-width: calc(var(--cs, 0.56) * 290px);
+    max-width: 90vw;
+    background: linear-gradient(165deg, rgba(17, 24, 39, 0.97) 0%, rgba(9, 14, 28, 0.98) 100%);
+    border: 2px solid #fbbf24;
+    border-radius: calc(var(--cs, 0.56) * 14px);
+    box-shadow: 0 18px 46px rgba(0, 0, 0, 0.82), 0 0 28px rgba(251, 191, 36, 0.45), inset 0 0 18px rgba(251, 191, 36, 0.15);
+    animation: ascFxKartuPop 0.44s cubic-bezier(0.18, 1.25, 0.4, 1) forwards;
+}
+
+.asc-fx-potret-wadah {
+    position: relative;
+    width: calc(var(--cs, 0.56) * 92px);
+    height: calc(var(--cs, 0.56) * 92px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: calc(var(--cs, 0.56) * 8px);
+}
+
+.asc-fx-cincin {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px dashed rgba(253, 224, 71, 0.82);
+    box-shadow: 0 0 18px rgba(251, 191, 36, 0.45), inset 0 0 14px var(--warna-asc-kar, #fbbf24);
+    animation: ascFxPutarCincin 4.2s linear infinite;
+}
+
+.asc-fx-mahkota {
+    position: absolute;
+    top: calc(var(--cs, 0.56) * -15px);
+    left: 50%;
+    width: calc(var(--cs, 0.56) * 32px);
+    height: calc(var(--cs, 0.56) * 22px);
+    transform: translateX(-50%);
+    z-index: 3;
+    filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.95));
+    animation: ascFxMahkotaTurun 0.48s cubic-bezier(0.2, 1.3, 0.4, 1) 0.08s backwards;
+}
+
+.asc-fx-mahkota svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.asc-fx-kanvas {
+    position: relative;
+    z-index: 2;
+    width: calc(var(--cs, 0.56) * 64px);
+    height: calc(var(--cs, 0.56) * 64px);
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    filter: drop-shadow(0 0 10px rgba(253, 224, 71, 0.72));
+    animation: ascFxPotretLoncat 0.52s cubic-bezier(0.22, 1.35, 0.4, 1) forwards;
+}
+
+.asc-fx-partikel {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: calc(var(--cs, 0.56) * 7px);
+    height: calc(var(--cs, 0.56) * 7px);
+    margin-top: calc(var(--cs, 0.56) * -3.5px);
+    margin-left: calc(var(--cs, 0.56) * -3.5px);
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    animation: ascFxPartikelBurst 0.78s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s) forwards;
+}
+
+.asc-fx-partikel.emas {
+    background: #fde047;
+    box-shadow: 0 0 8px #fbbf24;
+}
+
+.asc-fx-partikel.elemen {
+    background: var(--warna-asc-kar, #38bdf8);
+    box-shadow: 0 0 8px var(--warna-asc-kar, #38bdf8);
+}
+
+.asc-fx-badge {
+    margin-top: calc(var(--cs, 0.56) * 2px);
+    padding: calc(var(--cs, 0.56) * 3px) calc(var(--cs, 0.56) * 12px);
+    background: linear-gradient(90deg, rgba(245, 158, 11, 0.28) 0%, rgba(251, 191, 36, 0.42) 50%, rgba(245, 158, 11, 0.28) 100%);
+    border: 1px solid rgba(254, 240, 138, 0.75);
+    border-radius: 999px;
+    font-size: calc(var(--cs, 0.56) * 10.5px);
+    font-weight: 900;
+    letter-spacing: 1px;
+    color: #fef08a;
+    text-shadow: 0 0 8px rgba(251, 191, 36, 0.8);
+    white-space: nowrap;
+}
+
+.asc-fx-nama {
+    font-size: calc(var(--cs, 0.56) * 16px);
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    color: #ffffff;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9), 0 0 12px var(--warna-asc-kar, #fbbf24);
+}
+
+.asc-fx-stat-grup {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--cs, 0.56) * 5px);
+    margin-top: calc(var(--cs, 0.56) * 3px);
+    padding: calc(var(--cs, 0.56) * 8px) calc(var(--cs, 0.56) * 12px);
+    background: rgba(15, 23, 42, 0.82);
+    border: 1px solid rgba(251, 191, 36, 0.35);
+    border-radius: calc(var(--cs, 0.56) * 8px);
+}
+
+.asc-fx-stat-baris {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: calc(var(--cs, 0.56) * 8px);
+    font-size: calc(var(--cs, 0.56) * 10px);
+    font-weight: 800;
+}
+
+.asc-fx-stat-lbl {
+    color: #cbd5e1;
+    margin-right: auto;
+    letter-spacing: 0.5px;
+}
+
+.asc-fx-stat-lama {
+    color: #94a3b8;
+}
+
+.asc-fx-stat-panah {
+    color: #fbbf24;
+    font-size: calc(var(--cs, 0.56) * 11px);
+}
+
+.asc-fx-stat-baru {
+    color: #4ade80;
+    text-shadow: 0 0 8px rgba(74, 222, 128, 0.65);
+    animation: ascFxAngkaNaik 0.45s cubic-bezier(0.2, 1.35, 0.4, 1) 0.16s backwards;
+}
+
+@keyframes ascFxDenyutUpgrade {
+    0% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+    40% {
+        transform: scale(1.07);
+        filter: brightness(1.45) drop-shadow(0 0 14px rgba(251, 191, 36, 0.9));
+    }
+    100% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+}
+
+@keyframes ascFxMasukOverlay {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes ascFxKeluarOverlay {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(1.03);
+    }
+}
+
+@keyframes ascFxKilatLatar {
+    0% {
+        opacity: 0;
+        transform: scale(0.75);
+    }
+    28% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1.25);
+    }
+}
+
+@keyframes ascFxKartuPop {
+    0% {
+        opacity: 0;
+        transform: translateY(14px) scale(0.78);
+    }
+    65% {
+        opacity: 1;
+        transform: translateY(-2px) scale(1.04);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes ascFxPutarCincin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes ascFxMahkotaTurun {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -14px) scale(0.5);
+    }
+    100% {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(1);
+    }
+}
+
+@keyframes ascFxPotretLoncat {
+    0% {
+        transform: scale(0.65) translateY(8px);
+        filter: brightness(2) drop-shadow(0 0 20px #fef08a);
+    }
+    55% {
+        transform: scale(1.14) translateY(-4px);
+        filter: brightness(1.35) drop-shadow(0 0 16px #fbbf24);
+    }
+    100% {
+        transform: scale(1) translateY(0);
+        filter: brightness(1) drop-shadow(0 0 10px rgba(253, 224, 71, 0.72));
+    }
+}
+
+@keyframes ascFxPartikelBurst {
+    0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(0.5) rotate(0deg);
+    }
+    30% {
+        opacity: 1;
+        transform: translate(calc(var(--tx, 0px) * 0.65), calc(var(--ty, 0px) * 0.65)) scale(1.25) rotate(90deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(var(--tx, 0px), var(--ty, 0px)) scale(0.2) rotate(220deg);
+    }
+}
+
+@keyframes ascFxAngkaNaik {
+    0% {
+        opacity: 0;
+        transform: translateY(6px) scale(0.75);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}

@@ -1,7 +1,7 @@
 {
-  "timestamp": 1793365630483,
-  "build": 120,
-  "pesan": "Pembaruan 25 tekstur item pixel art unik & sinkronisasi sistem versi lintas platform.",
+  "timestamp": 1793367399462,
+  "build": 122,
+  "pesan": "Debug item 1000x khusus akun admin & animasi selebrasi upgrade saat Ascension I karakter berhasil.",
   "perlu_instal_ulang": false,
   "min_shell_build": 93,
   "url_apk": "https://github.com/Nakenzo/Soul-Ascendant/releases/latest/download/Soul-Ascendant.apk",
@@ -38,9 +38,12 @@
     "main.js",
     "admin-konfig.js",
     "admin-akun.js",
+    "test-wave-select.js",
+    "admin-artefak.js",
+    "admin-debug.js",
     "style.css",
     "settings.css",
     "updater.css"
   ],
-  "tanggal": "2026-10-30T13:07:10.483Z"
+  "tanggal": "2026-10-30T13:36:39.462Z"
 }
