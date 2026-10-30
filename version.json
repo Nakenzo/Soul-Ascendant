@@ -1,7 +1,7 @@
 {
-  "timestamp": 1793071349201,
-  "build": 118,
-  "pesan": "Integrasi tombol modal interaktif Ascension I & perbaikan tooltip syarat talent tree Ascension.",
+  "timestamp": 1793364844296,
+  "build": 119,
+  "pesan": "Pembaruan 25 tekstur item pixel art unik & sinkronisasi sistem versi lintas platform.",
   "perlu_instal_ulang": false,
   "min_shell_build": 93,
   "url_apk": "https://github.com/Nakenzo/Soul-Ascendant/releases/latest/download/Soul-Ascendant.apk",
@@ -42,5 +42,5 @@
     "settings.css",
     "updater.css"
   ],
-  "tanggal": "2026-10-27T03:22:29.201Z"
+  "tanggal": "2026-10-30T12:54:04.297Z"
 }

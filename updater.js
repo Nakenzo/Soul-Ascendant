@@ -1,7 +1,9 @@
 (function () {
   function ambilVersiLokal() {
     const versi = typeof VERSI_GAME !== "undefined" ? VERSI_GAME : "0.1.0";
-    let build = typeof BUILD_GAME !== "undefined" ? BUILD_GAME : (typeof BUILD !== "undefined" ? BUILD : 72);
+    let build = typeof BUILD_GAME !== "undefined"
+      ? BUILD_GAME
+      : (typeof BUILD_TERKINI === "number" ? BUILD_TERKINI : (typeof BUILD !== "undefined" ? BUILD : 118));
     const p = window.SA_PATCHER || window.SE_PATCHER;
     if (p && typeof p.ambilBuildAktif === "function") {
       build = p.ambilBuildAktif();

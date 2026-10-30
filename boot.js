@@ -51,7 +51,11 @@
     "admin-akun.js"
   ];
 
-  const BUILD_SEKARANG = 118;
+  const BUILD_SEKARANG = 119;
+  const TIMESTAMP_SEKARANG = 1793364844296;
+  const BUILD_SHELL_AWAL = (typeof BUILD_TERKINI === "number" && BUILD_TERKINI > 0)
+    ? BUILD_TERKINI
+    : BUILD_SEKARANG;
   let petaPatchAktif = {};
 
   let bootErrorCount = 0;
@@ -65,6 +69,7 @@
       if (bootErrorCount >= 2) {
         sessionStorage.removeItem("sa_boot_err_count");
         localStorage.removeItem("sa_patch_build");
+        localStorage.removeItem("sa_patch_timestamp");
         if (window.indexedDB) {
           indexedDB.deleteDatabase(DB_NAME);
         }
@@ -85,10 +90,7 @@
   }, 5000);
 
   function ambilBuildBawaan() {
-    if (typeof BUILD_TERKINI === "number" && BUILD_TERKINI > 0) return BUILD_TERKINI;
-    if (typeof BUILD_GAME !== "undefined") return BUILD_GAME;
-    if (typeof BUILD !== "undefined") return BUILD;
-    return BUILD_SEKARANG;
+    return BUILD_SHELL_AWAL;
   }
 
   function ambilBuildAktif() {
@@ -103,18 +105,19 @@
   }
 
   function ambilTimestampBawaan() {
-    return 1740000000000;
+    return TIMESTAMP_SEKARANG;
   }
 
   function ambilTimestampAktif() {
+    const tsBawaan = ambilTimestampBawaan();
     try {
       const tersimpan = localStorage.getItem("sa_patch_timestamp");
       if (tersimpan) {
         const n = parseInt(tersimpan, 10);
-        if (Number.isFinite(n) && n > 0) return n;
+        if (Number.isFinite(n) && n > 0) return Math.max(n, tsBawaan);
       }
     } catch (e) {}
-    return ambilTimestampBawaan();
+    return tsBawaan;
   }
 
   function bukaDB() {
@@ -238,6 +241,7 @@
     return new Promise((resolve) => {
       try {
         localStorage.removeItem("sa_patch_build");
+        localStorage.removeItem("sa_patch_timestamp");
       } catch (e) {}
       if (!db) return resolve(true);
       try {
@@ -716,6 +720,7 @@
     let petaPatch = await ambilSemuaPatch(db);
     terapkanPatchCSS(petaPatch);
     petaPatchAktif = petaPatch;
+    window.BUILD_TERKINI = ambilBuildAktif();
 
     function selesaikanLoadingScreen() {
       perbaruiStatusUI("Game siap!", 100);
@@ -746,6 +751,14 @@
     });
   }
 
+  function apakahRemoteLebihBaru(remote, bAktif, tsAktif) {
+    if (!remote) return false;
+    const bRemoteValid = typeof remote.build === "number" && remote.build > 0;
+    const adaUpdateBuild = bRemoteValid && remote.build > bAktif;
+    const adaUpdateTS = !!(remote.timestamp && remote.timestamp > tsAktif && (!bRemoteValid || remote.build >= bAktif));
+    return adaUpdateBuild || adaUpdateTS;
+  }
+
   async function mulaiBootstrapper() {
     const buildBawaan = ambilBuildBawaan();
     let tersimpanBuild = 0;
@@ -754,14 +767,14 @@
     } catch (e) {}
 
     const db = await bukaDB();
-    if (db && tersimpanBuild < buildBawaan) {
+    if (tersimpanBuild < buildBawaan) {
       await hapusSemuaPatch(db);
       try {
         localStorage.setItem("sa_patch_build", String(buildBawaan));
+        localStorage.setItem("sa_patch_timestamp", String(ambilTimestampBawaan()));
       } catch (e) {}
     }
 
-    const buildAktif = ambilBuildAktif();
     const teksVersi = document.getElementById("updateVersiTeks");
     if (teksVersi) {
       teksVersi.textContent = "v0.1.0";
@@ -780,9 +793,7 @@
         if (remote) {
           const tsAktif = ambilTimestampAktif();
           const bAktif = ambilBuildAktif();
-          const adaUpdateTS = remote.timestamp && remote.timestamp > tsAktif;
-          const adaUpdateBuild = typeof remote.build === "number" && remote.build > bAktif;
-          if (adaUpdateTS || adaUpdateBuild) {
+          if (apakahRemoteLebihBaru(remote, bAktif, tsAktif)) {
             const butuhInstal = cekPerluInstalUlang(remote);
             if (butuhInstal) {
               tampilkanModalUpdate(remote, db, true, function () {
@@ -802,6 +813,7 @@
   }
 
   window.SA_PATCHER = window.SE_PATCHER = {
+    ambilBuildBawaan: ambilBuildBawaan,
     ambilBuildAktif: ambilBuildAktif,
     ambilTimestampAktif: ambilTimestampAktif,
     ambilPatch: function (nama) {
@@ -820,10 +832,8 @@
 
       const tsAktif = ambilTimestampAktif();
       const bAktif = ambilBuildAktif();
-      const adaUpdateTS = remote.timestamp && remote.timestamp > tsAktif;
-      const adaUpdateBuild = typeof remote.build === "number" && remote.build > bAktif;
 
-      if (adaUpdateTS || adaUpdateBuild) {
+      if (apakahRemoteLebihBaru(remote, bAktif, tsAktif)) {
         const butuhInstal = cekPerluInstalUlang(remote);
         tampilkanModalUpdate(remote, db, butuhInstal);
       } else {

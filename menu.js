@@ -1780,9 +1780,13 @@ function bangunKontenAscension(wadah, kar, onSelesai) {
     const kartu = document.createElement("div");
     kartu.className = "asc-bahan-kartu" + (cukup ? " bahan-cukup" : " bahan-kurang");
 
-    const imgSrc = "assets/items/" + b.id + ".png";
+    const lokalSrc = "assets/items/" + b.id + ".png";
+    const imgSrc = typeof ambilPathIkonItem === "function" ? ambilPathIkonItem(b.id) : lokalSrc;
     const fallbackSvg = (dbItem && typeof dbItem.ikon === "function") ? dbItem.ikon(rarityInfo.warna) : '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="' + rarityInfo.warna + '"/></svg>';
-    const htmlIkon = '<img src="' + imgSrc + '" class="pixel-item-img" alt="' + namaItem + '" onerror="this.style.display=\'none\';if(this.nextElementSibling)this.nextElementSibling.style.display=\'flex\';">'
+    const onErr = imgSrc !== lokalSrc
+      ? 'if(typeof tanganiGagalMuatIkonItem===\'function\'){tanganiGagalMuatIkonItem(this,\'' + lokalSrc + '\');}else{this.style.display=\'none\';if(this.nextElementSibling)this.nextElementSibling.style.display=\'flex\';}'
+      : 'this.style.display=\'none\';if(this.nextElementSibling)this.nextElementSibling.style.display=\'flex\';';
+    const htmlIkon = '<img src="' + imgSrc + '" class="pixel-item-img" alt="' + namaItem + '" onerror="' + onErr + '">'
       + '<span class="pixel-item-fallback" style="display:none;width:100%;height:100%;align-items:center;justify-content:center;">' + fallbackSvg + '</span>';
 
     kartu.innerHTML =

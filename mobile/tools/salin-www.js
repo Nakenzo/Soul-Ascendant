@@ -1,6 +1,6 @@
 "use strict";
-// Salin aset game (folder induk) ke www/ untuk dibungkus Capacitor.
-// Ini BUKAN pengganti permainan — hanya menyiapkan isi aplikasi Android.
+// Salin aset game (folder induk) ke www/ untuk dibungkus Capacitor & Tauri.
+// Sekaligus memverifikasi dan menjaga sinkronisasi nomor build di seluruh file inti.
 const fs = require("fs");
 const path = require("path");
 
@@ -37,6 +37,86 @@ function salin(asal, tujuan) {
   return 1;
 }
 
+function wajibSamaBuild(label, berkas, regex, petunjuk, targetBuild) {
+  const isi = fs.readFileSync(path.join(ROOT, berkas), "utf8");
+  const m = isi.match(regex);
+  const nilai = m ? Number(m[1]) : null;
+  if (nilai !== targetBuild) {
+    console.error("GAGAL: " + label + " (" + nilai + ") != manifest.json build (" + targetBuild + ").");
+    console.error("Ubah '" + petunjuk + "' di " + berkas + " agar sama, lalu jalankan ulang script ini.");
+    process.exit(1);
+  }
+  return isi;
+}
+
+// 1. Verifikasi & sinkronisasi metadata di ROOT sebelum penyalinan ke www/
+try {
+  const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, "manifest.json"), "utf8"));
+  if (!Number.isInteger(manifest.build) || manifest.build <= 0) {
+    throw new Error("manifest.json build harus berupa bilangan bulat positif.");
+  }
+
+  wajibSamaBuild("sw.js BUILD", "sw.js", /const BUILD = (\d+)/, "const BUILD", manifest.build);
+  wajibSamaBuild("core.js BUILD_GAME", "core.js", /const BUILD_GAME = (\d+)/, "const BUILD_GAME", manifest.build);
+  let bootSrc = wajibSamaBuild("boot.js BUILD_SEKARANG", "boot.js", /const BUILD_SEKARANG = (\d+)/, "const BUILD_SEKARANG", manifest.build);
+  wajibSamaBuild("index.html BUILD_TERKINI", "index.html", /var BUILD_TERKINI = (\d+)/, "var BUILD_TERKINI", manifest.build);
+
+  const vPath = path.join(ROOT, "version.json");
+  let ver = {};
+  let vMentahLama = "";
+  try {
+    vMentahLama = fs.readFileSync(vPath, "utf8");
+    ver = JSON.parse(vMentahLama);
+  } catch (e) {}
+
+  // Hanya perbarui timestamp jika nomor build berubah atau timestamp belum valid,
+  // agar eksekusi ulang di runner CI tidak menggeser timestamp commit asli.
+  if (ver.build !== manifest.build || !Number.isFinite(ver.timestamp) || ver.timestamp <= 0) {
+    ver.timestamp = Date.now();
+    ver.build = manifest.build;
+    ver.tanggal = new Date().toISOString();
+  }
+  if (Array.isArray(manifest.patch_files) && manifest.patch_files.length > 0) {
+    ver.patch_files = manifest.patch_files;
+  }
+
+  const vMentahBaru = JSON.stringify(ver, null, 2) + "\n";
+  if (vMentahBaru !== vMentahLama) {
+    fs.writeFileSync(vPath, vMentahBaru);
+  }
+
+  // Pastikan TIMESTAMP_SEKARANG di boot.js selalu sinkron dengan version.json
+  if (/const TIMESTAMP_SEKARANG = \d+;/.test(bootSrc)) {
+    const bootBaru = bootSrc.replace(
+      /const TIMESTAMP_SEKARANG = \d+;/,
+      "const TIMESTAMP_SEKARANG = " + ver.timestamp + ";"
+    );
+    if (bootBaru !== bootSrc) {
+      fs.writeFileSync(path.join(ROOT, "boot.js"), bootBaru);
+      bootSrc = bootBaru;
+    }
+  }
+
+  const gradlePath = path.join(ROOT, "mobile", "android", "app", "build.gradle");
+  if (fs.existsSync(gradlePath)) {
+    const gradleLama = fs.readFileSync(gradlePath, "utf8");
+    let gradleBaru = gradleLama.replace(/versionCode\s+\d+/, "versionCode " + manifest.build);
+    gradleBaru = gradleBaru.replace(/versionName\s+"[^"]+"/, 'versionName "0.1.' + manifest.build + '"');
+    if (gradleBaru !== gradleLama) {
+      fs.writeFileSync(gradlePath, gradleBaru);
+    }
+  }
+
+  console.log(
+    "Verifikasi ok: build " + manifest.build +
+    " (manifest == sw.js == core.js == boot.js == index.html == version.json == build.gradle)"
+  );
+} catch (err) {
+  console.error("GAGAL verifikasi build: " + err.message);
+  process.exit(1);
+}
+
+// 2. Salin seluruh aset yang sudah terverifikasi ke www/
 if (fs.existsSync(OUT)) fs.rmSync(OUT, { recursive: true, force: true });
 fs.mkdirSync(OUT, { recursive: true });
 
@@ -47,56 +127,3 @@ for (const entri of fs.readdirSync(ROOT)) {
 }
 
 console.log("www/ siap: " + total + " aset disalin ke " + OUT);
-
-// Verifikasi rilis: sw.js BUILD harus sama dengan manifest build, kalau tidak
-// browser tidak akan update service worker dan pemain tetap dapat file lama.
-try {
-  const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, "manifest.json"), "utf8"));
-  const swSrc = fs.readFileSync(path.join(ROOT, "sw.js"), "utf8");
-  const m = swSrc.match(/const BUILD = (\d+)/);
-  const swBuild = m ? Number(m[1]) : null;
-  if (swBuild !== manifest.build) {
-    console.error("GAGAL: sw.js BUILD (" + swBuild + ") != manifest.json build (" + manifest.build + ").");
-    console.error("Ubah 'const BUILD' di sw.js agar sama, lalu jalankan ulang script ini.");
-    process.exit(1);
-  }
-  const coreSrc = fs.readFileSync(path.join(ROOT, "core.js"), "utf8");
-  const mc = coreSrc.match(/const BUILD_GAME = (\d+)/);
-  const coreBuild = mc ? Number(mc[1]) : null;
-  if (coreBuild !== manifest.build) {
-    console.error("GAGAL: core.js BUILD_GAME (" + coreBuild + ") != manifest.json build (" + manifest.build + ").");
-    console.error("Ubah 'const BUILD_GAME' di core.js agar sama, lalu jalankan ulang script ini.");
-    process.exit(1);
-  }
-  const bootSrc = fs.readFileSync(path.join(ROOT, "boot.js"), "utf8");
-  const mb = bootSrc.match(/const BUILD_SEKARANG = (\d+)/);
-  const bootBuild = mb ? Number(mb[1]) : null;
-  if (bootBuild !== manifest.build) {
-    console.error("GAGAL: boot.js BUILD_SEKARANG (" + bootBuild + ") != manifest.json build (" + manifest.build + ").");
-    console.error("Ubah 'const BUILD_SEKARANG' di boot.js agar sama, lalu jalankan ulang script ini.");
-    process.exit(1);
-  }
-  const vPath = path.join(ROOT, "version.json");
-  let ver = {};
-  try {
-    ver = JSON.parse(fs.readFileSync(vPath, "utf8"));
-  } catch (e) {}
-  ver.timestamp = Date.now();
-  ver.build = manifest.build;
-  ver.tanggal = new Date().toISOString();
-  fs.writeFileSync(vPath, JSON.stringify(ver, null, 2) + "\n");
-  fs.writeFileSync(path.join(OUT, "version.json"), JSON.stringify(ver, null, 2) + "\n");
-
-  const gradlePath = path.join(ROOT, "mobile", "android", "app", "build.gradle");
-  if (fs.existsSync(gradlePath)) {
-    let gradleSrc = fs.readFileSync(gradlePath, "utf8");
-    gradleSrc = gradleSrc.replace(/versionCode\s+\d+/, "versionCode " + manifest.build);
-    gradleSrc = gradleSrc.replace(/versionName\s+"[^"]+"/, 'versionName "0.1.' + manifest.build + '"');
-    fs.writeFileSync(gradlePath, gradleSrc);
-  }
-
-  console.log("Verifikasi ok: build " + manifest.build + " (manifest == sw.js == core.js == boot.js == version.json == build.gradle)");
-} catch (err) {
-  console.error("GAGAL verifikasi build: " + err.message);
-  process.exit(1);
-}

@@ -451,6 +451,37 @@ function gantiKategoriInventory(kat) {
   renderGridInventory();
 }
 
+const BUILD_IKON_ITEM_UNIK = 119;
+
+function ambilPathIkonItem(itemId) {
+  const lokal = "assets/items/" + itemId + ".png";
+  if (
+    typeof IS_APK !== "undefined" &&
+    (IS_APK || IS_PC) &&
+    typeof window !== "undefined" &&
+    window.SA_PATCHER &&
+    typeof window.SA_PATCHER.ambilBuildBawaan === "function" &&
+    window.SA_PATCHER.ambilBuildBawaan() < BUILD_IKON_ITEM_UNIK &&
+    (typeof navigator === "undefined" || navigator.onLine !== false)
+  ) {
+    return "https://raw.githubusercontent.com/Nakenzo/Soul-Ascendant/main/" + lokal;
+  }
+  return lokal;
+}
+
+function tanganiGagalMuatIkonItem(imgEl, fallbackLokal) {
+  if (!imgEl) return;
+  if (fallbackLokal && !imgEl.getAttribute("data-lokal-dicoba")) {
+    imgEl.setAttribute("data-lokal-dicoba", "1");
+    imgEl.src = fallbackLokal;
+    return;
+  }
+  imgEl.style.display = "none";
+  if (imgEl.nextElementSibling) {
+    imgEl.nextElementSibling.style.display = "flex";
+  }
+}
+
 function ambilHtmlIkonItem(item, warna) {
   if (!item) return "";
   if (item.kategori === "artefak" && item.id) {
@@ -459,9 +490,13 @@ function ambilHtmlIkonItem(item, warna) {
     return '<img src="' + imgSrc + '" class="pixel-item-img pixel-artefak-img" alt="' + (item.nama || "") + '" onerror="this.style.display=\'none\';if(this.nextElementSibling)this.nextElementSibling.style.display=\'flex\';">'
       + '<span class="pixel-item-fallback" style="display:none;width:100%;height:100%;">' + fallbackSvg + '</span>';
   }
-  const imgSrc = "assets/items/" + item.id + ".png";
+  const lokalSrc = "assets/items/" + item.id + ".png";
+  const imgSrc = ambilPathIkonItem(item.id);
   const fallbackSvg = typeof item.ikon === "function" ? item.ikon(warna) : "";
-  return '<img src="' + imgSrc + '" class="pixel-item-img" alt="' + (item.nama || "") + '" onerror="this.style.display=\'none\';if(this.nextElementSibling)this.nextElementSibling.style.display=\'flex\';">'
+  const onErr = imgSrc !== lokalSrc
+    ? 'if(typeof tanganiGagalMuatIkonItem===\'function\'){tanganiGagalMuatIkonItem(this,\'' + lokalSrc + '\');}else{this.style.display=\'none\';if(this.nextElementSibling)this.nextElementSibling.style.display=\'flex\';}'
+    : 'this.style.display=\'none\';if(this.nextElementSibling)this.nextElementSibling.style.display=\'flex\';';
+  return '<img src="' + imgSrc + '" class="pixel-item-img" alt="' + (item.nama || "") + '" onerror="' + onErr + '">'
     + '<span class="pixel-item-fallback" style="display:none;width:100%;height:100%;">' + fallbackSvg + '</span>';
 }
 
@@ -929,15 +964,27 @@ const CACHE_SPRITE_ITEM = {};
 
 function ambilSpriteItemCanvas(itemId) {
   if (CACHE_SPRITE_ITEM[itemId]) return CACHE_SPRITE_ITEM[itemId];
+  const lokalSrc = "assets/items/" + itemId + ".png";
+  const awalSrc = ambilPathIkonItem(itemId);
   const img = new Image();
-  img.src = "assets/items/" + itemId + ".png";
+  if (awalSrc !== lokalSrc) {
+    img.crossOrigin = "anonymous";
+  }
+  let sudahCobaLokal = awalSrc === lokalSrc;
   img.onerror = function() {
+    if (!sudahCobaLokal) {
+      sudahCobaLokal = true;
+      this.removeAttribute("crossorigin");
+      this.src = lokalSrc;
+      return;
+    }
     const def = (typeof DATABASE_ITEM !== "undefined" && DATABASE_ITEM) ? DATABASE_ITEM[itemId] : null;
     if (def && typeof def.ikon === "function") {
       const rarity = (typeof ITEM_RARITY !== "undefined" && ITEM_RARITY[def.rarity]) ? ITEM_RARITY[def.rarity] : { warna: "#ffd23f" };
       this.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(def.ikon(rarity.warna));
     }
   };
+  img.src = awalSrc;
   CACHE_SPRITE_ITEM[itemId] = img;
   return img;
 }
@@ -966,6 +1013,10 @@ if (typeof document !== "undefined") {
   }
 }
 
-window.bukaInventory = bukaInventory;
-window.tutupInventory = tutupInventory;
+if (typeof window !== "undefined") {
+  window.bukaInventory = bukaInventory;
+  window.tutupInventory = tutupInventory;
+  window.ambilPathIkonItem = ambilPathIkonItem;
+  window.tanganiGagalMuatIkonItem = tanganiGagalMuatIkonItem;
+}
 
