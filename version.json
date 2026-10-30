@@ -1,6 +1,6 @@
 {
-  "timestamp": 1793364844296,
-  "build": 119,
+  "timestamp": 1793365630483,
+  "build": 120,
   "pesan": "Pembaruan 25 tekstur item pixel art unik & sinkronisasi sistem versi lintas platform.",
   "perlu_instal_ulang": false,
   "min_shell_build": 93,
@@ -42,5 +42,5 @@
     "settings.css",
     "updater.css"
   ],
-  "tanggal": "2026-10-30T12:54:04.297Z"
+  "tanggal": "2026-10-30T13:07:10.483Z"
 }

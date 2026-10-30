@@ -1780,7 +1780,7 @@ function bangunKontenAscension(wadah, kar, onSelesai) {
     const kartu = document.createElement("div");
     kartu.className = "asc-bahan-kartu" + (cukup ? " bahan-cukup" : " bahan-kurang");
 
-    const lokalSrc = "assets/items/" + b.id + ".png";
+    const lokalSrc = "assets/items/" + b.id + ".png?b=120";
     const imgSrc = typeof ambilPathIkonItem === "function" ? ambilPathIkonItem(b.id) : lokalSrc;
     const fallbackSvg = (dbItem && typeof dbItem.ikon === "function") ? dbItem.ikon(rarityInfo.warna) : '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="' + rarityInfo.warna + '"/></svg>';
     const onErr = imgSrc !== lokalSrc

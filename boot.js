@@ -51,8 +51,8 @@
     "admin-akun.js"
   ];
 
-  const BUILD_SEKARANG = 119;
-  const TIMESTAMP_SEKARANG = 1793364844296;
+  const BUILD_SEKARANG = 120;
+  const TIMESTAMP_SEKARANG = 1793365630483;
   const BUILD_SHELL_AWAL = (typeof BUILD_TERKINI === "number" && BUILD_TERKINI > 0)
     ? BUILD_TERKINI
     : BUILD_SEKARANG;
