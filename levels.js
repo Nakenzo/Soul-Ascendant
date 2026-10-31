@@ -138,10 +138,19 @@ function levelSelesai() {
   if (typeof bosKematianAktif === "function" && bosKematianAktif()) return;
 
   koin += 50 + level * 10;
-  player.hp = Math.min(player.maxHp, player.hp + 30);
-
-  if (player.kartu && player.kartu.darahKetiga) {
-    player.hp = Math.min(player.maxHp, player.hp + 15 * player.kartu.darahKetiga);
+  const bonusDarah = (player.kartu && player.kartu.darahKetiga) ? (15 * player.kartu.darahKetiga) : 0;
+  player.hp = Math.min(player.maxHp, player.hp + 30 + bonusDarah);
+  if (typeof timAnggota !== "undefined" && Array.isArray(timAnggota)) {
+    for (let i = 0; i < timAnggota.length; i++) {
+      const m = timAnggota[i];
+      if (!m || m.mati || m.hp <= 0) continue;
+      if (i === timAktifIdx) {
+        m.hp = player.hp;
+      } else {
+        m.hp = Math.min(m.maxHp, m.hp + 20 + bonusDarah);
+      }
+    }
+    if (typeof perbaruiHudSwitchTim === "function") perbaruiHudSwitchTim();
   }
   spawnParticles(player.x, player.y, "#ffd23f", 24);
 

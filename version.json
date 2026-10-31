@@ -1,7 +1,7 @@
 {
-  "timestamp": 1793445538190,
-  "build": 123,
-  "pesan": "Perbaikan sinkronisasi akun yang mereset status Ascension I & level karakter ke 20, disertai pemulihan otomatis progres Ascension.",
+  "timestamp": 1793450500000,
+  "build": 125,
+  "pesan": "Sistem battle 3 karakter ala Punishing: Gray Raven, pasif karakter bertahan & hitung mundur realtime saat off-field, serta cooldown switch 3 detik independen per karakter.",
   "perlu_instal_ulang": false,
   "min_shell_build": 93,
   "url_apk": "https://github.com/Nakenzo/Soul-Ascendant/releases/latest/download/Soul-Ascendant.apk",
@@ -45,5 +45,5 @@
     "settings.css",
     "updater.css"
   ],
-  "tanggal": "2026-10-31T11:18:58.190Z"
+  "tanggal": "2026-10-31T12:08:20.000Z"
 }

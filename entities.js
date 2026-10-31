@@ -77,7 +77,9 @@ function tembakPanahRaksasa(ang) {
     life: 3.0,
     beku: false,
     raksasa: true,
-    fz: koridor
+    fz: koridor,
+    dmgAsal: player.damage || (karakter ? karakter.damage : 25),
+    element: (karakter && karakter.element ? karakter.element : "es").toLowerCase()
   });
   player.ultArrows = Math.max(0, player.ultArrows - 1);
   if (player.ultArrows <= 0) player.ultBuff = false;
@@ -97,7 +99,8 @@ function shoot() {
     vx: Math.cos(angle) * speed,
     vy: Math.sin(angle) * speed,
     life: 2.0,
-
+    dmgAsal: player.damage || (karakter ? karakter.damage : 25),
+    skill1DmgBonus: player.skill1DmgBonus || 0,
     beku: (typeof elemenInfusiSenjata === "function" && elemenInfusiSenjata() === "es") || player.specialBuff > 0,
     element: (typeof elemenInfusiSenjata === "function" && elemenInfusiSenjata()) || (typeof elemenSeranganBiasa === "function" ? elemenSeranganBiasa() : "fisik")
   });
@@ -142,6 +145,7 @@ function tembakBoltNihil() {
     wob: Math.random() * Math.PI * 2,
     t: 0,
     life: 2.2,
+    dmgAsal: player.damage || (karakter ? karakter.damage : 25),
     element: typeof elemenSeranganBiasa === "function" ? elemenSeranganBiasa() : "nihil"
   });
   spawnParticles(player.x, player.y, "#c084fc", 5);
@@ -1545,6 +1549,26 @@ function prosesKematianPemain() {
   if (animMati || gameOver) return;
   player.hp = 0;
   const punyaNyawa = !!(player.kartu && player.kartu.nyawaKedua);
+  if (!punyaNyawa && typeof timAnggota !== "undefined" && Array.isArray(timAnggota) && timAnggota.length > 1) {
+    if (timAnggota[timAktifIdx]) {
+      timAnggota[timAktifIdx].hp = 0;
+      timAnggota[timAktifIdx].mati = true;
+    }
+    const slotHidup = typeof cariSlotHidupBerikutnya === "function" ? cariSlotHidupBerikutnya() : -1;
+    if (slotHidup !== -1 && typeof switchKeTombol === "function") {
+      const namaGugur = karakter && karakter.nama ? karakter.nama.toUpperCase() : "KARAKTER";
+      spawnParticles(player.x, player.y, "#ef4444", 26);
+      shake = 0.55;
+      hurtVig = 1;
+      spawnDamage(player.x, player.y - 84, namaGugur + " GUGUR!", "#f87171");
+      if (switchKeTombol(slotHidup, { paksaMati: true })) {
+        return;
+      }
+    }
+    if (typeof segarkanPanelSwitchTim === "function") {
+      segarkanPanelSwitchTim(true);
+    }
+  }
   if (typeof setSfxTerjeda === "function") setSfxTerjeda(true);
   animMati = {
     t: 0,
@@ -1780,6 +1804,10 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
   }
   player.specialBuff = Math.max(0, (player.specialBuff || 0) - dt);
   player.igniteBuff = Math.max(0, (player.igniteBuff || 0) - dt);
+  if ((player.infusiDurasi || 0) > 0) {
+    player.infusiDurasi = Math.max(0, player.infusiDurasi - dt);
+    if (player.infusiDurasi <= 0) player.infusiElemen = null;
+  }
   player.swing = Math.max(0, (player.swing || 0) - dt);
   if (player.comboTimer > 0) {
     player.comboTimer = Math.max(0, player.comboTimer - dt);
@@ -1939,7 +1967,7 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
           }
           for (const e2 of impuls) {
             b.hitSet.add(e2);
-            const elRaksasa = (karakter && karakter.element ? karakter.element : "es").toLowerCase();
+            const elRaksasa = (b.element || (karakter && karakter.element ? karakter.element : "es")).toLowerCase();
             applyDamageMusuh(e2, dmg, elRaksasa);
             e2.hitFlash = 0.1;
             e2.freeze = 7;
@@ -1955,9 +1983,10 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
           rings.push({ x: e.x, y: e.y, r: 12, maxR: 110, life: 0.25, t: 0 });
           break;
         }
-        let dmg = player.damage || karakter.damage;
+        let dmg = b.dmgAsal || player.damage || karakter.damage;
         if (b.beku) {
-          dmg = Math.round(dmg * (1 + (player.skill1DmgBonus || 0)));
+          const bonusSk1 = b.skill1DmgBonus !== undefined ? b.skill1DmgBonus : (player.skill1DmgBonus || 0);
+          dmg = Math.round(dmg * (1 + bonusSk1));
         }
         if (Math.random() < (player.crit || 0)) {
           dmg = Math.round(dmg * (1 + (player.critDmg !== undefined ? player.critDmg : 0.70)));
@@ -2037,7 +2066,7 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
       const e = enemies[j];
       if (e.hp <= 0) continue;
       if (segDist(b.px, b.py, b.x, b.y, e.x, e.y) < e.r + 10) {
-        let dmg = player.damage || karakter.damage;
+        let dmg = b.dmgAsal || player.damage || karakter.damage;
         if (Math.random() < (player.crit || 0)) {
           dmg = Math.round(dmg * (1 + (player.critDmg !== undefined ? player.critDmg : 0.70)));
           spawnDamage(e.x, e.y - e.r - 40, "KRITIS", "#fbbf24");
@@ -2160,7 +2189,10 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
         R0: 46,
         R1: 340,
         dmgT: 0.25,
-        seed: Math.random() * 100
+        seed: Math.random() * 100,
+        kunciAsal: ob.kunciAsal || "voiz",
+        elementAsal: ob.elementAsal || "nihil",
+        specialDmgAsal: ob.specialDmgAsal || 55
       });
       spawnParticles(ob.x, ob.y, "#7c3aed", 30);
       rings.push({ x: ob.x, y: ob.y, r: 20, maxR: 130, life: 0.45, t: 0 });
@@ -2223,8 +2255,10 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
           if (e.hp <= 0) continue;
           const d = dist(e.x, e.y, bh.x, bh.y);
           if (d < bh.R) {
-            let dmg = Math.round((karakter.specialDmg || 55) * (typeof pengaliElement === "function" ? pengaliElement(karakter.kunci) : 1));
-            const elBh = (karakter && karakter.element ? karakter.element : "nihil").toLowerCase();
+            const kunciBh = bh.kunciAsal || (karakter ? karakter.kunci : "voiz");
+            const baseBh = bh.specialDmgAsal || (karakter && karakter.specialDmg) || 55;
+            let dmg = Math.round(baseBh * (typeof pengaliElement === "function" ? pengaliElement(kunciBh) : 1));
+            const elBh = (bh.elementAsal || (karakter && karakter.element ? karakter.element : "nihil")).toLowerCase();
             const dmgPasar = applyDamageMusuh(e, dmg, elBh);
             e.hitFlash = 0.1;
             parrySerigala(e);
@@ -2333,7 +2367,8 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
         sl.hit.add(e);
         let dmg = sl.dmg || player.damage || karakter.damage;
         if (sl.skill && typeof pengaliElement === "function") {
-          dmg *= pengaliElement(karakter.kunci);
+          const kunciSl = sl.kunciAsal || (karakter ? karakter.kunci : "rin");
+          dmg *= pengaliElement(kunciSl);
         }
         if (!sl.dmg && Math.random() < (player.crit || 0)) {
           dmg = Math.round(dmg * (1 + (player.critDmg !== undefined ? player.critDmg : 0.70)));
@@ -2379,8 +2414,9 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
     sfxApiLapis("jurus-vender-api");
     for (const e of enemies) {
       if (Math.hypot(e.x - ex, e.y - ey) > 130 + e.r) continue;
-      const elInferno = (karakter && karakter.element ? karakter.element : "api").toLowerCase();
-      const dmg = applyDamageMusuh(e, Math.round(60 * (1 + (player.skill2DmgBonus || 0))), elInferno);
+      const elInferno = (sl.element || (karakter && karakter.element ? karakter.element : "api")).toLowerCase();
+      const bonusSk2 = sl.skill2DmgBonus !== undefined ? sl.skill2DmgBonus : (player.skill2DmgBonus || 0);
+      const dmg = applyDamageMusuh(e, Math.round(60 * (1 + bonusSk2)), elInferno);
       e.hitFlash = 0.1;
       spawnDamage(e.x, e.y - e.r - 16, dmg, warnaElemenDamage(elInferno));
       serapanDarah(dmg);
@@ -2449,7 +2485,9 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
             aim: e,
             laju: 260,
             hit: new Set(),
-            telat: w * 0.18 + p.no * 0.04
+            telat: w * 0.18 + p.no * 0.04,
+            dmgAsal: p.dmgAsal,
+            elementAsal: p.elementAsal
           });
         }
         panahEs.splice(i, 1);
@@ -2487,13 +2525,12 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
       if (l2 > 0) t = Math.max(0, Math.min(1, ((sasaran.x - px) * dx + (sasaran.y - py) * dy) / l2));
       const cx = px + dx * t, cy = py + dy * t;
       if (Math.hypot(sasaran.x - cx, sasaran.y - cy) <= sasaran.r + 14) {
-        // damage sama persis dengan panah beku FROSTBITE
-        let dmg = Math.round((player.damage || karakter.damage) * (1 + (player.skill2DmgBonus || 0)));
+        let dmg = p.dmgAsal || Math.round((player.damage || karakter.damage) * (1 + (player.skill2DmgBonus || 0)));
         if (Math.random() < (player.crit || 0)) {
           dmg = Math.round(dmg * (1 + (player.critDmg !== undefined ? player.critDmg : 0.70)));
           spawnDamage(sasaran.x, sasaran.y - sasaran.r - 40, "KRITIS", "#fbbf24");
         }
-        const elFrozfall = (karakter && karakter.element ? karakter.element : "es").toLowerCase();
+        const elFrozfall = (p.elementAsal || (karakter && karakter.element ? karakter.element : "es")).toLowerCase();
         const dmgPasar = applyDamageMusuh(sasaran, dmg, elFrozfall);
         sasaran.hitFlash = 0.1;
         parrySerigala(sasaran);
@@ -2575,7 +2612,9 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
       for (const e of enemies) {
         if (e.hp <= 0) continue;
         if (dist(ia.x, ia.y, e.x, e.y) <= ia.radius + e.r) {
-          const dmg = Math.round(12 * (typeof pengaliElement === "function" ? pengaliElement(karakter.kunci) : 1) * (1 + (player.skill3DmgBonus || 0)));
+          const kunciIa = ia.kunciAsal || (karakter ? karakter.kunci : "kenzro");
+          const bonusIa = ia.skill3DmgBonus !== undefined ? ia.skill3DmgBonus : (player.skill3DmgBonus || 0);
+          const dmg = Math.round(12 * (typeof pengaliElement === "function" ? pengaliElement(kunciIa) : 1) * (1 + bonusIa));
           const dmgPasar = applyDamageMusuh(e, dmg, "es");
           spawnDamage(e.x, e.y - e.r - 16, dmgPasar, warnaElemenDamage("es"));
           spawnParticles(e.x, e.y, "#7dd3fc", 3);
@@ -2594,7 +2633,9 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
       const tgt = hl.target;
       if (tgt && tgt.hp > 0) {
         tgt.hexMark = 0;
-        const dmg = Math.round(52 * (typeof pengaliElement === "function" ? pengaliElement(karakter.kunci) : 1) * (1 + (player.skill3DmgBonus || 0)));
+        const kunciHl = hl.kunciAsal || (karakter ? karakter.kunci : "voiz");
+        const bonusHl = hl.skill3DmgBonus !== undefined ? hl.skill3DmgBonus : (player.skill3DmgBonus || 0);
+        const dmg = Math.round(52 * (typeof pengaliElement === "function" ? pengaliElement(kunciHl) : 1) * (1 + bonusHl));
         const dmgPasar = applyDamageMusuh(tgt, dmg, "nihil");
         tgt.hitFlash = 0.15;
         parrySerigala(tgt);
@@ -2952,6 +2993,7 @@ const dashWarna = (karakter && karakter.warnaDash) || (karakter && karakter.tipe
       player.aegisT = Math.max(0, player.aegisT - dt);
     }
   }
+  if (typeof tickTimSkuad === "function") tickTimSkuad(dt);
 
   for (let i = flashes.length - 1; i >= 0; i--) {
     flashes[i].t += dt;

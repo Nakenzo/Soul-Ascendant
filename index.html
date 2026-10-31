@@ -16,7 +16,7 @@
             var p = (window.AndroidNative || window.Capacitor) ? "apk" : ((window.__TAURI__ || window.__TAURI_INTERNALS__) ? "pc" : "web");
             document.documentElement.setAttribute("data-platform", p);
         })();
-        var BUILD_TERKINI = 123;
+        var BUILD_TERKINI = 125;
     </script>
 </head>
 <body>
@@ -107,10 +107,13 @@
                 <p><b>Klik Kanan</b> Dash</p>
                 <p><b>1 / 2 / 3</b> Skill 1-3 (Q)</p>
                 <p><b>R</b> Ultimate</p>
+                <p><b>Z / X</b> Switch Tim</p>
                 <p><b>Esc</b> Jeda</p>
             </div>
 
             <button id="tombolPause" class="tombol-pause hidden" title="Jeda (Esc)">&#10073;&#10073;</button>
+
+            <div id="panelSwitchTim" class="tim-sw-panel hidden" aria-label="Switch Karakter"></div>
 
             <div id="kontrolSentuh">
                 <div id="joyBase" class="joy-basis"><div id="joyKnob" class="joy-tombol"></div></div>
@@ -147,7 +150,7 @@
                 </div>
                 <div class="grup-tombol">
                     <button id="tombolLanjut" class="tombol-hijau">&#9654; Lanjut</button>
-                    <button id="tombolMenuPause" class="tombol-abu">&#8635; Ganti Karakter</button>
+                    <button id="tombolMenuPause" class="tombol-abu">&#8635; Atur Tim</button>
                     <button id="tombolJudulPause" class="tombol-abu">&#8962; Menu Utama</button>
                 </div>
             </div>
@@ -690,9 +693,16 @@
                     <i class="star-fall" style="--x:76%;--y:24%;--a:-205px;--b:170px;--dur:6.2s;--delay:1.4s"></i>
                     <i class="star-fall" style="--x:88%;--y:74%;--a:-165px;--b:135px;--dur:6.5s;--delay:4.1s"></i>
                 </div>
-                <h2>PILIH KARAKTER</h2>
+                <h2>PILIH TIM PERTARUNGAN</h2>
+                <p class="skuad-subjudul">Slot 1 masuk pertama ke arena &middot; Slot 2 &amp; 3 menjadi tombol Switch</p>
+                <div id="barSlotSkuad" class="skuad-slot-bar"></div>
                 <div id="daftarKarakter" class="tombol-karakter"></div>
                 <div id="infoKarakter" class="info-karakter hidden"></div>
+                <div id="aksiSkuadPilih" class="skuad-aksi-bar">
+                    <button id="tombolKembaliPilih" class="tombol-abu skuad-btn-kembali" type="button">&#8592; Kembali</button>
+                    <button id="tombolResetSkuad" class="tombol-abu skuad-btn-reset" type="button">&#8635; Atur Ulang</button>
+                    <button id="tombolMulaiSkuad" class="tombol-hijau skuad-btn-mulai" type="button">&#9654; MULAI PERTARUNGAN</button>
+                </div>
             </div>
 
             <div id="layarGameOver" class="overlay hidden">
@@ -704,7 +714,7 @@
                 <p id="skorAkhir" class="teks-skor" hidden>KOIN: 0</p>
                 <div class="grup-tombol">
                     <button id="tombolUlang" class="tombol-hijau">&#9654; Main Lagi</button>
-                    <button id="tombolMenu" class="tombol-abu">&#8635; Ganti Karakter</button>
+                    <button id="tombolMenu" class="tombol-abu">&#8635; Atur Tim</button>
                     <button id="tombolJudul" class="tombol-abu">&#8962; Menu Utama</button>
                 </div>
             </div>

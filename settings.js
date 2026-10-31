@@ -25,7 +25,9 @@ const IKATAN_BAWAAN = {
   skill1: "1",
   skill2: "2",
   skill3: "3",
-  ultimate: "r"
+  ultimate: "r",
+  switch1: "z",
+  switch2: "x"
 };
 
 // Urutan tampilan di UI + label tombolnya.
@@ -37,7 +39,9 @@ const DAFTAR_AKSI = [
   { aksi: "skill1", label: "SKILL 1", ket: "Skill 1 karakter (Q tetap cadangan)" },
   { aksi: "skill2", label: "SKILL 2", ket: "Skill 2 karakter" },
   { aksi: "skill3", label: "SKILL 3", ket: "Skill 3 karakter" },
-  { aksi: "ultimate", label: "ULTIMATE", ket: "Jurus ultimate" }
+  { aksi: "ultimate", label: "ULTIMATE", ket: "Jurus ultimate" },
+  { aksi: "switch1", label: "SWITCH 1", ket: "Tukar ke karakter cadangan 1" },
+  { aksi: "switch2", label: "SWITCH 2", ket: "Tukar ke karakter cadangan 2" }
 ];
 
 // Tombol cadangan yang menempel tetap pada satu aksi dan tidak boleh dipakai
@@ -94,7 +98,9 @@ function pengaturanBawaan() {
       skill1: IKATAN_BAWAAN.skill1,
       skill2: IKATAN_BAWAAN.skill2,
       skill3: IKATAN_BAWAAN.skill3,
-      ultimate: IKATAN_BAWAAN.ultimate
+      ultimate: IKATAN_BAWAAN.ultimate,
+      switch1: IKATAN_BAWAAN.switch1,
+      switch2: IKATAN_BAWAAN.switch2
     }
   };
 }

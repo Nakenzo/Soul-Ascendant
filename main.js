@@ -68,6 +68,9 @@ function loop(now) {
     try { vfx.render(); } catch (err) {}
   }
   try { aturNotaKartu(); } catch (err) {}
+  if (typeof sinkronkanVisibilitasSwitchTim === "function") {
+    try { sinkronkanVisibilitasSwitchTim(); } catch (err) {}
+  }
   sinkronkanKontrolSentuh();
   if (typeof sinkronkanMusikGame === "function") sinkronkanMusikGame();
   if (typeof perbaruiCdSkillSentuh === "function") {

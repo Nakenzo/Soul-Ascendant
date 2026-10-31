@@ -23,6 +23,7 @@ function jurusVender() {
     hit: new Set(),
     dmg: Math.round(45 * (1 + (player.skill1DmgBonus || 0))),
     skill: true,
+    kunciAsal: karakter ? karakter.kunci : "rin",
     element: (karakter && karakter.element ? karakter.element : "api").toLowerCase()
   });
   shake = 0.35;
@@ -170,6 +171,7 @@ function jurusUltimateVender() {
     dmg: Math.round(85 * (player.ultDmgMultiplier || 1)),
     skill: true,
     burst: true,
+    kunciAsal: karakter ? karakter.kunci : "rin",
     element: (karakter && karakter.element ? karakter.element : "api").toLowerCase()
   });
   shake = 0.7;
@@ -268,6 +270,8 @@ function skillVenderInferno() {
     jejak: [],
     hit: new Set(),
     dmg: Math.round(60 * (1 + (player.skill2DmgBonus || 0))),
+    skill2DmgBonus: player.skill2DmgBonus || 0,
+    kunciAsal: karakter ? karakter.kunci : "rin",
     skill: true,
     apiBesar: true,
     element: (karakter && karakter.element ? karakter.element : "api").toLowerCase()
@@ -293,6 +297,8 @@ function skillKenzroFrozfall() {
   target.sort(function (a, b) { return a.d - b.d; });
   const daftar = target.slice(0, 6).map(function (t) { return t.e; });
   const JUMLAH = 5;
+  const dmgFroz = Math.round((player.damage || (karakter ? karakter.damage : 25)) * (1 + (player.skill2DmgBonus || 0)));
+  const elFroz = (karakter && karakter.element ? karakter.element : "es").toLowerCase();
   for (let i = 0; i < JUMLAH; i++) {
     const a = -Math.PI / 2 + (i - (JUMLAH - 1) / 2) * 0.13;
     panahEs.push({
@@ -306,7 +312,9 @@ function skillKenzroFrozfall() {
       kids: 0,
       no: i,
       total: JUMLAH,
-      daftar: daftar
+      daftar: daftar,
+      dmgAsal: dmgFroz,
+      elementAsal: elFroz
     });
   }
   shake = 0.3;
@@ -425,7 +433,10 @@ function jurusUltimateVoiz() {
     tx: tx,
     ty: ty,
     t: 0,
-    laju: 1250
+    laju: 1250,
+    kunciAsal: karakter ? karakter.kunci : "voiz",
+    elementAsal: (karakter && karakter.element ? karakter.element : "nihil").toLowerCase(),
+    specialDmgAsal: (karakter && karakter.specialDmg) || 55
   });
   if (!sfxFile("ultimate-voiz")) sfxUltimate();
   addFlash("rgba(139, 92, 246, 0.5)", 1, 0.6);
@@ -501,6 +512,8 @@ function skillKenzroIceAge() {
     life: 10.0,
     tick: 0.35,
     pulse: 0,
+    kunciAsal: karakter ? karakter.kunci : "kenzro",
+    skill3DmgBonus: player.skill3DmgBonus || 0,
     snowflakes: snowflakes,
     crystals: crystals,
     sparkles: sparkles,
@@ -545,7 +558,9 @@ function skillVoizHex() {
       t: 0,
       durasi: 0.35,
       hit: false,
-      lebar: 26
+      lebar: 26,
+      kunciAsal: karakter ? karakter.kunci : "voiz",
+      skill3DmgBonus: player.skill3DmgBonus || 0
     });
   }
 }

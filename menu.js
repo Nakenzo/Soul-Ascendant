@@ -177,6 +177,9 @@ function aturTombolPause() {
   } else {
     tombolPause.classList.add("hidden");
   }
+  if (typeof sinkronkanVisibilitasSwitchTim === "function") {
+    sinkronkanVisibilitasSwitchTim();
+  }
 }
 
 function sembunyiSemua() {
@@ -2199,6 +2202,7 @@ function tampilkanPilih() {
 
   sinkronSfxTerjeda();
   layarPilih.classList.remove("hidden");
+  if (typeof inisialisasiSkuadPilih === "function") inisialisasiSkuadPilih();
   buatPilihanKarakter();
   aturTombolPause();
   if (typeof setMusik === "function") setMusik("lobby");
@@ -2315,22 +2319,26 @@ function siapkanSentuh() {
 
 function mulaiGameBaru() {
   sfxResume();
+  if (typeof pastikanPanelSwitchTim === "function") pastikanPanelSwitchTim();
   resetArena({ koinBaru: true });
   statusGame = "main";
   sinkronSfxTerjeda();
   sembunyiSemua();
   aturTombolPause();
+  if (typeof segarkanPanelSwitchTim === "function") segarkanPanelSwitchTim(true);
   if (typeof siapkanSentuh === "function") siapkanSentuh();
   if (typeof setMusik === "function") setMusik("game");
   if (typeof jalankanLoop === "function") jalankanLoop();
 }
 
 function ulangDenganKarakter() {
+  if (typeof pastikanPanelSwitchTim === "function") pastikanPanelSwitchTim();
   resetArena({ koinBaru: true });
   statusGame = "main";
   sinkronSfxTerjeda();
   sembunyiSemua();
   aturTombolPause();
+  if (typeof segarkanPanelSwitchTim === "function") segarkanPanelSwitchTim(true);
   if (typeof siapkanSentuh === "function") siapkanSentuh();
   if (typeof setMusik === "function") setMusik("game");
   if (typeof jalankanLoop === "function") jalankanLoop();
@@ -2393,33 +2401,249 @@ function pasangTombol() {
   }
 }
 
+let _pointerLeaveKarakterTerpasang = false;
+
+function gambarPotretKarakterCanvas(cv, kar, ukuran) {
+  if (!cv) return false;
+  const sz = ukuran || cv.width || 48;
+  if (cv.width !== sz) cv.width = sz;
+  if (cv.height !== sz) cv.height = sz;
+  const c = cv.getContext("2d");
+  if (!c) return false;
+  c.clearRect(0, 0, sz, sz);
+  if (!kar) return false;
+  const img = (typeof tekstur === "object" && tekstur) ? tekstur[kar.kunci] : null;
+  if (img && img.width > 0) {
+    const s = (sz * 0.9) / Math.max(img.width, img.height);
+    const w = img.width * s;
+    const h = img.height * s;
+    c.imageSmoothingEnabled = s < 1;
+    c.drawImage(img, (sz - w) / 2, (sz - h) / 2, w, h);
+    return true;
+  }
+  c.fillStyle = (typeof warnaSwitchKarakter === "function" ? warnaSwitchKarakter(kar) : kar.warnaDash) || "#38bdf8";
+  const pad = Math.round(sz * 0.16);
+  c.fillRect(pad, pad, sz - pad * 2, sz - pad * 2);
+  return false;
+}
+
+function pastikanStrukturPilihSkuad() {
+  if (!layarPilih) return;
+  const h2 = layarPilih.querySelector("h2");
+  if (h2) h2.textContent = "PILIH TIM PERTARUNGAN";
+
+  let sub = layarPilih.querySelector(".skuad-subjudul");
+  if (!sub) {
+    sub = document.createElement("p");
+    sub.className = "skuad-subjudul";
+    sub.textContent = "Slot 1 masuk pertama ke arena \u00B7 Slot 2 & 3 menjadi tombol Switch";
+    if (h2 && h2.nextSibling) layarPilih.insertBefore(sub, h2.nextSibling);
+    else layarPilih.insertBefore(sub, daftarKarakter);
+  }
+
+  let barSlot = document.getElementById("barSlotSkuad");
+  if (!barSlot) {
+    barSlot = document.createElement("div");
+    barSlot.id = "barSlotSkuad";
+    barSlot.className = "skuad-slot-bar";
+    layarPilih.insertBefore(barSlot, daftarKarakter);
+  }
+
+  let barAksi = document.getElementById("aksiSkuadPilih");
+  if (!barAksi) {
+    barAksi = document.createElement("div");
+    barAksi.id = "aksiSkuadPilih";
+    barAksi.className = "skuad-aksi-bar";
+    barAksi.innerHTML =
+      '<button id="tombolKembaliPilih" class="tombol-abu skuad-btn-kembali" type="button">\u2190 Kembali</button>' +
+      '<button id="tombolResetSkuad" class="tombol-abu skuad-btn-reset" type="button">\u21BA Atur Ulang</button>' +
+      '<button id="tombolMulaiSkuad" class="tombol-hijau skuad-btn-mulai" type="button">\u25B6 MULAI PERTARUNGAN</button>';
+    layarPilih.appendChild(barAksi);
+  }
+
+  const btnKembali = document.getElementById("tombolKembaliPilih");
+  if (btnKembali && !btnKembali.dataset.wired) {
+    btnKembali.dataset.wired = "1";
+    btnKembali.addEventListener("click", () => {
+      if (typeof sfxKlik === "function") sfxKlik();
+      tampilkanLevel();
+    });
+  }
+  const btnReset = document.getElementById("tombolResetSkuad");
+  if (btnReset && !btnReset.dataset.wired) {
+    btnReset.dataset.wired = "1";
+    btnReset.addEventListener("click", () => {
+      if (typeof sfxKlik === "function") sfxKlik();
+      timSkuad = [];
+      buatPilihanKarakter();
+    });
+  }
+  const btnMulai = document.getElementById("tombolMulaiSkuad");
+  if (btnMulai && !btnMulai.dataset.wired) {
+    btnMulai.dataset.wired = "1";
+    btnMulai.addEventListener("click", () => {
+      mulaiPertarunganSkuad();
+    });
+  }
+}
+
+function inisialisasiSkuadPilih() {
+  if (typeof muatSkuadTersimpan === "function") {
+    timSkuad = muatSkuadTersimpan();
+  } else if (!Array.isArray(timSkuad) || !timSkuad.length) {
+    timSkuad = KARAKTER
+      .filter((def) => def && (typeof syaratKarakter !== "function" || syaratKarakter(def).terbuka))
+      .slice(0, 3)
+      .map((def) => def.kunci);
+  }
+  if (typeof simpanSkuadPilihan === "function") simpanSkuadPilihan();
+}
+
+function toggleKarakterSkuad(kar) {
+  if (!kar) return;
+  const cek = typeof syaratKarakter === "function" ? syaratKarakter(kar) : { terbuka: true };
+  if (!cek || !cek.terbuka) {
+    if (typeof sfxKlik === "function") sfxKlik();
+    return;
+  }
+  if (!Array.isArray(timSkuad)) timSkuad = [];
+  const pos = timSkuad.indexOf(kar.kunci);
+  if (pos >= 0) {
+    timSkuad.splice(pos, 1);
+  } else if (timSkuad.length < 3) {
+    timSkuad.push(kar.kunci);
+  } else {
+    timSkuad[2] = kar.kunci;
+  }
+  if (typeof simpanSkuadPilihan === "function") simpanSkuadPilihan();
+  if (typeof sfxKlik === "function") sfxKlik();
+  buatPilihanKarakter();
+  tampilInfoKarakter(kar);
+}
+
+function mulaiPertarunganSkuad() {
+  const valid = [];
+  const sudah = {};
+  if (Array.isArray(timSkuad)) {
+    for (let i = 0; i < timSkuad.length && valid.length < 3; i++) {
+      const k = String(timSkuad[i] || "");
+      if (!k || sudah[k]) continue;
+      const def = KARAKTER.find((c) => c.kunci === k);
+      const cek = def && (typeof syaratKarakter === "function" ? syaratKarakter(def) : { terbuka: true });
+      if (def && cek && cek.terbuka) {
+        valid.push(def);
+        sudah[k] = true;
+      }
+    }
+  }
+  if (!valid.length) {
+    if (typeof sfxKlik === "function") sfxKlik();
+    return;
+  }
+  timSkuad = valid.map((d) => d.kunci);
+  if (typeof simpanSkuadPilihan === "function") simpanSkuadPilihan();
+  karakter = valid[0];
+  try { if (typeof perbaruiIkonSkillSentuh === "function") perbaruiIkonSkillSentuh(karakter); } catch (err) {}
+  mulaiGameBaru();
+}
+
+function renderBarSlotSkuad() {
+  const barSlot = document.getElementById("barSlotSkuad");
+  if (!barSlot) return;
+  barSlot.innerHTML = "";
+  const peranLabel = ["SLOT 1 \u00B7 ON-FIELD", "SLOT 2 \u00B7 SWITCH 1", "SLOT 3 \u00B7 SWITCH 2"];
+
+  for (let s = 0; s < 3; s++) {
+    const kunci = Array.isArray(timSkuad) ? timSkuad[s] : null;
+    const kar = kunci ? KARAKTER.find((c) => c.kunci === kunci) : null;
+    const slotEl = document.createElement("button");
+    slotEl.type = "button";
+    slotEl.className = "skuad-slot-item slot-ke-" + (s + 1) + (kar ? " terisi" : " kosong");
+    if (kar) {
+      const wAksen = typeof warnaSwitchKarakter === "function" ? warnaSwitchKarakter(kar) : "#4ade80";
+      slotEl.style.setProperty("--warna-slot", wAksen);
+    }
+
+    const kepala = document.createElement("div");
+    kepala.className = "skuad-slot-peran";
+    kepala.textContent = peranLabel[s];
+    slotEl.appendChild(kepala);
+
+    const badan = document.createElement("div");
+    badan.className = "skuad-slot-badan";
+    if (kar) {
+      const cv = document.createElement("canvas");
+      cv.className = "skuad-slot-potret";
+      gambarPotretKarakterCanvas(cv, kar, 40);
+      badan.appendChild(cv);
+
+      const teksWadah = document.createElement("div");
+      teksWadah.className = "skuad-slot-teks";
+      const nm = document.createElement("div");
+      nm.className = "skuad-slot-nama";
+      nm.textContent = kar.nama;
+      const elKet = document.createElement("div");
+      elKet.className = "skuad-slot-meta";
+      elKet.textContent = (kar.element || "Fisik").toUpperCase() + " \u00B7 HP " + kar.hp;
+      teksWadah.appendChild(nm);
+      teksWadah.appendChild(elKet);
+      badan.appendChild(teksWadah);
+
+      slotEl.title = "Klik untuk melepas " + kar.nama + " dari " + peranLabel[s];
+      slotEl.addEventListener("click", () => {
+        timSkuad.splice(s, 1);
+        if (typeof simpanSkuadPilihan === "function") simpanSkuadPilihan();
+        if (typeof sfxKlik === "function") sfxKlik();
+        buatPilihanKarakter();
+      });
+    } else {
+      const kosongTeks = document.createElement("div");
+      kosongTeks.className = "skuad-slot-kosong-teks";
+      kosongTeks.textContent = "+ Klik Karakter";
+      badan.appendChild(kosongTeks);
+      slotEl.disabled = true;
+    }
+    slotEl.appendChild(badan);
+    barSlot.appendChild(slotEl);
+  }
+
+  const btnMulai = document.getElementById("tombolMulaiSkuad");
+  if (btnMulai) {
+    const jml = Array.isArray(timSkuad) ? timSkuad.length : 0;
+    btnMulai.disabled = jml < 1;
+    btnMulai.classList.toggle("terkunci", jml < 1);
+    btnMulai.textContent = jml >= 1
+      ? ("\u25B6 MULAI PERTARUNGAN (" + jml + "/3)")
+      : "PILIH MINIMAL 1 KARAKTER";
+  }
+}
+
 function buatPilihanKarakter() {
+  pastikanStrukturPilihSkuad();
+  if (!Array.isArray(timSkuad)) timSkuad = [];
+  renderBarSlotSkuad();
   daftarKarakter.innerHTML = "";
 
   KARAKTER.forEach((kar, idx) => {
-    const img = tekstur[kar.kunci];
     const card = document.createElement("button");
+    card.type = "button";
     card.className = "kartu-karakter";
     const cek = typeof syaratKarakter === "function"
       ? syaratKarakter(kar)
       : { terbuka: true, syarat: "" };
     if (!cek.terbuka) card.classList.add("terkunci");
 
-    const cv = document.createElement("canvas");
-    cv.width = 56;
-    cv.height = 56;
-    const c = cv.getContext("2d");
-    if (img && img.width) {
-      const s = 56 / Math.max(img.width, img.height);
-      const w = img.width * s;
-      const h = img.height * s;
-
-      c.imageSmoothingEnabled = s < 1;
-      c.drawImage(img, (56 - w) / 2, (56 - h) / 2, w, h);
-    } else {
-      c.fillStyle = kar.warnaDash || "#ff8844";
-      c.fillRect(7, 7, 42, 42);
+    const idxSkuad = cek.terbuka ? timSkuad.indexOf(kar.kunci) : -1;
+    if (idxSkuad >= 0) {
+      card.classList.add("terpilih-skuad", "terpilih-slot-" + (idxSkuad + 1));
+      const badgeUrut = document.createElement("div");
+      badgeUrut.className = "skuad-urut-badge urut-" + (idxSkuad + 1);
+      badgeUrut.textContent = idxSkuad === 0 ? "1 \u00B7 ON-FIELD" : ((idxSkuad + 1) + " \u00B7 SWITCH");
+      card.appendChild(badgeUrut);
     }
+
+    const cv = document.createElement("canvas");
+    gambarPotretKarakterCanvas(cv, kar, 56);
     card.appendChild(cv);
 
     const nama = document.createElement("div");
@@ -2451,14 +2675,9 @@ function buatPilihanKarakter() {
       card.appendChild(badge);
     }
 
-    card.addEventListener("click", () => {
-      if (!cek.terbuka) {
-        if (typeof sfxKlik === "function") sfxKlik();
-        return;
-      }
-      karakter = kar;
-      try { if (typeof perbaruiIkonSkillSentuh === "function") perbaruiIkonSkillSentuh(kar); } catch (err) {}
-      mulaiGameBaru();
+    card.addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggleKarakterSkuad(kar);
     });
 
     card.addEventListener("pointerenter", () => tampilInfoKarakter(kar));
@@ -2467,7 +2686,10 @@ function buatPilihanKarakter() {
     daftarKarakter.appendChild(card);
   });
 
-  daftarKarakter.addEventListener("pointerleave", sembunyiInfoKarakter);
+  if (!_pointerLeaveKarakterTerpasang) {
+    _pointerLeaveKarakterTerpasang = true;
+    daftarKarakter.addEventListener("pointerleave", sembunyiInfoKarakter);
+  }
 }
 
 function buatPilihanLevel() {
@@ -2881,9 +3103,292 @@ function pasangAkun() {
   }
 }
 
+let _panelSwitchEl = null;
+let _slotDomSwitch = [];
+let _visSwitchTerakhir = null;
+
+function pastikanPanelSwitchTim() {
+  if (_panelSwitchEl && _slotDomSwitch.length === 2 && document.body && document.body.contains(_panelSwitchEl)) {
+    return _panelSwitchEl;
+  }
+  let panel = document.getElementById("panelSwitchTim");
+  if (!panel) {
+    const wadahGame = document.querySelector(".posisi-game") || (canvas && canvas.parentElement);
+    if (!wadahGame) return null;
+    panel = document.createElement("div");
+    panel.id = "panelSwitchTim";
+    panel.className = "tim-sw-panel hidden";
+    panel.setAttribute("aria-label", "Switch Karakter");
+    if (tombolPause && tombolPause.parentNode === wadahGame && tombolPause.nextSibling) {
+      wadahGame.insertBefore(panel, tombolPause.nextSibling);
+    } else {
+      wadahGame.appendChild(panel);
+    }
+  }
+  _panelSwitchEl = panel;
+  _visSwitchTerakhir = !panel.classList.contains("hidden");
+  panel.innerHTML = "";
+  _slotDomSwitch = [];
+
+  for (let b = 0; b < 2; b++) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "tim-sw-btn kosong";
+    btn.dataset.slotSwitch = String(b);
+
+    const potret = document.createElement("div");
+    potret.className = "tim-sw-potret";
+    const cv = document.createElement("canvas");
+    cv.width = 44;
+    cv.height = 44;
+    cv.className = "tim-sw-canvas";
+    const keyBadge = document.createElement("span");
+    keyBadge.className = "tim-sw-key";
+    keyBadge.textContent = b === 0 ? "Z" : "X";
+    potret.appendChild(cv);
+    potret.appendChild(keyBadge);
+
+    const info = document.createElement("div");
+    info.className = "tim-sw-info";
+
+    const atas = document.createElement("div");
+    atas.className = "tim-sw-atas";
+    const namaEl = document.createElement("span");
+    namaEl.className = "tim-sw-nama";
+    namaEl.textContent = "KOSONG";
+    const pipsWadah = document.createElement("span");
+    pipsWadah.className = "tim-sw-pips";
+    const pips = [];
+    for (let p = 0; p < 3; p++) {
+      const pip = document.createElement("i");
+      pip.className = "tim-sw-pip";
+      pipsWadah.appendChild(pip);
+      pips.push(pip);
+    }
+    atas.appendChild(namaEl);
+    atas.appendChild(pipsWadah);
+
+    const hpTrack = document.createElement("div");
+    hpTrack.className = "tim-sw-hp-track";
+    const hpFill = document.createElement("div");
+    hpFill.className = "tim-sw-hp-fill";
+    const hpTeks = document.createElement("span");
+    hpTeks.className = "tim-sw-hp-teks";
+    hpTeks.textContent = "-";
+    hpTrack.appendChild(hpFill);
+    hpTrack.appendChild(hpTeks);
+
+    info.appendChild(atas);
+    info.appendChild(hpTrack);
+
+    const cdOverlay = document.createElement("div");
+    cdOverlay.className = "tim-sw-cd";
+    const cdAngka = document.createElement("span");
+    cdAngka.className = "tim-sw-cd-angka";
+    cdOverlay.appendChild(cdAngka);
+
+    const buffBadge = document.createElement("span");
+    buffBadge.className = "tim-sw-buff hidden";
+
+    btn.appendChild(potret);
+    btn.appendChild(info);
+    btn.appendChild(cdOverlay);
+    btn.appendChild(buffBadge);
+
+    btn.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (typeof switchKeTombol === "function") {
+        switchKeTombol(b);
+      }
+    });
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+
+    panel.appendChild(btn);
+    _slotDomSwitch.push({
+      btn: btn,
+      cv: cv,
+      keyBadge: keyBadge,
+      namaEl: namaEl,
+      pips: pips,
+      hpFill: hpFill,
+      hpTeks: hpTeks,
+      cdOverlay: cdOverlay,
+      cdAngka: cdAngka,
+      buffBadge: buffBadge,
+      cache: {}
+    });
+  }
+  return panel;
+}
+
+function ambilLabelIkatanSwitch(idxBtn) {
+  const aksi = idxBtn === 0 ? "switch1" : "switch2";
+  const k = typeof pengaturanIkatan === "function"
+    ? pengaturanIkatan(aksi)
+    : (idxBtn === 0 ? "z" : "x");
+  if (typeof ikatanNamaTampil === "function") return ikatanNamaTampil(k);
+  return String(k || (idxBtn === 0 ? "Z" : "X")).toUpperCase();
+}
+
+function sinkronkanVisibilitasSwitchTim() {
+  const tampil = statusGame === "main" &&
+    !gameOver &&
+    typeof timAnggota !== "undefined" &&
+    Array.isArray(timAnggota) &&
+    timAnggota.length > 0;
+  if (tampil && !_panelSwitchEl) {
+    pastikanPanelSwitchTim();
+  }
+  if (!_panelSwitchEl) return;
+  if (_visSwitchTerakhir !== tampil) {
+    _visSwitchTerakhir = tampil;
+    _panelSwitchEl.classList.toggle("hidden", !tampil);
+    if (tampil) segarkanPanelSwitchTim(true);
+  }
+}
+
+function segarkanPanelSwitchTim(paksa) {
+  const panel = pastikanPanelSwitchTim();
+  if (!panel) return;
+  if (paksa) {
+    for (let i = 0; i < _slotDomSwitch.length; i++) {
+      _slotDomSwitch[i].cache = {};
+    }
+  }
+  sinkronkanVisibilitasSwitchTim();
+  perbaruiHudSwitchTim(!!paksa);
+}
+
+function perbaruiHudSwitchTim(paksa) {
+  if (!_panelSwitchEl || _slotDomSwitch.length !== 2) return;
+  if (!paksa && statusGame !== "main") return;
+
+  for (let b = 0; b < 2; b++) {
+    const dom = _slotDomSwitch[b];
+    const cc = dom.cache;
+    const idx = (typeof timOffFieldSlots !== "undefined" && Array.isArray(timOffFieldSlots))
+      ? timOffFieldSlots[b]
+      : -1;
+    const m = (idx >= 0 && typeof timAnggota !== "undefined" && Array.isArray(timAnggota))
+      ? timAnggota[idx]
+      : null;
+
+    const lblKey = ambilLabelIkatanSwitch(b);
+    if (cc.lblKey !== lblKey) {
+      cc.lblKey = lblKey;
+      dom.keyBadge.textContent = lblKey;
+    }
+
+    if (!m || !m.kar) {
+      if (cc.mode !== "kosong") {
+        cc.mode = "kosong";
+        cc.kunci = "";
+        cc.potretSiap = false;
+        cc.buffTeks = "";
+        dom.btn.className = "tim-sw-btn kosong";
+        dom.btn.disabled = true;
+        dom.namaEl.textContent = "KOSONG";
+        dom.hpFill.style.width = "0%";
+        dom.hpTeks.textContent = "-";
+        dom.cdAngka.textContent = "";
+        dom.buffBadge.textContent = "";
+        dom.buffBadge.classList.add("hidden");
+        for (let p = 0; p < 3; p++) dom.pips[p].className = "tim-sw-pip";
+        gambarPotretKarakterCanvas(dom.cv, null, 44);
+      }
+      continue;
+    }
+
+    const kar = m.kar;
+    const wAksen = typeof warnaSwitchKarakter === "function" ? warnaSwitchKarakter(kar) : "#38bdf8";
+    const imgAda = !!(typeof tekstur === "object" && tekstur && tekstur[kar.kunci] && tekstur[kar.kunci].width > 0);
+    if (cc.kunci !== kar.kunci || (imgAda && !cc.potretSiap)) {
+      cc.kunci = kar.kunci;
+      cc.potretSiap = gambarPotretKarakterCanvas(dom.cv, kar, 44);
+      dom.btn.style.setProperty("--warna-sw", wAksen);
+      dom.namaEl.textContent = String(kar.nama || kar.kunci).toUpperCase();
+    }
+
+    const gugur = !!(m.mati || m.hp <= 0);
+    const cdAnggota = (!gugur && typeof m.switchCd === "number" && m.switchCd > 0.04) ? m.switchCd : 0;
+    const teksCd = cdAnggota > 0 ? (cdAnggota.toFixed(1) + "s") : "";
+    const sedangCd = !gugur && cdAnggota > 0;
+    const pasif = (!gugur && typeof infoPasifAktifKarakter === "function")
+      ? infoPasifAktifKarakter(m, kar)
+      : null;
+    const adaPasif = !!pasif;
+    const modeBaru = (gugur ? "gugur" : (sedangCd ? "cd" : "siap")) + (adaPasif ? "-pasif" : "");
+    if (cc.mode !== modeBaru) {
+      cc.mode = modeBaru;
+      dom.btn.className = "tim-sw-btn"
+        + (gugur ? " gugur" : (sedangCd ? " sedang-cd" : " siap"))
+        + (adaPasif ? " pasif-aktif" : "");
+      dom.btn.disabled = gugur;
+    }
+
+    const teksBuff = pasif ? pasif.singkat : "";
+    const warnaBuff = pasif ? pasif.warna : "";
+    if (cc.buffTeks !== teksBuff) {
+      cc.buffTeks = teksBuff;
+      dom.buffBadge.textContent = teksBuff;
+      dom.buffBadge.classList.toggle("hidden", !teksBuff);
+    }
+    if (warnaBuff && cc.warnaBuff !== warnaBuff) {
+      cc.warnaBuff = warnaBuff;
+      dom.btn.style.setProperty("--warna-buff", warnaBuff);
+    }
+
+    const maxHp = Math.max(1, Math.round(m.maxHp || 100));
+    const hpBulat = gugur ? 0 : Math.max(1, Math.min(maxHp, Math.ceil(m.hp)));
+    const persen = gugur ? 0 : Math.max(0, Math.min(100, Math.round((hpBulat / maxHp) * 100)));
+    const warnaHp = persen > 55 ? "#22c55e" : (persen > 25 ? "#f59e0b" : "#ef4444");
+    if (cc.persen !== persen) {
+      cc.persen = persen;
+      dom.hpFill.style.width = persen + "%";
+    }
+    if (cc.warnaHp !== warnaHp) {
+      cc.warnaHp = warnaHp;
+      dom.hpFill.style.background = warnaHp;
+    }
+    const labelHp = gugur ? "GUGUR" : (hpBulat + "/" + maxHp);
+    if (cc.labelHp !== labelHp) {
+      cc.labelHp = labelHp;
+      dom.hpTeks.textContent = labelHp;
+    }
+
+    const teksOverlay = gugur ? "KO" : teksCd;
+    if (cc.teksOverlay !== teksOverlay) {
+      cc.teksOverlay = teksOverlay;
+      dom.cdAngka.textContent = teksOverlay;
+    }
+
+    const slotsSkill = [2, 3, 4];
+    for (let p = 0; p < 3; p++) {
+      const sl = slotsSkill[p];
+      const terbuka = !gugur && (typeof apakahSkillTerbuka === "function" ? apakahSkillTerbuka(kar.kunci, sl) : (p === 0));
+      const siap = terbuka && (!m.skillCds || !(m.skillCds[sl] > 0.05));
+      const stPip = !terbuka ? "kunci" : (siap ? "siap" : "cd");
+      const kPip = "pip" + p;
+      if (cc[kPip] !== stPip) {
+        cc[kPip] = stPip;
+        dom.pips[p].className = "tim-sw-pip " + stPip;
+      }
+    }
+  }
+}
+
 window.tampilkanLevel = tampilkanLevel;
 window.tampilkanKarakter = tampilkanKarakter;
 window.tampilkanJudul = tampilkanJudul;
 window.bukaSetting = bukaSetting;
 window.pilihDevice = pilihDevice;
+window.mulaiPertarunganSkuad = mulaiPertarunganSkuad;
+window.toggleKarakterSkuad = toggleKarakterSkuad;
+window.segarkanPanelSwitchTim = segarkanPanelSwitchTim;
+window.perbaruiHudSwitchTim = perbaruiHudSwitchTim;
+window.sinkronkanVisibilitasSwitchTim = sinkronkanVisibilitasSwitchTim;
 

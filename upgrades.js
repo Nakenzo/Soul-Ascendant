@@ -142,10 +142,17 @@ let kartuHover = -1;
 const CAP_KARTU = { speed: 1.7, damage: 2.2, atk: 0.45, reach: 1.6, halfA: 1.5, bSpeed: 1.6, special: 0.5, status: 2.0, hpA: 150, regen: 3, dash: 3, jiwa: 3, crit: 0.6, armor: 0.6, koin: 1.5 };
 
 function buatPilihanKartu(n) {
+  const cekCocokTim = (fnCocok) => {
+    if (!fnCocok) return true;
+    if (typeof timAnggota !== "undefined" && Array.isArray(timAnggota) && timAnggota.length) {
+      return timAnggota.some((m) => m && !m.mati && m.kar && fnCocok(m.kar));
+    }
+    return karakter ? fnCocok(karakter) : true;
+  };
   const pool = KARTU_UPGRADE.filter((k) => {
     const maks = (TIER_DEF[k.tier || "common"] || TIER_DEF.common).maks;
     return (
-      (!k.cocok || k.cocok(karakter)) &&
+      cekCocokTim(k.cocok) &&
       (!player || !player.kartu[k.id] || player.kartu[k.id] < maks)
     );
   });
@@ -242,6 +249,32 @@ function pilihKartuUpgrade(i) {
   hitungStatKartu();
   if (kart.mult && kart.mult.hpA) {
     player.hp = Math.min(player.maxHp, player.hp + kart.mult.hpA);
+  }
+  if (typeof timAnggota !== "undefined" && Array.isArray(timAnggota)) {
+    const mHpA = (player.mult && player.mult.hpA) || 0;
+    const mDash = (player.mult && player.mult.dash) || 0;
+    for (let idx = 0; idx < timAnggota.length; idx++) {
+      const ag = timAnggota[idx];
+      if (!ag) continue;
+      if (idx === timAktifIdx) {
+        ag.maxHp = player.maxHp;
+        ag.hp = player.hp;
+        ag.hpADiterapkan = mHpA;
+        ag.dashStacks = player.dashStacks;
+        ag.dashDiterapkan = mDash;
+      } else if (!ag.mati && ag.hp > 0) {
+        const dHp = Math.max(0, mHpA - (ag.hpADiterapkan || 0));
+        ag.maxHp = Math.round(ag.base.maxHp + mHpA);
+        ag.hp = Math.min(ag.maxHp, ag.hp + dHp);
+        ag.hpADiterapkan = mHpA;
+        const dDash = Math.max(0, mDash - (ag.dashDiterapkan || 0));
+        if (dDash > 0) {
+          ag.dashStacks = Math.min(ag.base.dashMax + mDash, ag.dashStacks + dDash);
+          ag.dashDiterapkan = mDash;
+        }
+      }
+    }
+    if (typeof perbaruiHudSwitchTim === "function") perbaruiHudSwitchTim();
   }
   if (typeof spawnParticles === "function") spawnParticles(player.x, player.y - 40, kart.warna, 18);
   if (typeof sfxKlik === "function") sfxKlik();

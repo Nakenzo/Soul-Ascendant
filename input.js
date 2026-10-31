@@ -35,7 +35,9 @@ const IKATAN_POKOK = {
   skill1: "1",
   skill2: "2",
   skill3: "3",
-  ultimate: "r"
+  ultimate: "r",
+  switch1: "z",
+  switch2: "x"
 };
 
 // Tombol yang sedang ditekan untuk aksi tertentu, mengikuti ikatan di
@@ -141,6 +143,13 @@ window.addEventListener("keydown", (e) => {
     } else if (tombolAksi("skill1") || k === "q") {
       castSpecial();
     }
+    if (!e.repeat && !animMati && typeof switchKeTombol === "function") {
+      if (tombolAksi("switch1")) {
+        switchKeTombol(0);
+      } else if (tombolAksi("switch2")) {
+        switchKeTombol(1);
+      }
+    }
   }
 
   if (e.key === "Escape") {
@@ -195,21 +204,31 @@ window.addEventListener("keydown", (e) => {
     }
   }
 
-  KARAKTER.forEach((kar, idx) => {
-    if (k === String(idx + 1) && statusGame === "select") {
-      // Tekan angka untuk karakter terkunci = tidak mulai game (klik juga begitu).
-      const cek = typeof syaratKarakter === "function"
-        ? syaratKarakter(kar)
-        : { terbuka: true, syarat: "" };
-      if (!cek.terbuka) {
-        if (typeof sfxKlik === "function") sfxKlik();
-        return;
-      }
-      karakter = kar;
-      try { if (typeof perbaruiIkonSkillSentuh === "function") perbaruiIkonSkillSentuh(kar); } catch (err) {}
-      mulaiGameBaru();
+  if (statusGame === "select" && !e.repeat) {
+    if ((e.key === "Enter" || e.key === " ") && typeof mulaiPertarunganSkuad === "function") {
+      e.preventDefault();
+      mulaiPertarunganSkuad();
+      return;
     }
-  });
+    KARAKTER.forEach((kar, idx) => {
+      if (k === String(idx + 1)) {
+        const cek = typeof syaratKarakter === "function"
+          ? syaratKarakter(kar)
+          : { terbuka: true, syarat: "" };
+        if (!cek.terbuka) {
+          if (typeof sfxKlik === "function") sfxKlik();
+          return;
+        }
+        if (typeof toggleKarakterSkuad === "function") {
+          toggleKarakterSkuad(kar);
+        } else {
+          karakter = kar;
+          try { if (typeof perbaruiIkonSkillSentuh === "function") perbaruiIkonSkillSentuh(kar); } catch (err) {}
+          mulaiGameBaru();
+        }
+      }
+    });
+  }
 });
 
 window.addEventListener("keyup", (e) => {
