@@ -1,7 +1,7 @@
 {
-  "timestamp": 1793367399462,
-  "build": 122,
-  "pesan": "Debug item 1000x khusus akun admin & animasi selebrasi upgrade saat Ascension I karakter berhasil.",
+  "timestamp": 1793445538190,
+  "build": 123,
+  "pesan": "Perbaikan sinkronisasi akun yang mereset status Ascension I & level karakter ke 20, disertai pemulihan otomatis progres Ascension.",
   "perlu_instal_ulang": false,
   "min_shell_build": 93,
   "url_apk": "https://github.com/Nakenzo/Soul-Ascendant/releases/latest/download/Soul-Ascendant.apk",
@@ -45,5 +45,5 @@
     "settings.css",
     "updater.css"
   ],
-  "tanggal": "2026-10-30T13:36:39.462Z"
+  "tanggal": "2026-10-31T11:18:58.190Z"
 }

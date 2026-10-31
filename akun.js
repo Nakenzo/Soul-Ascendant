@@ -455,11 +455,11 @@ function gabungProgres(a, b) {
     const set = new Set();
     for (const v of Array.isArray(x) ? x : []) {
       const n = Number(v);
-      if (Number.isFinite(n) && n > 0) set.add(Math.floor(n));
+      if (Number.isFinite(n) && n >= 0 && n <= 200) set.add(Math.floor(n));
     }
     for (const v of Array.isArray(y) ? y : []) {
       const n = Number(v);
-      if (Number.isFinite(n) && n > 0) set.add(Math.floor(n));
+      if (Number.isFinite(n) && n >= 0 && n <= 200) set.add(Math.floor(n));
     }
     return Array.from(set).sort((a2, b2) => a2 - b2);
   };
@@ -493,6 +493,7 @@ function gabungProgres(a, b) {
 
   const artefakMilik = gabungTinggiPerKunci(kiri.artefakMilik, kanan.artefakMilik);
   const artefakBintang = gabungTinggiPerKunci(kiri.artefakBintang, kanan.artefakBintang);
+  const ascensionKarakter = gabungTinggiPerKunci(kiri.ascensionKarakter, kanan.ascensionKarakter);
   const levelKarakter = gabungTinggiPerKunci(kiri.levelKarakter, kanan.levelKarakter);
 
   // Substat artefak: ambil yang lebih tinggi per artefak per stat. Hanya stat
@@ -566,10 +567,16 @@ function gabungProgres(a, b) {
 
   const inventaris = gabungTinggiPerKunci(kiri.inventaris, kanan.inventaris);
 
-  const skillPakai =
-    (kiri.skillPakai && typeof kiri.skillPakai === "object" && kiri.skillPakai.kunci)
-      ? kiri.skillPakai
-      : (kanan.skillPakai && typeof kanan.skillPakai === "object" ? kanan.skillPakai : null);
+  const utamakanKanan = (Number(kanan.t) || 0) > (Number(kiri.t) || 0);
+  const urutanSkill = utamakanKanan ? [kiri, kanan] : [kanan, kiri];
+  const skillPakai = {};
+  for (const sumber of urutanSkill) {
+    if (!sumber || !sumber.skillPakai || typeof sumber.skillPakai !== "object") continue;
+    for (const kar of Object.keys(sumber.skillPakai)) {
+      const sl = Math.floor(akunNomorAngka(sumber.skillPakai[kar]));
+      if (sl >= 2 && sl <= 5) skillPakai[kar] = sl;
+    }
+  }
 
   const hasil = {
     v: 3,
@@ -578,6 +585,7 @@ function gabungProgres(a, b) {
     koinSaldo: Math.max(akunNomorAngka(kiri.koinSaldo), akunNomorAngka(kanan.koinSaldo)),
     selesai: gabungAngka(kiri.selesai, kanan.selesai),
     bosKalah: gabungKunci(kiri.bosKalah, kanan.bosKalah),
+    ascensionKarakter: ascensionKarakter,
     levelKarakter: levelKarakter,
     treePoin: treePoin,
     skillPakai: skillPakai,
@@ -715,6 +723,12 @@ function akunTarik(opsi) {
         saveGantiProgres(gabung);
       } finally {
         akunTahanJadwal = false;
+      }
+      if (
+        JSON.stringify(gabung.ascensionKarakter || {}) !== JSON.stringify(serverProgres.ascensionKarakter || {}) ||
+        JSON.stringify(gabung.levelKarakter || {}) !== JSON.stringify(serverProgres.levelKarakter || {})
+      ) {
+        akunJadwalUnggah();
       }
     } else if (typeof progres !== "undefined") {
       progres = bersihkanProgres(gabung);

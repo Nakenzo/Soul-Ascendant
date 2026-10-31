@@ -2798,6 +2798,13 @@ function setelahProgresBerubah() {
     segarkanSaldoJudul();
     if (typeof segarkanSaldoKarakter === "function") segarkanSaldoKarakter();
     if (typeof pasangTabKarakter === "function") pasangTabKarakter();
+    if (layarKarakter && !layarKarakter.classList.contains("hidden") && typeof buatPilihanUpgrade === "function") {
+      buatPilihanUpgrade();
+    }
+    const layarInv = document.getElementById("layarInventory");
+    if (layarInv && !layarInv.classList.contains("hidden") && typeof segarkanTampilanInventory === "function") {
+      segarkanTampilanInventory();
+    }
     if (typeof tampilkanLevel === "function" && typeof statusGame !== "undefined" && statusGame === "level") {
       tampilkanLevel();
     }

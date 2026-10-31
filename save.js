@@ -114,9 +114,64 @@ function saveAmbilMentah() {
   return null;
 }
 
+var _savePerluSimpanPulih = false;
+
+function pulihkanAscensionDariRiwayat(n, mentah) {
+  if (!n || typeof n !== "object") return false;
+  let berubah = false;
+  const mentahAsc = (mentah && mentah.ascensionKarakter && typeof mentah.ascensionKarakter === "object") ? mentah.ascensionKarakter : {};
+  const mentahLv = (mentah && mentah.levelKarakter && typeof mentah.levelKarakter === "object") ? mentah.levelKarakter : {};
+
+  const oto = saveBacaOtomatis();
+  for (let i = 0; i < oto.length; i++) {
+    try {
+      const box = saveDekode(oto[i].teks);
+      if (!box || typeof box !== "object" || !box.d || box.sig !== saveChecksum(box.d)) continue;
+      const d = box.d;
+      const dAsc = (d.ascensionKarakter && typeof d.ascensionKarakter === "object") ? d.ascensionKarakter : {};
+      const dLv = (d.levelKarakter && typeof d.levelKarakter === "object") ? d.levelKarakter : {};
+      const kandidat = {};
+      for (const k in dAsc) { if (kunciAman(k)) kandidat[k] = true; }
+      for (const k in dLv) { if (kunciAman(k)) kandidat[k] = true; }
+      for (const k in kandidat) {
+        if ((mentahAsc[k] || 0) >= 1) continue;
+        if ((mentahLv[k] || 0) < 20 && !(n.ascensionKarakter[k] >= 1)) continue;
+        const ascSnap = Number.isInteger(dAsc[k]) && dAsc[k] > 0 ? Math.min(dAsc[k], 5) : 0;
+        const lvSnap = Number.isInteger(dLv[k]) && dLv[k] > 0 ? Math.min(dLv[k], KARAKTER_LEVEL_MAX) : 0;
+        if (ascSnap >= 1 || lvSnap > 20) {
+          const ascBaru = Math.max(n.ascensionKarakter[k] || 0, ascSnap || 1);
+          if (ascBaru !== (n.ascensionKarakter[k] || 0)) {
+            n.ascensionKarakter[k] = ascBaru;
+            berubah = true;
+          }
+          if (lvSnap > (n.levelKarakter[k] || 0)) {
+            n.levelKarakter[k] = Math.min(KARAKTER_LEVEL_MAX, lvSnap);
+            berubah = true;
+          }
+        }
+      }
+    } catch (err) {}
+  }
+
+  for (const k in n.ascensionKarakter) {
+    if ((n.ascensionKarakter[k] || 0) > (mentahAsc[k] || 0)) berubah = true;
+  }
+  for (const k in n.levelKarakter) {
+    if ((n.levelKarakter[k] || 0) > (mentahLv[k] || 0)) berubah = true;
+  }
+  if (berubah && mentah) {
+    n.t = Date.now();
+  }
+  return berubah;
+}
+
 function bacaProgres() {
   const mentah = saveAmbilMentah();
-  return bersihkanProgres(mentah);
+  const bersih = bersihkanProgres(mentah);
+  if (mentah && pulihkanAscensionDariRiwayat(bersih, mentah)) {
+    _savePerluSimpanPulih = true;
+  }
+  return bersih;
 }
 
 // Sanitasi dipakai bersama oleh pembacaan save dan import kode:
@@ -154,6 +209,41 @@ function bersihkanProgres(terbaik) {
     ? Math.min(KOIN_MAKS, Math.max(0, Math.floor(terbaik.koinSaldo)))
     : 0;
 
+  const NODE_WAJIB_ASCENSION = {
+    vampiric: true,
+    ultimate_cd: true,
+    executioner: true,
+    aegis: true
+  };
+
+  n.treePoin = {};
+  const poinTreePerKar = {};
+  const buktiAscensionTree = {};
+  if (terbaik.treePoin && typeof terbaik.treePoin === "object") {
+    for (const k in terbaik.treePoin) {
+      if (!kunciAman(k)) continue;
+      const isi = terbaik.treePoin[k];
+      if (!isi || typeof isi !== "object") continue;
+      const bersih = {};
+      let totalPoin = 0;
+      for (const nid in isi) {
+        if (!kunciAman(nid)) continue;
+        const val = isi[nid];
+        if (Number.isInteger(val) && val > 0) {
+          const rank = Math.min(val, 5);
+          bersih[nid] = rank;
+          totalPoin += rank;
+          if (NODE_WAJIB_ASCENSION[nid]) buktiAscensionTree[k] = true;
+        } else if (typeof val === "boolean" && val) {
+          bersih[nid] = true;
+        }
+      }
+      n.treePoin[k] = bersih;
+      poinTreePerKar[k] = totalPoin;
+      if (totalPoin > 20) buktiAscensionTree[k] = true;
+    }
+  }
+
   n.ascensionKarakter = {};
   if (terbaik.ascensionKarakter && typeof terbaik.ascensionKarakter === "object") {
     for (const k in terbaik.ascensionKarakter) {
@@ -164,35 +254,43 @@ function bersihkanProgres(terbaik) {
       }
     }
   }
-
-  n.levelKarakter = {};
   if (terbaik.levelKarakter && typeof terbaik.levelKarakter === "object") {
     for (const k in terbaik.levelKarakter) {
-      const lv = terbaik.levelKarakter[k];
-      if (Number.isInteger(lv) && lv >= 0) {
-        const batasMax = (n.ascensionKarakter[k] || 0) >= 1 ? 40 : 20;
-        n.levelKarakter[k] = Math.min(lv, batasMax);
+      if (!kunciAman(k)) continue;
+      const lvMentah = terbaik.levelKarakter[k];
+      if (Number.isInteger(lvMentah) && lvMentah > 20 && !(n.ascensionKarakter[k] >= 1)) {
+        n.ascensionKarakter[k] = 1;
       }
     }
   }
-  n.treePoin = {};
-  if (terbaik.treePoin && typeof terbaik.treePoin === "object") {
-    for (const k in terbaik.treePoin) {
-      if (!kunciAman(k)) continue;
-      const isi = terbaik.treePoin[k];
-      if (!isi || typeof isi !== "object") continue;
-      const bersih = {};
-      for (const nid in isi) {
-        if (!kunciAman(nid)) continue;
-        const val = isi[nid];
-        if (Number.isInteger(val) && val > 0) {
-          bersih[nid] = Math.min(val, 5);
-        } else if (typeof val === "boolean" && val) {
-          bersih[nid] = true;
-        }
-      }
-      n.treePoin[k] = bersih;
+  for (const k in buktiAscensionTree) {
+    if (buktiAscensionTree[k] && !(n.ascensionKarakter[k] >= 1)) {
+      n.ascensionKarakter[k] = 1;
     }
+  }
+
+  n.levelKarakter = {};
+  const semuaKunciKar = {};
+  if (terbaik.levelKarakter && typeof terbaik.levelKarakter === "object") {
+    for (const k in terbaik.levelKarakter) {
+      if (kunciAman(k)) semuaKunciKar[k] = true;
+    }
+  }
+  for (const k in poinTreePerKar) {
+    if (poinTreePerKar[k] > 0) semuaKunciKar[k] = true;
+  }
+  for (const k in n.ascensionKarakter) {
+    if (n.ascensionKarakter[k] >= 1) semuaKunciKar[k] = true;
+  }
+  for (const k in semuaKunciKar) {
+    const lvSimpan = (terbaik.levelKarakter && Number.isInteger(terbaik.levelKarakter[k]) && terbaik.levelKarakter[k] >= 0)
+      ? terbaik.levelKarakter[k]
+      : 0;
+    const minDariTree = poinTreePerKar[k] || 0;
+    const minDariAsc = (n.ascensionKarakter[k] || 0) >= 1 ? 20 : 0;
+    const batasMax = (n.ascensionKarakter[k] || 0) >= 1 ? 40 : 20;
+    const lvPulih = Math.max(lvSimpan, minDariTree, minDariAsc);
+    n.levelKarakter[k] = Math.min(lvPulih, batasMax);
   }
   n.skillPakai = {};
   if (terbaik.skillPakai && typeof terbaik.skillPakai === "object") {
@@ -334,6 +432,11 @@ function saveGantiProgres(baru) {
   progres = bersih;
   progres.t = Date.now();
   saveTulis();
+  if (typeof setelahProgresBerubah === "function") {
+    try {
+      setelahProgresBerubah();
+    } catch (err) {  }
+  }
   return true;
 }
 
@@ -481,6 +584,16 @@ function saveCadanganDaftar() {
 let progres;
 try {
   progres = bacaProgres();
+  if (_savePerluSimpanPulih && progres) {
+    _savePerluSimpanPulih = false;
+    const teksPulih = saveEnkode(saveSnapshot());
+    if (teksPulih) {
+      try {
+        localStorage.setItem(SAVE_KUNCI, teksPulih);
+        localStorage.setItem(SAVE_KUNCI_BAK, teksPulih);
+      } catch (e) {}
+    }
+  }
 } catch (err) {
   console.warn("SAVE: gagal baca progres, pakai default.", err);
   progres = progresBaru();
