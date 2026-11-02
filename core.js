@@ -43,7 +43,7 @@ var IS_PC = PLATFORM === "pc";
 var IS_WEB = PLATFORM === "web";
 
 const VERSI_GAME = "0.1.0";
-const BUILD_GAME = 125;
+const BUILD_GAME = 126;
 const EDISI_GAME = IS_APK ? "Android APK" : (IS_PC ? "PC Windows" : "Web Edition");
 
 function saatPlatform(opsi) {
@@ -535,9 +535,6 @@ function switchKeTombol(slotBtn, opsi) {
   }
   if (typeof addFlash === "function") {
     addFlash(warnaSwitchRgba(wMasuk, 0.22), 0.45, 0.22);
-  }
-  if (typeof spawnDamage === "function" && karakter && karakter.nama) {
-    spawnDamage(player.x, player.y - 62, karakter.nama.toUpperCase() + "!", wMasuk);
   }
   if (typeof sfxDash === "function") sfxDash();
   else if (typeof sfxKlik === "function") sfxKlik();

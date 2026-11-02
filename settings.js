@@ -26,8 +26,8 @@ const IKATAN_BAWAAN = {
   skill2: "2",
   skill3: "3",
   ultimate: "r",
-  switch1: "z",
-  switch2: "x"
+  switch1: "q",
+  switch2: "e"
 };
 
 // Urutan tampilan di UI + label tombolnya.
@@ -36,23 +36,18 @@ const DAFTAR_AKSI = [
   { aksi: "mundur", label: "MUNDUR", ket: "ArrowDown tetap aktif sebagai cadangan" },
   { aksi: "kiri", label: "KIRI", ket: "ArrowLeft tetap aktif sebagai cadangan" },
   { aksi: "kanan", label: "KANAN", ket: "ArrowRight tetap aktif sebagai cadangan" },
-  { aksi: "skill1", label: "SKILL 1", ket: "Skill 1 karakter (Q tetap cadangan)" },
+  { aksi: "skill1", label: "SKILL 1", ket: "Skill 1 karakter" },
   { aksi: "skill2", label: "SKILL 2", ket: "Skill 2 karakter" },
   { aksi: "skill3", label: "SKILL 3", ket: "Skill 3 karakter" },
   { aksi: "ultimate", label: "ULTIMATE", ket: "Jurus ultimate" },
-  { aksi: "switch1", label: "SWITCH 1", ket: "Tukar ke karakter cadangan 1" },
-  { aksi: "switch2", label: "SWITCH 2", ket: "Tukar ke karakter cadangan 2" }
+  { aksi: "switch1", label: "SWITCH 1", ket: "Tukar ke karakter cadangan 1 (Slot 2)" },
+  { aksi: "switch2", label: "SWITCH 2", ket: "Tukar ke karakter cadangan 2 (Slot 3)" }
 ];
-
-// Tombol cadangan yang menempel tetap pada satu aksi dan tidak boleh dipakai
-// aksi lain: Q = skill cadangan (Q/1).
-const IKATAN_Q_SKILL = "q";
 
 // Tombol yang tidak boleh dipakai: system shortcuts (F11/F12, modifier, Esc, Tab, Enter).
 function ikatanTombolDilarang(k) {
   const s = String(k || "").toLowerCase();
   if (!s) return true;
-  if (s === IKATAN_Q_SKILL) return true;
   if (s === "escape" || s === "enter" || s === "tab") return true;
   if (s === " " || s === "shift" || s === "control" || s === "alt" || s === "meta") return true;
   if (/^f([1-9]|1[0-2])$/.test(s)) return true;
@@ -187,9 +182,6 @@ function ikatanSetel(aksi, kunci) {
   const k = String(kunci || "").toLowerCase();
   if (!Object.prototype.hasOwnProperty.call(IKATAN_BAWAAN, aksi)) {
     return { ok: false, pesan: "Aksi tidak dikenal." };
-  }
-  if (k === IKATAN_Q_SKILL) {
-    return { ok: false, pesan: "Tombol Q tetap cadangan skill (Q/K)." };
   }
   if (!ikatanSah(k)) {
     return { ok: false, pesan: "Tombol itu dipakai menu game, tidak bisa dipakai." };

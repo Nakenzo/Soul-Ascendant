@@ -2368,7 +2368,6 @@ function pasangTombol() {
   document.getElementById("tombolMenu").addEventListener("click", tampilkanPilih);
   tombolPause.addEventListener("click", tampilkanPause);
   document.getElementById("tombolLanjut").addEventListener("click", lanjutDariPause);
-  document.getElementById("tombolMenuPause").addEventListener("click", tampilkanPilih);
   document.getElementById("tombolJudulPause").addEventListener("click", tampilkanJudul);
   document.getElementById("tombolJudul").addEventListener("click", tampilkanJudul);
   document.getElementById("tombolLevelBerikut").addEventListener("click", () => {
@@ -3139,12 +3138,12 @@ function pastikanPanelSwitchTim() {
     const potret = document.createElement("div");
     potret.className = "tim-sw-potret";
     const cv = document.createElement("canvas");
-    cv.width = 44;
-    cv.height = 44;
+    cv.width = 58;
+    cv.height = 58;
     cv.className = "tim-sw-canvas";
     const keyBadge = document.createElement("span");
     keyBadge.className = "tim-sw-key";
-    keyBadge.textContent = b === 0 ? "Z" : "X";
+    keyBadge.textContent = b === 0 ? "Q" : "E";
     potret.appendChild(cv);
     potret.appendChild(keyBadge);
 
@@ -3229,9 +3228,9 @@ function ambilLabelIkatanSwitch(idxBtn) {
   const aksi = idxBtn === 0 ? "switch1" : "switch2";
   const k = typeof pengaturanIkatan === "function"
     ? pengaturanIkatan(aksi)
-    : (idxBtn === 0 ? "z" : "x");
+    : (idxBtn === 0 ? "q" : "e");
   if (typeof ikatanNamaTampil === "function") return ikatanNamaTampil(k);
-  return String(k || (idxBtn === 0 ? "Z" : "X")).toUpperCase();
+  return String(k || (idxBtn === 0 ? "Q" : "E")).toUpperCase();
 }
 
 function sinkronkanVisibilitasSwitchTim() {
@@ -3298,7 +3297,7 @@ function perbaruiHudSwitchTim(paksa) {
         dom.buffBadge.textContent = "";
         dom.buffBadge.classList.add("hidden");
         for (let p = 0; p < 3; p++) dom.pips[p].className = "tim-sw-pip";
-        gambarPotretKarakterCanvas(dom.cv, null, 44);
+        gambarPotretKarakterCanvas(dom.cv, null, 58);
       }
       continue;
     }
@@ -3308,7 +3307,7 @@ function perbaruiHudSwitchTim(paksa) {
     const imgAda = !!(typeof tekstur === "object" && tekstur && tekstur[kar.kunci] && tekstur[kar.kunci].width > 0);
     if (cc.kunci !== kar.kunci || (imgAda && !cc.potretSiap)) {
       cc.kunci = kar.kunci;
-      cc.potretSiap = gambarPotretKarakterCanvas(dom.cv, kar, 44);
+      cc.potretSiap = gambarPotretKarakterCanvas(dom.cv, kar, 58);
       dom.btn.style.setProperty("--warna-sw", wAksen);
       dom.namaEl.textContent = String(kar.nama || kar.kunci).toUpperCase();
     }

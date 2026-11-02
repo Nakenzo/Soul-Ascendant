@@ -65,7 +65,7 @@ function slotDariTombol(tombol) {
   const k1 = typeof pengaturanIkatan === "function" ? pengaturanIkatan("skill1") : "1";
   const k2 = typeof pengaturanIkatan === "function" ? pengaturanIkatan("skill2") : "2";
   const k3 = typeof pengaturanIkatan === "function" ? pengaturanIkatan("skill3") : "3";
-  if (tombol === k1 || tombol === "1" || tombol === "q") return 2;
+  if (tombol === k1 || tombol === "1") return 2;
   if (tombol === k2 || tombol === "2") return 3;
   if (tombol === k3 || tombol === "3") return 4;
   return 0;

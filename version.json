@@ -1,7 +1,7 @@
 {
-  "timestamp": 1793450500000,
-  "build": 125,
-  "pesan": "Sistem battle 3 karakter ala Punishing: Gray Raven, pasif karakter bertahan & hitung mundur realtime saat off-field, serta cooldown switch 3 detik independen per karakter.",
+  "timestamp": 1793578889460,
+  "build": 126,
+  "pesan": "Tampilan pasif dipindahkan ke Info Box di bawah koin dengan bar progress realtime, dan pembersihan tombol Atur Tim di menu pause.",
   "perlu_instal_ulang": false,
   "min_shell_build": 93,
   "url_apk": "https://github.com/Nakenzo/Soul-Ascendant/releases/latest/download/Soul-Ascendant.apk",
@@ -45,5 +45,5 @@
     "settings.css",
     "updater.css"
   ],
-  "tanggal": "2026-10-31T12:08:20.000Z"
+  "tanggal": "2026-11-02T00:21:29.461Z"
 }

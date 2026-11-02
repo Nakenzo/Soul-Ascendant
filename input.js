@@ -36,8 +36,8 @@ const IKATAN_POKOK = {
   skill2: "2",
   skill3: "3",
   ultimate: "r",
-  switch1: "z",
-  switch2: "x"
+  switch1: "q",
+  switch2: "e"
 };
 
 // Tombol yang sedang ditekan untuk aksi tertentu, mengikuti ikatan di
@@ -129,9 +129,18 @@ window.addEventListener("keydown", (e) => {
   if (e.code) keys[e.code.toLowerCase()] = true;
 
   if (statusGame === "main") {
+    if (!e.repeat && !animMati && typeof switchKeTombol === "function") {
+      if (tombolAksi("switch1")) {
+        switchKeTombol(0);
+        return;
+      } else if (tombolAksi("switch2")) {
+        switchKeTombol(1);
+        return;
+      }
+    }
     if (typeof pakaiModeTigaSkill === "function" && pakaiModeTigaSkill()) {
       let slot = 0;
-      if (tombolAksi("skill1") || k === "q") slot = 2;
+      if (tombolAksi("skill1")) slot = 2;
       else if (tombolAksi("skill2")) slot = 3;
       else if (tombolAksi("skill3")) slot = 4;
       else if (typeof slotDariTombol === "function") slot = slotDariTombol(k);
@@ -140,15 +149,8 @@ window.addEventListener("keydown", (e) => {
         if (karakter && typeof apakahSkillTerbuka === "function" && !apakahSkillTerbuka(karakter.kunci, slot)) return;
         castSkillSlot(slot);
       }
-    } else if (tombolAksi("skill1") || k === "q") {
+    } else if (tombolAksi("skill1")) {
       castSpecial();
-    }
-    if (!e.repeat && !animMati && typeof switchKeTombol === "function") {
-      if (tombolAksi("switch1")) {
-        switchKeTombol(0);
-      } else if (tombolAksi("switch2")) {
-        switchKeTombol(1);
-      }
     }
   }
 

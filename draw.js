@@ -3906,8 +3906,11 @@ function drawHUD() {
 
   const infoW = Math.round(340 * s);
   const infoPad = Math.round(5 * s);
-  const infoBaris = 3;
-  const infoH = Math.round(64 * s);
+  const pasifAktif = (player && karakter && typeof infoPasifAktifKarakter === "function")
+    ? infoPasifAktifKarakter(player, karakter)
+    : null;
+  const infoBaris = pasifAktif ? 4 : 3;
+  const infoH = Math.round((pasifAktif ? 84 : 64) * s);
   const infoLineH = Math.round((infoH - infoPad * 2) / infoBaris);
   const infoX = W - infoW - m, infoY = m;
 
@@ -3935,6 +3938,42 @@ function drawHUD() {
   ctx.textAlign = "left";
   ctx.fillStyle = "#ffd23f";
   ctx.fillText("KOIN " + koin, infoX + infoPad, infoYbaris(2));
+
+  if (pasifAktif) {
+    const tPasifY = infoYbaris(3);
+    const pBarH = Math.max(13, Math.round(infoLineH * 0.78));
+    const pBarY = Math.round(tPasifY - pBarH / 2);
+    const pBarW = infoW - infoPad * 2;
+    const pBarX = infoX + infoPad;
+    const rasioP = Math.max(0, Math.min(1, pasifAktif.sisa / Math.max(0.1, pasifAktif.maks || 1)));
+
+    ctx.save();
+    ctx.fillStyle = "rgba(10, 16, 28, 0.85)";
+    ctx.fillRect(pBarX, pBarY, pBarW, pBarH);
+    ctx.globalAlpha = 0.45;
+    ctx.fillStyle = pasifAktif.warna || "#ff7a00";
+    ctx.fillRect(pBarX + 1, pBarY + 1, (pBarW - 2) * rasioP, pBarH - 2);
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = pasifAktif.warna || "#ff7a00";
+    ctx.lineWidth = Math.max(1, Math.round(1 * s));
+    ctx.strokeRect(pBarX + 0.5, pBarY + 0.5, pBarW - 1, pBarH - 1);
+
+    ctx.font = "bold " + fs(11) + "px Zen Dots";
+    ctx.textBaseline = "middle";
+    const tKiri = "PASIF: " + pasifAktif.nama;
+    const tKanan = pasifAktif.panah ? ("x" + pasifAktif.sisa) : (pasifAktif.sisa.toFixed(1) + "s");
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = Math.max(1, Math.round(1.8 * s));
+    ctx.strokeText(tKiri, pBarX + Math.round(5 * s), tPasifY);
+    ctx.fillStyle = "#ffffff";
+    ctx.fillText(tKiri, pBarX + Math.round(5 * s), tPasifY);
+    ctx.textAlign = "right";
+    ctx.strokeText(tKanan, pBarX + pBarW - Math.round(5 * s), tPasifY);
+    ctx.fillStyle = "#fde047";
+    ctx.fillText(tKanan, pBarX + pBarW - Math.round(5 * s), tPasifY);
+    ctx.textAlign = "left";
+    ctx.restore();
+  }
   ctx.textBaseline = "alphabetic";
 
   // nama skill = slot yang SEDANG terpasang (bukan hardcode per karakter)
@@ -4042,45 +4081,6 @@ function drawHUD() {
   }
 
   const totalSkH = mode3 ? (Math.max(16, Math.round(hpBarH * 0.85)) + Math.max(4, Math.round(6 * s))) * 3 : hpBarH;
-  let ekstraPasifH = 0;
-  const pasifAktif = (player && karakter && typeof infoPasifAktifKarakter === "function")
-    ? infoPasifAktifKarakter(player, karakter)
-    : null;
-  if (pasifAktif) {
-    const pBarH = Math.max(15, Math.round(hpBarH * 0.72));
-    const pY = skY + totalSkH + Math.round(4 * s);
-    const padP = Math.max(2, Math.round(2 * s));
-    const rasioP = Math.max(0, Math.min(1, pasifAktif.sisa / Math.max(0.1, pasifAktif.maks || 1)));
-    ctx.save();
-    ctx.fillStyle = "rgba(4, 8, 18, 0.9)";
-    ctx.fillRect(hpX, pY, hpBarW, pBarH);
-    ctx.globalAlpha = 0.55;
-    ctx.fillStyle = pasifAktif.warna || "#ff7a00";
-    ctx.fillRect(hpX + padP, pY + padP, (hpBarW - padP * 2) * rasioP, pBarH - padP * 2);
-    ctx.globalAlpha = 1;
-    ctx.strokeStyle = pasifAktif.warna || "#ff7a00";
-    ctx.lineWidth = Math.max(1, Math.round(1.5 * s));
-    ctx.strokeRect(hpX + 0.5, pY + 0.5, hpBarW - 1, pBarH - 1);
-    ctx.font = "bold " + fs(12) + "px Zen Dots";
-    ctx.textBaseline = "middle";
-    const tMidY = pY + pBarH / 2;
-    const mmP = Math.max(6, Math.round(7 * s));
-    const tKiri = "PASIF: " + pasifAktif.nama;
-    const tKanan = pasifAktif.panah ? ("x" + pasifAktif.sisa) : (pasifAktif.sisa.toFixed(1) + "s");
-    ctx.strokeStyle = "#000";
-    ctx.lineWidth = Math.max(1, Math.round(2 * s));
-    ctx.strokeText(tKiri, hpX + mmP, tMidY);
-    ctx.fillStyle = "#ffffff";
-    ctx.fillText(tKiri, hpX + mmP, tMidY);
-    ctx.textAlign = "right";
-    ctx.strokeText(tKanan, hpX + hpBarW - mmP, tMidY);
-    ctx.fillStyle = "#fde047";
-    ctx.fillText(tKanan, hpX + hpBarW - mmP, tMidY);
-    ctx.textAlign = "left";
-    ctx.textBaseline = "alphabetic";
-    ctx.restore();
-    ekstraPasifH = pBarH + Math.round(6 * s);
-  }
 
   if ((statusGame === "main" || statusGame === "pause") && player && player.kartu) {
     try {
@@ -4096,7 +4096,7 @@ function drawHUD() {
       }
       if (nota.length > 0) {
         const nx = hpX;
-        const ny = skY + totalSkH + ekstraPasifH + Math.round(10 * s);
+        const ny = skY + totalSkH + Math.round(10 * s);
         const lh = Math.round(18 * s);
         const pad = Math.round(8 * s);
         const lebar = hpBarW;
